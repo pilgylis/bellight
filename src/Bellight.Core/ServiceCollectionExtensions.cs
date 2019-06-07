@@ -1,0 +1,28 @@
+﻿using Bellight.Core;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+
+namespace Microsoft.Extensions.DependencyInjection
+{
+    public static class ServiceCollectionExtensions
+    {
+        public static IServiceCollection AddBellightCore(this IServiceCollection services) {
+            return services.AddBellightCore(Enumerable.Empty<Assembly>());
+        }
+
+        public static IServiceCollection AddBellightCore(this IServiceCollection services, IEnumerable<Assembly> assemblies) {
+            return services.AddBellightCore(config => config.AdditionalAssemblies = config.AdditionalAssemblies.Union(assemblies).ToList());
+        }
+
+        public static IServiceCollection AddBellightCore(this IServiceCollection services, Action<BellightCoreOptions> setupAction) {
+            var options = new BellightCoreOptions();
+            setupAction(options);
+
+            Starter.ScanAndRegisterServices(services, options);
+
+            return services;
+        }
+    }
+}
