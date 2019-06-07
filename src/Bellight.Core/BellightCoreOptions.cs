@@ -12,7 +12,8 @@ namespace Bellight.Core
         public IList<ITypeHandler> TypeHandlers { get; set; } = new List<ITypeHandler>();
         public IList<Assembly> AdditionalAssemblies { get; set; } = new List<Assembly>();
         public IList<Action<IServiceCollection>> StartupBuilderActions { get; set; } = new List<Action<IServiceCollection>>();
-        public IList<Action<IServiceProvider>> StartupContainerActions { get; set; } = new List<Action<IServiceProvider>>();
+        public IList<Action<IServiceProvider, IServiceCollection>> StartupContainerActions { get; set; } 
+            = new List<Action<IServiceProvider, IServiceCollection>>();
 
         public BellightCoreOptions AddStartupServiceAction(Action<IServiceCollection> action)
         {
@@ -20,7 +21,7 @@ namespace Bellight.Core
             return this;
         }
 
-        public BellightCoreOptions AddStartupContainerAction(Action<IServiceProvider> action)
+        public BellightCoreOptions AddStartupContainerAction(Action<IServiceProvider, IServiceCollection> action)
         {
             StartupContainerActions.Add(action);
             return this;

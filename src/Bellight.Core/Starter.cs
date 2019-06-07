@@ -16,9 +16,6 @@ namespace Bellight.Core
             startupContainerServices.AddTransient<IAssemblyScanner, DefaultAssemblyScanner>();
 
             startupContainerServices.AddSingleton(services);
-            IDictionary<string, Type> keyedTypeDictionary = new Dictionary<string, Type>();
-            startupContainerServices.AddSingleton(keyedTypeDictionary);
-            startupContainerServices.AddTransient<ITypeHandler, DependencyTypeHandler>();
 
             if (options.StartupBuilderActions?.Any() == true) {
                 foreach (var action in options.StartupBuilderActions)
@@ -27,20 +24,18 @@ namespace Bellight.Core
                 }
             }
 
-            var startupContainer = startupContainerServices.BuildServiceProvider();
+            var startupServiceProvider = startupContainerServices.BuildServiceProvider();
 
-            var assemblyScanner = startupContainer.GetService<IAssemblyScanner>();
+            var assemblyScanner = startupServiceProvider.GetService<IAssemblyScanner>();
             assemblyScanner.Scan(options.AdditionalAssemblies);
 
             if (options.StartupContainerActions?.Any() == true)
             {
                 foreach (var action in options.StartupContainerActions)
                 {
-                    action(startupContainer);
+                    action(startupServiceProvider, services);
                 }
             }
-
-            services.AddScoped<IKeyedServiceFactory>(sp => new KeyedServiceFactory(keyedTypeDictionary, sp));
 
             return services;
         }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace Bellight.Core.Defaults
 {
@@ -44,6 +43,7 @@ namespace Bellight.Core.Defaults
             }
         }
 
-        private Func<Assembly, string, bool> excludeThisAssemblyPredicate = (a, b) => a.GetReferencedAssemblies().Any(asb => string.CompareOrdinal(asb.Name, b) == 0);
+        private readonly Func<Assembly, string, bool> excludeThisAssemblyPredicate = (a, b)
+            => a.GetReferencedAssemblies().Any(asb => string.CompareOrdinal(asb.Name, b) == 0);
     }
 }

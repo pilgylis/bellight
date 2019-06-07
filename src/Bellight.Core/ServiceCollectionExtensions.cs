@@ -18,6 +18,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection AddBellightCore(this IServiceCollection services, Action<BellightCoreOptions> setupAction) {
             var options = new BellightCoreOptions();
+            options.AddDependencyHandler();
+
             setupAction(options);
 
             Starter.ScanAndRegisterServices(services, options);
