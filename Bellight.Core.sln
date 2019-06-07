@@ -19,6 +19,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. SolutionItems", "1. Solu
 		LICENSE = LICENSE
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bellight.Configurations", "src\Bellight.Configurations\Bellight.Configurations.csproj", "{D7636966-AB97-4D5C-A72E-16B507623D86}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bellight.Queue.Abstractions", "src\Bellight.Queue.Abstractions\Bellight.Queue.Abstractions.csproj", "{AF17C9B5-C034-4E2E-A237-667087232E04}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bellight.Queue.KafkaProvider", "src\Bellight.Queue.KafkaProvider\Bellight.Queue.KafkaProvider.csproj", "{02C9B59F-E780-409D-BB34-9C02311E950E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +39,18 @@ Global
 		{806A66DF-DD92-40C7-B648-35F15A4B4754}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{806A66DF-DD92-40C7-B648-35F15A4B4754}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{806A66DF-DD92-40C7-B648-35F15A4B4754}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7636966-AB97-4D5C-A72E-16B507623D86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7636966-AB97-4D5C-A72E-16B507623D86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7636966-AB97-4D5C-A72E-16B507623D86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7636966-AB97-4D5C-A72E-16B507623D86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF17C9B5-C034-4E2E-A237-667087232E04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF17C9B5-C034-4E2E-A237-667087232E04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF17C9B5-C034-4E2E-A237-667087232E04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF17C9B5-C034-4E2E-A237-667087232E04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02C9B59F-E780-409D-BB34-9C02311E950E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02C9B59F-E780-409D-BB34-9C02311E950E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02C9B59F-E780-409D-BB34-9C02311E950E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02C9B59F-E780-409D-BB34-9C02311E950E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -40,6 +58,9 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{8DFEAB56-2990-4AD3-9ECD-30AA978281EA} = {AE3746B0-99A5-4106-A683-A1524CF78CEB}
 		{806A66DF-DD92-40C7-B648-35F15A4B4754} = {0B340B7A-59E6-45F9-8CAD-3E505F059671}
+		{D7636966-AB97-4D5C-A72E-16B507623D86} = {AE3746B0-99A5-4106-A683-A1524CF78CEB}
+		{AF17C9B5-C034-4E2E-A237-667087232E04} = {AE3746B0-99A5-4106-A683-A1524CF78CEB}
+		{02C9B59F-E780-409D-BB34-9C02311E950E} = {AE3746B0-99A5-4106-A683-A1524CF78CEB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {34BCAF91-77E2-4023-881F-46C93E351321}
