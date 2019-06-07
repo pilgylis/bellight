@@ -23,7 +23,7 @@ namespace Bellight.Queue.KafkaProvider
             _producer = new Lazy<IProducer<Null, string>>(() => {
                 var config = new ProducerConfig
                 {
-                    BootstrapServers = configuration.GetSection("KafkaOptions:BootstrapServers").Value,
+                    BootstrapServers = configuration.GetSection(Constants.OptionNameBootstrapServer).Value,
                     BatchNumMessages = 1,
                     MessageTimeoutMs = 1,
                     SocketNagleDisable = true,
@@ -34,12 +34,12 @@ namespace Bellight.Queue.KafkaProvider
             });
 
             _consumer = new Lazy<IConsumer<Ignore, string>>(() => {
-                var groupIdSection = configuration.GetSection("KafkaOptions:ConsumerGroupId");
+                var groupIdSection = configuration.GetSection(Constants.OptionNameConsumerGroupId);
                 var groupId = groupIdSection.Exists() && !string.IsNullOrEmpty(groupIdSection.Value)
-                    ? groupIdSection.Value : "default";
+                    ? groupIdSection.Value : Constants.DefaultGroupId;
                 var config = new ConsumerConfig
                 {
-                    BootstrapServers = configuration.GetSection("KafkaOptions:BootstrapServers").Value,
+                    BootstrapServers = configuration.GetSection(Constants.OptionNameBootstrapServer).Value,
                     GroupId = groupId,
                     AutoOffsetReset = AutoOffsetReset.Earliest,
                     StatisticsIntervalMs = 5000,
@@ -72,7 +72,7 @@ namespace Bellight.Queue.KafkaProvider
 
         private void Handler(DeliveryReport<Null, string> result)
         {
-            if (!result.Error.IsError)
+            if (result?.Error?.IsError == false)
             {
                 return;
             }
