@@ -8,8 +8,8 @@ namespace Bellight.Configurations
         public static IConfigurationBuilder InitialiseBellightConfigurations(
             this IConfigurationBuilder configurationBuilder, 
             bool isDevelopment, 
-            string environmentName, 
-            string[] args)
+            string environmentName = null, 
+            string[] args = null)
         {
             configurationBuilder.AddJsonFile("appsettings.json", true, true);
 
