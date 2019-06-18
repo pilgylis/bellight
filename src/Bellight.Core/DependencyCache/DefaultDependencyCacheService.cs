@@ -1,4 +1,5 @@
 ﻿using Bellight.Core.Misc;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,39 +13,45 @@ namespace Bellight.Core.DependencyCache
         private readonly BellightCoreOptions _options;
         private readonly ISerializer _serializer;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IServiceCollection _services;
 
-        public DefaultDependencyCacheService(BellightCoreOptions options, ISerializer serializer, IServiceProvider serviceProvider) {
+        public DefaultDependencyCacheService(
+            BellightCoreOptions options, 
+            ISerializer serializer, 
+            IServiceCollection services,
+            IServiceProvider serviceProvider) {
             _options = options;
             _serializer = serializer;
             _serviceProvider = serviceProvider;
+            _services = services;
         }
 
-        public DependencyCacheModel Load()
+        public bool Load()
         {
-            if (_options.DependencyCacheOptions == null || !_options.DependencyCacheOptions.Enabled)
+            if (_options.DependencyCacheOptions?.Enabled != true)
             {
-                return null;
+                return false;
             }
 
             var filePath = string.IsNullOrEmpty(_options.DependencyCacheOptions.FileLocation) ? _options.DependencyCacheOptions.FileName :
                 Path.Combine(_options.DependencyCacheOptions.FileLocation, _options.DependencyCacheOptions.FileName);
 
-            var content = string.Empty;
-            if (!SafeExecute.Sync(() => content = LoadCache(filePath)) || string.IsNullOrEmpty(content))
+            var content = LoadCache(filePath);
+            if (string.IsNullOrEmpty(content))
             {
-                return null;
+                return false;
             }
 
             var model = _serializer.TryDeserializeObject<DependencyCacheModel>(content);
 
             if (!VerifyAssembles(model.Assemblies))
             {
-                return null;
+                return false;
             }
 
             if (model.TypeHandlers?.Any() != true)
             {
-                return null;
+                return false;
             }
 
             var loadSuccess = SafeExecute.Sync(() => {
@@ -56,20 +63,12 @@ namespace Bellight.Core.DependencyCache
                 }
             });
 
-            if (!loadSuccess)
-            {
-                return null;
-            }
-            
-
-            return null; // _serializer.TryDeserializeObject<DependencyCacheModel>(content);
-            // TODO: verify assemblies
-            // TODO: load dependencies
+            return loadSuccess;
         }
 
         public void Save(DependencyCacheModel item)
         {
-            if (item == null || _options.DependencyCacheOptions == null || !_options.DependencyCacheOptions.Enabled)
+            if (item == null || _options.DependencyCacheOptions?.Enabled != true)
             {
                 return;
             }
@@ -88,7 +87,14 @@ namespace Bellight.Core.DependencyCache
             var filePath = string.IsNullOrEmpty(_options.DependencyCacheOptions.FileLocation) ? _options.DependencyCacheOptions.FileName :
                 Path.Combine(_options.DependencyCacheOptions.FileLocation, _options.DependencyCacheOptions.FileName);
 
-            SafeExecute.Sync(() => File.WriteAllText(filePath, serializedContent));
+            try
+            {
+                File.WriteAllText(filePath, serializedContent);
+            }
+            catch
+            {
+                StaticLog.Warning($"Cannot write cache file: {filePath}. As a consequence, next startup may suffer a performance issue.");
+            }
         }
 
         private bool VerifyAssembles(IEnumerable<string> assemblyNames)
@@ -98,7 +104,15 @@ namespace Bellight.Core.DependencyCache
 
         private string LoadCache(string fileName)
         {
-            return File.ReadAllText(fileName);
+            try
+            {
+                return File.ReadAllText(fileName);
+            }
+            catch
+            {
+                StaticLog.Warning($"Cannot open cache file: {fileName}");
+                return string.Empty;
+            }            
         }
     }
 }

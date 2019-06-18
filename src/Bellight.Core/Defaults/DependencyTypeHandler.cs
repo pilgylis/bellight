@@ -14,8 +14,8 @@ namespace Bellight.Core.Defaults
         private readonly Type _singletonType = typeof(ISingletonDependency);
         private readonly Type _keyedType = typeof(IKeyedDependency);
 
-        private readonly IServiceCollection _builder;
-        private readonly IDictionary<string, Type> _keyedTypeDictionary;
+        private readonly IServiceCollection _services;
+        private readonly IKeyedServiceRegistry _keyedServiceRegistry;
 
         private readonly IList<Type> _singletonTypes = new List<Type>();
         private readonly IList<Type> _scopedTypes = new List<Type>();
@@ -23,12 +23,13 @@ namespace Bellight.Core.Defaults
         private readonly IList<Tuple<Type, Type>> _singletonMaps = new List<Tuple<Type, Type>>();
         private readonly IList<Tuple<Type, Type>> _scopedMaps = new List<Tuple<Type, Type>>();
         private readonly IList<Tuple<Type, Type>> _transientMaps = new List<Tuple<Type, Type>>();
-        private readonly IList<Tuple<string, Type>> _keyedMaps = new List<Tuple<string, Type>>();
+        private readonly IList<Tuple<string, Type, Type>> _keyedMaps = new List<Tuple<string, Type, Type>>();
 
-        public DependencyTypeHandler(IServiceCollection builder, IDictionary<string, Type> keyedTypeDictionary)
+        public DependencyTypeHandler(IServiceCollection services, IKeyedServiceRegistry keyedServiceRegistry)
         {
-            _builder = builder;
-            _keyedTypeDictionary = keyedTypeDictionary;
+            _services = services;
+            _keyedServiceRegistry = keyedServiceRegistry;
+            _keyedServiceRegistry.Clear();
         }
 
         public void Process(Type type)
@@ -44,12 +45,12 @@ namespace Bellight.Core.Defaults
             {
                 if (_singletonType.IsAssignableFrom(interfaceType))
                 {
-                    _builder.AddSingleton(type);
+                    _services.AddSingleton(type);
                     _singletonTypes.Add(type);
 
                     if (interfaceType != _singletonType)
                     {
-                        _builder.AddSingleton(interfaceType, type);
+                        _services.AddSingleton(interfaceType, type);
                         _singletonMaps.Add(new Tuple<Type, Type>(interfaceType, type));
                     }
                 }
@@ -61,41 +62,40 @@ namespace Bellight.Core.Defaults
                         continue;
                     }
 
-                    _builder.AddTransient(type);
+                    _services.AddTransient(type);
                     _transientTypes.Add(type);
 
                     if (interfaceType != _keyedType)
                     {
-                        _transientMaps.Add(new Tuple<Type, Type>(interfaceType, type));
-                        _builder.AddTransient(interfaceType, type);
+                        _services.AddTransient(interfaceType, type);
                     }
 
-                    if (!_keyedTypeDictionary.ContainsKey(key))
+                    if (!_keyedServiceRegistry.ContainsKey(key))
                     {
-                        _keyedTypeDictionary.Add(key, type);
-                        _keyedMaps.Add(new Tuple<string, Type>(key, type));
+                        _keyedServiceRegistry.Add(key, type);
+                        _keyedMaps.Add(new Tuple<string, Type, Type>(key, interfaceType, type));
                     }
                 }
                 else if (_scopedDependencyType.IsAssignableFrom(interfaceType))
                 {
-                    _builder.AddScoped(type);
+                    _services.AddScoped(type);
                     _scopedTypes.Add(type);
 
                     if (interfaceType != _scopedDependencyType)
                     {
                         _scopedMaps.Add(new Tuple<Type, Type>(interfaceType, type));
-                        _builder.AddScoped(interfaceType, type);
+                        _services.AddScoped(interfaceType, type);
                     }
                 }
                 else
                 {
-                    _builder.AddTransient(type);
+                    _services.AddTransient(type);
                     _transientTypes.Add(type);
 
                     if (interfaceType != _dependencyType)
                     {
                         _transientMaps.Add(new Tuple<Type, Type>(interfaceType, type));
-                        _builder.AddTransient(interfaceType, type);
+                        _services.AddTransient(interfaceType, type);
                     }
                 }
             }
@@ -103,9 +103,85 @@ namespace Bellight.Core.Defaults
 
         public void LoadCache(IEnumerable<TypeHandlerCacheSection> sections)
         {
-            throw new NotImplementedException();
+            Action<Type> typeAction = null;
+            Action<Type, Type> mapAction = null;
+            foreach (var section in sections)
+            {
+                if ("SingletonTypes".Equals(section.Name, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    typeAction = type => _services.AddSingleton(type);
+                    mapAction = (interfaceType, implementationType) => _services.AddSingleton(interfaceType, implementationType);
+                }
+                else if ("ScopeTypes".Equals(section.Name, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    typeAction = type => _services.AddScoped(type);
+                    mapAction = (interfaceType, implementationType) => _services.AddScoped(interfaceType, implementationType);
+                }
+                else if ("KeyedTypes".Equals(section.Name, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    typeAction = type => _services.AddTransient(type);
+                    mapAction = (interfaceType, implementationType) => _services.AddTransient(interfaceType, implementationType);
+
+                    foreach (var line in section.Lines)
+                    {
+                        var colonIndex = line.IndexOf(':');
+                        if (colonIndex < 0)
+                        {
+                            var type = Type.GetType(line);
+                            _services.AddTransient(type);
+                            continue;
+                        }
+
+                        var parts = line.Split(':');
+                        if (parts.Length != 3)
+                        {
+                            throw new Exception($"Error parsing keyed dependency: {line}");
+                        }
+
+                        var key = parts[0].Trim();
+                        var interfaceTypeName = parts[1].Trim();
+                        var implementationTypeName = parts[2].Trim();
+
+                        var interfaceType = Type.GetType(interfaceTypeName);
+                        var implementationType = Type.GetType(implementationTypeName);
+
+                        _keyedServiceRegistry.Add(key, implementationType);
+                        _services.AddTransient(interfaceType, implementationType);
+                    }
+
+                    continue;
+                }
+                else // TransientTypes
+                {
+                    typeAction = type => _services.AddTransient(type);
+                    mapAction = (interfaceType, implementationType) => _services.AddTransient(interfaceType, implementationType);
+                }
+
+                foreach (var line in section.Lines)
+                {
+                    var colonIndex = line.IndexOf(':');
+                    if (colonIndex < 0)
+                    {
+                        var type = Type.GetType(line);
+                        typeAction(type);
+                        continue;
+                    }
+
+                    var interfaceTypeName = line.Substring(0, colonIndex).Trim();
+                    var typeName = line.Substring(colonIndex + 1);
+
+                    var interfaceType = Type.GetType(interfaceTypeName);
+                    var implementationType = Type.GetType(typeName);
+                    mapAction(interfaceType, implementationType);
+                }
+            }
         }
 
+        #region Load Cache
+
+        #endregion Load Cache
+
+        #region Save Cache
         public IEnumerable<TypeHandlerCacheSection> SaveCache()
         {
             var sections = new List<TypeHandlerCacheSection>
@@ -118,7 +194,10 @@ namespace Bellight.Core.Defaults
             // keyed
             sections.Add(new TypeHandlerCacheSection {
                 Name = "KeyedTypes",
-                Lines = _keyedMaps.Select(tuple => string.Format("{0}: {1}", tuple.Item1, tuple.Item2.AssemblyQualifiedName))
+                Lines = _keyedMaps.Select(tuple => string.Format("{0}: {1}: {2}",
+                    tuple.Item1,
+                    tuple.Item2.AssemblyQualifiedName,
+                    tuple.Item3.AssemblyQualifiedName))
             });
 
             return sections;
@@ -140,6 +219,8 @@ namespace Bellight.Core.Defaults
 
             return section;
         }
+
+        #endregion Save Cache
 
         private static string GetKey(Type type)
         {

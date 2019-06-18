@@ -2,7 +2,7 @@
 {
     public interface IDependencyCacheService
     {
-        DependencyCacheModel Load();
+        bool Load();
         void Save(DependencyCacheModel item);
     }
 }

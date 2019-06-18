@@ -1,7 +1,5 @@
 ﻿using Bellight.Core.Defaults;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
 
 namespace Bellight.Core
 {
@@ -9,14 +7,16 @@ namespace Bellight.Core
     {
         public static BellightCoreOptions AddDependencyHandler(this BellightCoreOptions options)
         {
-            IDictionary<string, Type> keyedTypeDictionary = new Dictionary<string, Type>();
             return options
                 .AddStartupServiceAction(startupContainerServices =>
                 {
-                    startupContainerServices.AddSingleton(keyedTypeDictionary);
-                    startupContainerServices.AddSingleton<ITypeHandler, DependencyTypeHandler>();
+                    startupContainerServices.AddSingleton<IKeyedServiceRegistry, DefaultKeyedServiceRegistry>();
+                    startupContainerServices.AddScoped<DependencyTypeHandler>();
+                    startupContainerServices.AddScoped<ITypeHandler, DependencyTypeHandler>();
                 })
-                .AddStartupContainerAction((_, services) => {
+                .AddStartupContainerAction((startupServiceProvider, services) => {
+                    var keyedServiceRegistry = startupServiceProvider.GetService<IKeyedServiceRegistry>();
+                    var keyedTypeDictionary = keyedServiceRegistry.GetDictionary();
                     services.AddScoped<IKeyedServiceFactory>(sp => new KeyedServiceFactory(keyedTypeDictionary, sp));
                 });
         }

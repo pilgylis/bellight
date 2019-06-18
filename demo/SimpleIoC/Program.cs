@@ -1,6 +1,5 @@
 ﻿using Bellight.Core;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 
 namespace SimpleIoC
 {
