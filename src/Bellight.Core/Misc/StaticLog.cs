@@ -13,5 +13,10 @@ namespace Bellight.Core.Misc
         public static void Error(Exception ex, string messageTemplate) {
             Provider.Error(ex, messageTemplate);
         }
+
+        public static void Warning(string message)
+        {
+            Provider.Warning(message);
+        }
     }
 }

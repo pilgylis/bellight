@@ -6,19 +6,20 @@ namespace Bellight.Core.Misc
 {
     public class BellightJsonSerializer: ISerializer
     {
+        public JsonSerializerSettings Settings { get; set; } = DefaultJsonSerializerSettings;
         public string SerializeObject(object value)
         {
-            return JsonConvert.SerializeObject(value, DefaultJsonSerializerSettings);
+            return JsonConvert.SerializeObject(value, Settings);
         }
 
         public T DeserializeObject<T>(string value)
         {
-            return JsonConvert.DeserializeObject<T>(value, DefaultJsonSerializerSettings);
+            return JsonConvert.DeserializeObject<T>(value, Settings);
         }
 
         public object DeserializeObject(string value, Type type)
         {
-            return JsonConvert.DeserializeObject(value, type, DefaultJsonSerializerSettings);
+            return JsonConvert.DeserializeObject(value, type, Settings);
         }
 
         public object DeserializeObject(string value, string typeName)
@@ -47,12 +48,18 @@ namespace Bellight.Core.Misc
             return Try(() => DeserializeObject(value, typeName));
         }
 
-        public static readonly JsonSerializerSettings DefaultJsonSerializerSettings = new JsonSerializerSettings
+        public static JsonSerializerSettings DefaultJsonSerializerSettings
         {
-            DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-            NullValueHandling = NullValueHandling.Ignore,
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
-        };
+            get
+            {
+                return new JsonSerializerSettings
+                {
+                    DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+                    NullValueHandling = NullValueHandling.Ignore,
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                };
+            }
+        }
 
         private T Try<T>(Func<T> func)
         {
@@ -60,8 +67,9 @@ namespace Bellight.Core.Misc
             {
                 return func();
             }
-            catch
+            catch (Exception ex)
             {
+                StaticLog.Error(ex, ex.Message);
                 return default(T);
             }
         }

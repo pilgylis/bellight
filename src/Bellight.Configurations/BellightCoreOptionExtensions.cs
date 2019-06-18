@@ -11,7 +11,7 @@ namespace Bellight.Core
             return options
                 .AddStartupServiceAction(startupContainerServices => {
                     startupContainerServices.AddSingleton(configuration);
-                    startupContainerServices.AddTransient<ITypeHandler, AppSettingsTypeHandler>();
+                    startupContainerServices.AddScoped<ITypeHandler, AppSettingsTypeHandler>();
                 })
                 .AddStartupContainerAction((_, services) => {
                     services.AddSingleton(configuration);

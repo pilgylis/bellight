@@ -7,3 +7,4 @@
 **/obj
 Experiments
 /tools/Cake
+*.user
