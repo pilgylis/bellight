@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Bellight.Core;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 
 namespace SimpleIoC
@@ -9,7 +10,9 @@ namespace SimpleIoC
         {
             var services = new ServiceCollection();
 
-            services.AddBellightCore(options => { });
+            services.AddBellightCore(options => {
+                options.DependencyCacheOptions.PrettyPrint = true;
+            });
 
             var serviceProvider = services.BuildServiceProvider();
 
@@ -24,6 +27,10 @@ namespace SimpleIoC
             {
                 item.DoSomething();
             }
+
+            var keyedServiceFactory = serviceProvider.GetService<IKeyedServiceFactory>();
+            var c1 = keyedServiceFactory.Resolve<IKeyedServiceC>("C1");
+            c1.DoSomethingInKeyed();
         }
     }
 }

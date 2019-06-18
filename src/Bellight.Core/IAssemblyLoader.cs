@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace Bellight.Core
@@ -11,33 +9,33 @@ namespace Bellight.Core
 
     public static class AssemblyLoaderExtensions
     {
-        public static string ExtractAssemblyShortName(string fullName)
+        internal static string ExtractAssemblyShortName(this string fullName)
         {
             fullName = fullName.ToLowerInvariant();
             var index = fullName.IndexOf(',');
             return index < 0 ? fullName : fullName.Substring(0, index);
         }
 
-        public static string ExtractAssemblyName(string moduleName)
+        internal static string ExtractAssemblyName(this string moduleName)
         {
             var index = moduleName.LastIndexOf('.');
             return index < 0 ? moduleName : moduleName.Substring(0, index);
         }
 
-        public static string GetShortName(this Assembly assembly)
+        internal static string GetShortName(this Assembly assembly)
         {
             return ExtractAssemblyShortName(assembly.FullName);
         }
 
-        public static string GetQualifiedName(this Assembly assembly)
+        internal static string GetQualifiedName(this Assembly assembly)
         {
             return ExtractAssemblyName(assembly.ManifestModule.Name);
         }
 
-        public static string GetAssemblyNameFromFileName(string fileName)
+        internal static string GetAssemblyNameFromFileName(this string fileName)
         {
             fileName = fileName.ToLowerInvariant();
-            return fileName.EndsWith(".dll") 
+            return fileName.EndsWith(".dll")
                 ? fileName : fileName.Substring(0, fileName.Length - 4);
         }
     }

@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
+﻿using Bellight.Core.DependencyCache;
 
 namespace Bellight.Core
 {
     public interface IAssemblyScanner
     {
-        void Scan(IEnumerable<Assembly> additionalAssemblies);
+        DependencyCacheModel Scan();
     }
 }

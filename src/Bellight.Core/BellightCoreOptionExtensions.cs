@@ -14,7 +14,7 @@ namespace Bellight.Core
                 .AddStartupServiceAction(startupContainerServices =>
                 {
                     startupContainerServices.AddSingleton(keyedTypeDictionary);
-                    startupContainerServices.AddTransient<ITypeHandler, DependencyTypeHandler>();
+                    startupContainerServices.AddSingleton<ITypeHandler, DependencyTypeHandler>();
                 })
                 .AddStartupContainerAction((_, services) => {
                     services.AddScoped<IKeyedServiceFactory>(sp => new KeyedServiceFactory(keyedTypeDictionary, sp));
