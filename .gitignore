@@ -6,5 +6,6 @@
 **/bin
 **/obj
 Experiments
-/tools/Cake
+tools
 *.user
+artifacts
