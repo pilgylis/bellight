@@ -16,7 +16,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. SolutionItems", "1. SolutionItems", "{1096F654-D231-497F-A184-7BA288673A9C}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		LICENSE = LICENSE
+		build.cake = build.cake
+		build.ps1 = build.ps1
+		build.sh = build.sh
+		LICENSE.txt = LICENSE.txt
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bellight.Configurations", "src\Bellight.Configurations\Bellight.Configurations.csproj", "{D7636966-AB97-4D5C-A72E-16B507623D86}"
@@ -25,7 +28,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bellight.Queue.Abstractions
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bellight.Queue.KafkaProvider", "src\Bellight.Queue.KafkaProvider\Bellight.Queue.KafkaProvider.csproj", "{02C9B59F-E780-409D-BB34-9C02311E950E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleConfigurations", "demo\ConsoleConfigurations\ConsoleConfigurations.csproj", "{CF508365-9246-436D-AFCF-CADFB9CF97EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleConfigurations", "demo\ConsoleConfigurations\ConsoleConfigurations.csproj", "{CF508365-9246-436D-AFCF-CADFB9CF97EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
