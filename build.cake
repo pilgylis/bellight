@@ -87,6 +87,7 @@ private bool IsNuGetPublished(FilePath packagePath) {
 private string GetProject(string projectName) {
     switch (projectName.ToLowerInvariant()) {
         case "configurations": return "./src/Bellight.Configurations/Bellight.Configurations.csproj";
+        case "mapper": return "./src/Bellight.AutoMapper/Bellight.AutoMapper.csproj";
         default:
         case "core": return "./src/Bellight.Core/Bellight.Core.csproj";
     }

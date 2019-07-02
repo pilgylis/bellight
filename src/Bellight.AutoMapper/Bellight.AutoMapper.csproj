@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <AssemblyTitle>Bellight.AutoMapper</AssemblyTitle>
+    <Product>Bellight.AutoMapper</Product>
+    <Company>Nguyen Viet Trung</Company>
+    <Copyright>Nguyen Viet Trung</Copyright>
+    <Description>A plug-in of Bellight.Core automatically bind AutoMapper models based on [MappedModel] attribute.</Description>
+    <Authors>Nguyen Viet Trung</Authors>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageDescription>Bellight AutoMapper</PackageDescription>
+    <PackageProjectUrl>https://github.com/pilgylis/bellight</PackageProjectUrl>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageTags>bellight, core, dependency</PackageTags>
+    <PackageLanguage>en-US</PackageLanguage>
+    <IncludeSymbols>true</IncludeSymbols>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="8.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bellight.Core\Bellight.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE.txt" Pack="true" PackagePath="$(PackageLicenseFile)">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

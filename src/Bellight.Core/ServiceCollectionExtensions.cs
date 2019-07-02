@@ -26,5 +26,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services;
         }
+
+        public static IServiceCollection AddTypeHandler<T>(this IServiceCollection services) where T: class, ITypeHandler
+        {
+            services.AddScoped<T>();
+            services.AddScoped<ITypeHandler, T>();
+            return services;
+        }
     }
 }

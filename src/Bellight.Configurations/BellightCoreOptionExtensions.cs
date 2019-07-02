@@ -6,12 +6,12 @@ namespace Bellight.Core
 {
     public static class BellightCoreOptionExtensions
     {
-        public static BellightCoreOptions AddBellightConfigurations(this BellightCoreOptions options, IConfiguration configuration)
+        public static BellightCoreOptions AddConfigurations(this BellightCoreOptions options, IConfiguration configuration)
         {
             return options
                 .AddStartupServiceAction(startupContainerServices => {
                     startupContainerServices.AddSingleton(configuration);
-                    startupContainerServices.AddScoped<ITypeHandler, AppSettingsTypeHandler>();
+                    startupContainerServices.AddTypeHandler<AppSettingsTypeHandler>();
                 })
                 .AddStartupContainerAction((_, services) => {
                     services.AddSingleton(configuration);
@@ -25,7 +25,7 @@ namespace Bellight.Core
                 .InitialiseBellightConfigurations(isDevelopment, environment, args)
                 .Build();
 
-            return options.AddBellightConfigurations(configuration);
+            return options.AddConfigurations(configuration);
         }
     }
 }
