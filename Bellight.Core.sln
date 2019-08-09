@@ -30,9 +30,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bellight.Queue.KafkaProvide
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleConfigurations", "demo\ConsoleConfigurations\ConsoleConfigurations.csproj", "{CF508365-9246-436D-AFCF-CADFB9CF97EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bellight.AutoMapper", "src\Bellight.AutoMapper\Bellight.AutoMapper.csproj", "{6FD63283-E440-44DB-8BDB-ECB8F142DA27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bellight.AutoMapper", "src\Bellight.AutoMapper\Bellight.AutoMapper.csproj", "{6FD63283-E440-44DB-8BDB-ECB8F142DA27}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleAutoMapper", "demo\ConsoleAutoMapper\ConsoleAutoMapper.csproj", "{F31DC290-4F3C-4DEE-98E9-254907697B8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleAutoMapper", "demo\ConsoleAutoMapper\ConsoleAutoMapper.csproj", "{F31DC290-4F3C-4DEE-98E9-254907697B8B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bellight.MessageBus.Abstractions", "src\Bellight.MessageBus.Abstractions\Bellight.MessageBus.Abstractions.csproj", "{6644945A-3BC0-4965-9BB6-883DC050F0B4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bellight.MessageBus.Amqp", "src\Bellight.MessageBus.Amqp\Bellight.MessageBus.Amqp.csproj", "{CB9AD703-279C-42F6-8238-BF3DF234C0B8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MessageBus", "MessageBus", "{3372DF3C-9633-4288-A438-6987DA5B75E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageBusPublisher", "demo\MessageBus\MessageBusPublisher\MessageBusPublisher.csproj", "{0E281F40-66B7-4161-9806-43461347546E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageBusSubscriber", "demo\MessageBus\MessageBusSubscriber\MessageBusSubscriber.csproj", "{2374BB38-4041-40A6-99A4-2671399B2C98}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -72,6 +82,22 @@ Global
 		{F31DC290-4F3C-4DEE-98E9-254907697B8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F31DC290-4F3C-4DEE-98E9-254907697B8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F31DC290-4F3C-4DEE-98E9-254907697B8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6644945A-3BC0-4965-9BB6-883DC050F0B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6644945A-3BC0-4965-9BB6-883DC050F0B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6644945A-3BC0-4965-9BB6-883DC050F0B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6644945A-3BC0-4965-9BB6-883DC050F0B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB9AD703-279C-42F6-8238-BF3DF234C0B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB9AD703-279C-42F6-8238-BF3DF234C0B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB9AD703-279C-42F6-8238-BF3DF234C0B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB9AD703-279C-42F6-8238-BF3DF234C0B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E281F40-66B7-4161-9806-43461347546E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E281F40-66B7-4161-9806-43461347546E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E281F40-66B7-4161-9806-43461347546E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E281F40-66B7-4161-9806-43461347546E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2374BB38-4041-40A6-99A4-2671399B2C98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2374BB38-4041-40A6-99A4-2671399B2C98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2374BB38-4041-40A6-99A4-2671399B2C98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2374BB38-4041-40A6-99A4-2671399B2C98}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -85,6 +111,11 @@ Global
 		{CF508365-9246-436D-AFCF-CADFB9CF97EC} = {0B340B7A-59E6-45F9-8CAD-3E505F059671}
 		{6FD63283-E440-44DB-8BDB-ECB8F142DA27} = {AE3746B0-99A5-4106-A683-A1524CF78CEB}
 		{F31DC290-4F3C-4DEE-98E9-254907697B8B} = {0B340B7A-59E6-45F9-8CAD-3E505F059671}
+		{6644945A-3BC0-4965-9BB6-883DC050F0B4} = {AE3746B0-99A5-4106-A683-A1524CF78CEB}
+		{CB9AD703-279C-42F6-8238-BF3DF234C0B8} = {AE3746B0-99A5-4106-A683-A1524CF78CEB}
+		{3372DF3C-9633-4288-A438-6987DA5B75E3} = {0B340B7A-59E6-45F9-8CAD-3E505F059671}
+		{0E281F40-66B7-4161-9806-43461347546E} = {3372DF3C-9633-4288-A438-6987DA5B75E3}
+		{2374BB38-4041-40A6-99A4-2671399B2C98} = {3372DF3C-9633-4288-A438-6987DA5B75E3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {34BCAF91-77E2-4023-881F-46C93E351321}
