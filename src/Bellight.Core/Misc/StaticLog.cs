@@ -18,5 +18,10 @@ namespace Bellight.Core.Misc
         {
             Provider.Warning(message);
         }
+
+        public static void Information(string message)
+        {
+            Provider.Information(message);
+        }
     }
 }

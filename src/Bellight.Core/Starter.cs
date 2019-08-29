@@ -1,4 +1,6 @@
+using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Bellight.Core.Defaults;
 using Bellight.Core.DependencyCache;
 using Bellight.Core.Misc;
@@ -56,9 +58,7 @@ namespace Bellight.Core
                     innerServices = loadScope.ServiceProvider.GetService<IServiceCollection>();
                     MergeServiceCollections(services, innerServices);
 
-                    // TODO: move the save to a different thread, with its scope
-                    var dependencyCacheService = loadScope.ServiceProvider.GetService<IDependencyCacheService>();
-                    dependencyCacheService.Save(dependencyModel);
+                    Task.Factory.StartNew(() => SaveDependencyCache(dependencyModel, startupServiceProvider));
                 }
             }
 
@@ -71,6 +71,15 @@ namespace Bellight.Core
             }
 
             return services;
+        }
+
+        private static void SaveDependencyCache(DependencyCacheModel model, IServiceProvider rootServiceProvider)
+        {
+            using (var scope = rootServiceProvider.CreateScope())
+            {
+                var dependencyCacheService = scope.ServiceProvider.GetService<IDependencyCacheService>();
+                dependencyCacheService.Save(model);
+            }
         }
 
         private static void MergeServiceCollections(IServiceCollection target, IServiceCollection source)

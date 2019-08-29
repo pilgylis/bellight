@@ -4,7 +4,7 @@ using System;
 
 namespace MessageBusPublisher
 {
-    class Program
+    static class Program
     {
         static void Main(string[] args)
         {
@@ -19,14 +19,13 @@ namespace MessageBusPublisher
             Console.WriteLine($"Sending messages to {typeText} '{topic}'");
 
             var services = new ServiceCollection();
-            services.AddAmqpMessageBus(options => {
-                options.Endpoint = "amqp://admin:Abc%40123@localhost:5672";
-            });
+            services.AddBellightMessageBus()
+                .AddAmqp(options => options.Endpoint = "amqp://admin:Abc%40123@localhost:5672");
 
             var serviceProvider = services.BuildServiceProvider();
 
-            var publisherFactory = serviceProvider.GetService<IPublisherFactory>();
-            var publisher = publisherFactory.GetPublisher(topic, messageBusType);
+            var messageBusFactory = serviceProvider.GetService<IMessageBusFactory>();
+            var publisher = messageBusFactory.GetPublisher(topic, messageBusType);
 
             var acceptInput = true;
             Console.CancelKeyPress += (object s, ConsoleCancelEventArgs e) =>

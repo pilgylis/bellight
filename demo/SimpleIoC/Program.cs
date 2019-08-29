@@ -1,5 +1,6 @@
 ﻿using Bellight.Core;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace SimpleIoC
 {
@@ -30,6 +31,8 @@ namespace SimpleIoC
             var keyedServiceFactory = serviceProvider.GetService<IKeyedServiceFactory>();
             var c1 = keyedServiceFactory.Resolve<IKeyedServiceC>("C1");
             c1.DoSomethingInKeyed();
+
+            Console.ReadKey();
         }
     }
 }

@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>1.0.0</Version>
     <LangVersion>latest</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
@@ -9,13 +10,13 @@
     <Product>Bellight.AutoMapper</Product>
     <Company>Nguyen Viet Trung</Company>
     <Copyright>Nguyen Viet Trung</Copyright>
-    <Description>A plug-in of Bellight.Core automatically bind AutoMapper models based on [MappedModel] attribute.</Description>
+    <Description>A plug-in of Bellight.Core that automatically bind AutoMapper models based on [MappedModel] attribute.</Description>
     <Authors>Nguyen Viet Trung</Authors>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageDescription>Bellight AutoMapper</PackageDescription>
     <PackageProjectUrl>https://github.com/pilgylis/bellight</PackageProjectUrl>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <PackageTags>bellight, core, dependency</PackageTags>
+    <PackageTags>automapper, bellight, core, dependency</PackageTags>
     <PackageLanguage>en-US</PackageLanguage>
     <IncludeSymbols>true</IncludeSymbols>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

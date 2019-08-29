@@ -2,7 +2,33 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>1.0.0</Version>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <AssemblyTitle>Bellight.MessageBus.Amqp</AssemblyTitle>
+    <Product>Bellight.MessageBus.Amqp</Product>
+    <Company>Nguyen Viet Trung</Company>
+    <Copyright>Nguyen Viet Trung</Copyright>
+    <Description>An implementation of Bellight.MessageBus.Abstractions for AMQP, that uses AMQPNetLite.</Description>
+    <Authors>Nguyen Viet Trung</Authors>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageDescription>Bellight MessageBus Amqp</PackageDescription>
+    <PackageProjectUrl>https://github.com/pilgylis/bellight</PackageProjectUrl>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageTags>AMQP, messagebus, queue, pubsub, bellight</PackageTags>
+    <PackageLanguage>en-US</PackageLanguage>
+    <IncludeSymbols>true</IncludeSymbols>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE.txt" Link="LICENSE.txt">
+      <PackagePath>$(PackageLicenseFile)</PackagePath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AMQPNetLite" Version="2.1.8" />

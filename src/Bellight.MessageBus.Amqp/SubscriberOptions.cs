@@ -1,0 +1,13 @@
+﻿using Bellight.MessageBus.Abstractions;
+
+namespace Bellight.MessageBus.Amqp
+{
+    public class SubscriberOptions
+    {
+        public string Endpoint { get; set; }
+        public string Topic { get; set; }
+        public MessageBusType MessageBusType { get; set; }
+        public int PollingInterval { get; set; }
+        public int WaitDuration { get; set; }
+    }
+}

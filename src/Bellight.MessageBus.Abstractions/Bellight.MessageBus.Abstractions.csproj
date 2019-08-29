@@ -1,7 +1,38 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>1.0.0</Version>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <AssemblyTitle>Bellight.MessageBus.Abstractions</AssemblyTitle>
+    <Product>Bellight.MessageBus.Abstractions</Product>
+    <Company>Nguyen Viet Trung</Company>
+    <Copyright>Nguyen Viet Trung</Copyright>
+    <Description>A plug-in of Bellight.Core that provides abstractions for Message Queuing and Publish/Subscribe. An implementation such as Kafka or Amqp is required.</Description>
+    <Authors>Nguyen Viet Trung</Authors>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageDescription>Bellight MessageBus Abstractions</PackageDescription>
+    <PackageProjectUrl>https://github.com/pilgylis/bellight</PackageProjectUrl>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageTags>messagebus, queue, pubsub, bellight, core, dependency</PackageTags>
+    <PackageLanguage>en-US</PackageLanguage>
+    <IncludeSymbols>true</IncludeSymbols>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="..\..\LICENSE.txt" Link="LICENSE.txt">
+      <PackagePath>$(PackageLicenseFile)</PackagePath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
+    <ProjectReference Include="..\Bellight.Core\Bellight.Core.csproj" />
+  </ItemGroup>
 </Project>

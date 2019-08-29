@@ -19,15 +19,14 @@ namespace MessageBusSubscriber
             Console.WriteLine($"Subscribing {typeText} '{topic}'");
 
             var services = new ServiceCollection();
-            services.AddAmqpMessageBus(options => {
-                options.Endpoint = "amqp://admin:Abc%40123@localhost:5672";
-            });
+            services.AddBellightMessageBus()
+                .AddAmqp(options => options.Endpoint = "amqp://admin:Abc%40123@localhost:5672");
 
             var serviceProvider = services.BuildServiceProvider();
 
-            var subscriber = serviceProvider.GetService<ISubscriber>();
+            var messageBusFactory = serviceProvider.GetService<IMessageBusFactory>();
 
-            var subscription = subscriber.Subscribe(topic, OnMessageReceived, messageBusType);
+            var subscription = messageBusFactory.Subscribe(topic, OnMessageReceived, messageBusType);
             Console.ReadLine();
             subscription.Dispose();
         }

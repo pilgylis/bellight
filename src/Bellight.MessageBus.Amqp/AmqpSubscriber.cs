@@ -1,55 +1,69 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using Amqp;
+using Amqp.Framing;
+using Amqp.Types;
+using Bellight.Core.Misc;
 using Bellight.MessageBus.Abstractions;
-using Microsoft.Extensions.Options;
+using System;
+using System.Threading;
 
 namespace Bellight.MessageBus.Amqp
 {
-    public class AmqpSubscriber: ISubscriber
+    public class AmqpSubscriber : AmqpLinkWrapper<ReceiverLink>, ISubscriber
     {
-        private readonly ConcurrentDictionary<string, AmqpReceiverLinkWrapper> _linkDictionary 
-            = new ConcurrentDictionary<string, AmqpReceiverLinkWrapper>();
-        private readonly IOptionsMonitor<AmqpOptions> _options;
+        private const string _linkName = "receiver-link";
+        private readonly SubscriberOptions _options;
 
-        public AmqpSubscriber(IOptionsMonitor<AmqpOptions> options) {
+        public AmqpSubscriber(SubscriberOptions options) : base(options.Endpoint)
+        {
             _options = options;
         }
 
-        public ISubscription Subscribe(string topic, Action<string> messageReceivedAction, MessageBusType messageBusType = MessageBusType.Queue)
+        public ISubscription Subscribe(Action<string> messageReceivedAction)
         {
-            string subscriptionId;
-            do
-            {
-                subscriptionId = Guid.NewGuid().ToString();
-            } while (_linkDictionary.ContainsKey(subscriptionId));
-
-            var link = new AmqpReceiverLinkWrapper(
-                topic,
-                _options,
-                messageReceivedAction,
-                messageBusType);
-
-            _linkDictionary.TryAdd(subscriptionId, link);
-
-            return new DefaultSubscription(() => Unsubscribe(subscriptionId));
+            var tokenSource = new CancellationTokenSource();
+            SafeExecute.Sync(() => ThreadPool.QueueUserWorkItem(s => {
+                var cancellationToken = (CancellationToken)s;
+                while (!cancellationToken.IsCancellationRequested)
+                {
+                    SafeExecute.SyncCatch(
+                        () => PollMessage(messageReceivedAction, cancellationToken),
+                        () => Thread.Sleep(_options.WaitDuration));
+                }
+            }, tokenSource.Token));
+            return new DefaultSubscription(() => tokenSource.Cancel());
         }
 
-        private void Unsubscribe(string subscriptionId)
+        protected override ReceiverLink InitialiseLink(Session session)
         {
-            _linkDictionary.TryRemove(subscriptionId, out var link);
-            link?.Dispose();
+            var source = new Source
+            {
+                Address = _options.Topic,
+                Capabilities = new Symbol[] {
+                    new Symbol(_options.MessageBusType == MessageBusType.Queue ? "queue" : "topic")
+                }
+            };
+
+            return new ReceiverLink(session, _linkName, source, null);
         }
 
-        public void Dispose()
+        private void PollMessage(Action<string> messageReceivedAction, CancellationToken cancellationToken)
         {
-            if (_linkDictionary.Count == 0)
+            while (!cancellationToken.IsCancellationRequested)
             {
-                return;
-            }
+                SafeExecute.SyncCatch(() =>
+                {
+                    var link = GetLink();
+                    var message = link.Receive(TimeSpan.FromMilliseconds(_options.PollingInterval));
+                    if (message == null)
+                    {
+                        Thread.Sleep(_options.WaitDuration);
+                        return;
+                    }
 
-            foreach (var link in _linkDictionary.Values)
-            {
-                link?.Dispose();
+                    link.Accept(message);
+                    messageReceivedAction.Invoke((string)message.Body);
+                }, () => Thread.Sleep(_options.WaitDuration));
+
             }
         }
     }

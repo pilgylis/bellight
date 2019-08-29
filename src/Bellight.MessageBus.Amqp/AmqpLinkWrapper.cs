@@ -1,20 +1,18 @@
 ﻿using Amqp;
-using Microsoft.Extensions.Options;
 using System;
 
 namespace Bellight.MessageBus.Amqp
 {
-    public abstract class AmqpLinkWrapper<T>: IDisposable where T: ILink
+    public abstract class AmqpLinkWrapper<T> : IDisposable where T : ILink
     {
-
         private Connection _connection;
         private Session _session;
         private T _link;
+        private readonly string _endpoint;
 
-        protected IOptionsMonitor<AmqpOptions> Options { get; }
-
-        public AmqpLinkWrapper(IOptionsMonitor<AmqpOptions> options) {
-            Options = options;
+        public AmqpLinkWrapper(string endpoint)
+        {
+            _endpoint = endpoint;
         }
 
         protected abstract T InitialiseLink(Session session);
@@ -35,7 +33,7 @@ namespace Bellight.MessageBus.Amqp
         {
             if (_connection?.IsClosed != false)
             {
-                _connection = new Connection(new Address(Options.CurrentValue.Endpoint));
+                _connection = new Connection(new Address(_endpoint));
             }
 
             if (_session?.IsClosed != false)

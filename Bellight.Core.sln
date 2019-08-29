@@ -40,9 +40,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bellight.MessageBus.Amqp", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MessageBus", "MessageBus", "{3372DF3C-9633-4288-A438-6987DA5B75E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageBusPublisher", "demo\MessageBus\MessageBusPublisher\MessageBusPublisher.csproj", "{0E281F40-66B7-4161-9806-43461347546E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageBusPublisher", "demo\MessageBus\MessageBusPublisher\MessageBusPublisher.csproj", "{0E281F40-66B7-4161-9806-43461347546E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageBusSubscriber", "demo\MessageBus\MessageBusSubscriber\MessageBusSubscriber.csproj", "{2374BB38-4041-40A6-99A4-2671399B2C98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageBusSubscriber", "demo\MessageBus\MessageBusSubscriber\MessageBusSubscriber.csproj", "{2374BB38-4041-40A6-99A4-2671399B2C98}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

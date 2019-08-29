@@ -29,5 +29,10 @@ namespace Bellight.Core.Misc
         {
             Console.WriteLine("{0:u} [WARN]: {1}", DateTime.Now, message);
         }
+
+        public void Information(string message)
+        {
+            Console.WriteLine("{0:u} [WARN]: {1}", DateTime.Now, message);
+        }
     }
 }

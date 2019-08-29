@@ -1,30 +1,45 @@
 ﻿using Amqp;
+using Amqp.Framing;
+using Amqp.Types;
 using Bellight.MessageBus.Abstractions;
-using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 
 namespace Bellight.MessageBus.Amqp
 {
-    public class AmqpPublisher : IPublisher
+    public class AmqpPublisher : AmqpLinkWrapper<SenderLink>, IPublisher
     {
-        private readonly AmqpSenderLinkWrapper _link;
-        public AmqpPublisher(IOptionsMonitor<AmqpOptions> options, string topic, MessageBusType messageBusType) {
-            _link = new AmqpSenderLinkWrapper(options, topic, messageBusType);
-        }
+        private const string _linkName = "sender-link";
+        private readonly string _topic;
+        private readonly MessageBusType _messageBusType;
 
-        public void Dispose()
+        public AmqpPublisher(string endpoint, string topic, MessageBusType messageBusType)
+            :base(endpoint)
         {
-            _link?.Dispose();
+            _topic = topic;
+            _messageBusType = messageBusType;
         }
 
         public void Send(string message)
         {
-            _link.GetLink().Send(new Message(message));
+            GetLink().Send(new Message(message));
         }
 
         public Task SendAsync(string message)
         {
-            return _link.GetLink().SendAsync(new Message(message));
+            return GetLink().SendAsync(new Message(message));
+        }
+
+        protected override SenderLink InitialiseLink(Session session)
+        {
+            var target = new Target
+            {
+                Address = _topic,
+                Capabilities = new Symbol[] {
+                    new Symbol(_messageBusType == MessageBusType.Queue ? "queue" : "topic")
+                }
+            };
+
+            return new SenderLink(session, _linkName, target, null);
         }
     }
 }
