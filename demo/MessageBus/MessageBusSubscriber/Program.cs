@@ -20,7 +20,7 @@ namespace MessageBusSubscriber
 
             var services = new ServiceCollection();
             services.AddBellightMessageBus()
-                .AddAmqp(options => options.Endpoint = "amqp://admin:Abc%40123@localhost:5672");
+                .AddAmqp(options => options.Endpoint = "amqp://artemis:simetraehcapa@localhost:5672");
 
             var serviceProvider = services.BuildServiceProvider();
 
