@@ -40,6 +40,6 @@ namespace Bellight.MessageBus.Amqp
         }
 
         private string NormalizeTopic(string topic) => string.IsNullOrEmpty(_options.CurrentValue.InstanceName) ? 
-            topic : $"{_options.CurrentValue.InstanceName}_{topic}";
+            topic : $"{_options.CurrentValue.InstanceName}.{topic}";
     }
 }

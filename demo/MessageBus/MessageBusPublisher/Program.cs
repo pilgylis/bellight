@@ -8,7 +8,7 @@ namespace MessageBusPublisher
     {
         static void Main(string[] args)
         {
-            var topic = args.Length < 2 || string.IsNullOrEmpty(args[1]) ? "q1" : args[1];
+            var topic = args.Length < 2 || string.IsNullOrEmpty(args[1]) ? "bellight.q1" : args[1];
             var messageBusType = 
                         args.Length >= 1 
                         && !string.IsNullOrEmpty(args[0]) 
