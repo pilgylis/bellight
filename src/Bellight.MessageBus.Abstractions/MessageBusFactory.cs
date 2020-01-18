@@ -11,12 +11,10 @@ namespace Bellight.MessageBus.Abstractions
         private readonly string _queueConfigSection = "Providers:MessageBusQueue";
         private readonly string _pubsubConfigSection = "Providers:MessageBusPubsub";
 
-        private readonly IConfiguration _configuration;
         private readonly IServiceProvider _serviceProvider;
 
-        public MessageBusFactory(IConfiguration configuration, IServiceProvider serviceProvider)
+        public MessageBusFactory(IServiceProvider serviceProvider)
         {
-            _configuration = configuration;
             _serviceProvider = serviceProvider;
         }
 
@@ -38,19 +36,40 @@ namespace Bellight.MessageBus.Abstractions
 
         private IMessageBusProvider GetProvider(MessageBusType messageBusType)
         {
+            try
+            {
+                var provider = GetProviderFromDi(messageBusType);
+                if (provider != null)
+                {
+                    return provider;
+                }
+
+                return GetProviderFromConfig(messageBusType);
+            }
+            catch (Exception ex)
+            {
+                StaticLog.Warning($"An error has occurred while trying to retrieve provider for Message Bus: {ex.Message}");
+                return GetProviderFromConfig(messageBusType);
+            }
+        }
+
+        private IMessageBusProvider GetProviderFromConfig(MessageBusType messageBusType)
+        {
             var configurationKey = messageBusType == MessageBusType.Queue ?
                 _queueConfigSection : _pubsubConfigSection;
 
-            var providerTypeName = _configuration[configurationKey];
+            var configuration = _serviceProvider.GetService<IConfiguration>();
+
+            var messageBusTypeText = messageBusType == MessageBusType.Queue ? "Queue" : "Pub/Sub";
+            if (configuration == null)
+            {
+                throw new ProviderNotFoundException($"MessageBus - Provider for {messageBusTypeText} must present at {configurationKey}.");
+            }
+
+            var providerTypeName = configuration[configurationKey];
             if (string.IsNullOrEmpty(providerTypeName))
             {
-                var provider = GetProviderFromDi(messageBusType);
-
-                if (provider == null)
-                {
-                    var messageBusTypeText = messageBusType == MessageBusType.Queue ? "Queue" : "Pub/Sub";
-                    throw new ProviderNotFoundException($"MessageBus - Provider for {messageBusTypeText} must present at {configurationKey}.");
-                }
+                throw new ProviderNotFoundException($"MessageBus - Provider for {messageBusTypeText} must present at {configurationKey}.");
             }
 
             var type = Type.GetType(providerTypeName);

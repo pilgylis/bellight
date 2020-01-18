@@ -6,8 +6,8 @@ namespace Bellight.MessageBus.Amqp
 {
     public class AmqpPubsubProvider : AmqpProviderBase, IPubsubProvider
     {
-        public AmqpPubsubProvider(IConfiguration configuration, IOptionsMonitor<AmqpOptions> options)
-            : base(configuration, options, MessageBusType.PubSub)
+        public AmqpPubsubProvider(IOptionsMonitor<AmqpOptions> options)
+            : base(options, MessageBusType.PubSub)
         {
         }
     }

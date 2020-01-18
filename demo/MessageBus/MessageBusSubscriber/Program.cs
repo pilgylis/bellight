@@ -8,7 +8,7 @@ namespace MessageBusSubscriber
     {
         static void Main(string[] args)
         {
-            var topic = args.Length < 2 || string.IsNullOrEmpty(args[1]) ? "q1" : args[1];
+            var topic = args.Length < 2 || string.IsNullOrEmpty(args[1]) ? "bellight.q1" : args[1];
             var messageBusType =
                         args.Length >= 1
                         && !string.IsNullOrEmpty(args[0])
@@ -20,7 +20,7 @@ namespace MessageBusSubscriber
 
             var services = new ServiceCollection();
             services.AddBellightMessageBus()
-                .AddAmqp(options => options.Endpoint = "amqp://admin:Abc%40123@localhost:5672");
+                .AddAmqp(options => options.Endpoint = "amqp://artemis:simetraehcapa@localhost:5672");
 
             var serviceProvider = services.BuildServiceProvider();
 
