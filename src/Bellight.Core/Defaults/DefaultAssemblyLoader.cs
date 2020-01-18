@@ -16,7 +16,18 @@ namespace Bellight.Core.Defaults
 
             var assemblies = new List<Assembly>();
             var entryAssembly = Assembly.GetEntryAssembly();
-            var entryAssemblyName = entryAssembly.GetShortName();
+            var entryAssemblyName = entryAssembly.GetShortName(); // in case of unit testing, the entry assembly is 'testhost'
+
+            if ("testhost".Equals(entryAssemblyName, StringComparison.OrdinalIgnoreCase))
+            {
+                try
+                {
+                    entryAssembly = Assembly.Load(new AssemblyName(dependencies.First().Name));
+                    entryAssemblyName = entryAssembly.GetShortName();
+                }
+                catch { }
+            }
+
             var directDependencies = (from library in dependencies
                 where library.Name.Equals(entryAssemblyName, StringComparison.OrdinalIgnoreCase)
                       || library.Name.Equals(ThisAssemblyName, StringComparison.OrdinalIgnoreCase)
@@ -45,7 +56,6 @@ namespace Bellight.Core.Defaults
                 }
             }
 
-            //
             foreach (var directDependency in directDependencies)
             {
                 try

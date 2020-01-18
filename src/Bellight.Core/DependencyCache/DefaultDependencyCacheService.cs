@@ -44,7 +44,7 @@ namespace Bellight.Core.DependencyCache
 
             var model = _serializer.TryDeserializeObject<DependencyCacheModel>(content);
 
-            if (!VerifyAssembles(model.Assemblies))
+            if (model == null || !VerifyAssembles(model.Assemblies))
             {
                 return false;
             }

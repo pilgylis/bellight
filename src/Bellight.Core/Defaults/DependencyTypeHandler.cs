@@ -101,6 +101,7 @@ namespace Bellight.Core.Defaults
             }
         }
 
+        #region Load Cache
         public void LoadCache(IEnumerable<TypeHandlerCacheSection> sections)
         {
             Action<Type> typeAction = null;
@@ -176,8 +177,6 @@ namespace Bellight.Core.Defaults
                 }
             }
         }
-
-        #region Load Cache
 
         #endregion Load Cache
 
