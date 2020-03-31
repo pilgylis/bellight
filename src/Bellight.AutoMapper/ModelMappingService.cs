@@ -11,11 +11,11 @@ namespace Bellight.AutoMapper
         private IMapper _mapper;
         private readonly IModelRegistrationService _modelRegistrationService;
 
-        public ModelMappingService(IModelRegistrationService modelRegistrationService)
+        public ModelMappingService(IModelRegistrationService modelRegistrationService, Action<IMapperConfigurationExpression> configAction)
         {
             _modelRegistrationService = modelRegistrationService;
 
-            Init();
+            Init(configAction);
         }
 
         public T Map<T>(object source)
@@ -29,7 +29,7 @@ namespace Bellight.AutoMapper
             return _mapper.Map(source, sourceType, destinationType);
         }
 
-        private void Init()
+        private void Init(Action<IMapperConfigurationExpression> configAction)
         {
             var profiles = _modelRegistrationService.GetAllProfiles();
             var mappings = _modelRegistrationService.GetAllMappings();
@@ -39,6 +39,11 @@ namespace Bellight.AutoMapper
                 cfg.CreateMap<string, DateTime?>().ConvertUsing<StringToNullableDateTimeConverter>();
                 cfg.CreateMap<DateTime, string>().ConvertUsing<DateTimeToStringConverter>();
                 cfg.CreateMap<DateTimeOffset, string>().ConvertUsing<DateTimeOffsetToStringConverter>();
+
+                if (configAction != null)
+                {
+                    configAction.Invoke(cfg);
+                }
 
                 if (profiles?.Any() == true)
                 {
