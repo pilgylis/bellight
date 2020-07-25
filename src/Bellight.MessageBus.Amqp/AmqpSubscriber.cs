@@ -11,6 +11,7 @@ namespace Bellight.MessageBus.Amqp
     public class AmqpSubscriber : AmqpLinkWrapper<ReceiverLink>, ISubscriber
     {
         private const string _linkName = "receiver-link";
+
         private readonly SubscriberOptions _options;
 
         public AmqpSubscriber(SubscriberOptions options) : base(options.Endpoint)
@@ -35,6 +36,12 @@ namespace Bellight.MessageBus.Amqp
 
         protected override ReceiverLink InitialiseLink(Session session)
         {
+            if ("true".Equals(_options.IsAzureMessageBus, StringComparison.InvariantCultureIgnoreCase)
+                && _options.MessageBusType == MessageBusType.PubSub) 
+            {
+                return new ReceiverLink(session, _linkName, $"{_options.Topic}/Subscriptions/{_options.SubscriberName}");
+            }
+
             var source = new Source
             {
                 Address = _options.Topic,

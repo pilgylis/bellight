@@ -31,7 +31,9 @@ namespace Bellight.MessageBus.Amqp
                 Topic = NormalizeTopic(topic),
                 MessageBusType = _messageBusType,
                 PollingInterval = options.PollingIntervalMilliseconds,
-                WaitDuration = options.WaitDurationMilliseconds
+                WaitDuration = options.WaitDurationMilliseconds,
+                IsAzureMessageBus = options.IsAzureMessageBus,
+                SubscriberName = options.SubscriberName
             };
 
             var subscriber = new AmqpSubscriber(subscriberOptions);
