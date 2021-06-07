@@ -1,0 +1,48 @@
+{
+  "assemblies": [
+    "Bellight.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null",
+    "ConsoleAutoMapper, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+    "Bellight.AutoMapper, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null"
+  ],
+  "typeHandlers": [
+    {
+      "name": "Bellight.Core.Defaults.DependencyTypeHandler, Bellight.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "sections": [
+        {
+          "name": "SingletonTypes",
+          "lines": []
+        },
+        {
+          "name": "ScopeTypes",
+          "lines": []
+        },
+        {
+          "name": "TransientTypes",
+          "lines": [
+            "Bellight.Core.Misc.BellightJsonSerializer, Bellight.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null",
+            "Bellight.Core.Misc.ISerializer, Bellight.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null: Bellight.Core.Misc.BellightJsonSerializer, Bellight.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null"
+          ]
+        },
+        {
+          "name": "KeyedTypes",
+          "lines": []
+        }
+      ]
+    },
+    {
+      "name": "Bellight.AutoMapper.ModelMappingTypeHandler, Bellight.AutoMapper, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "sections": [
+        {
+          "name": "Mappings",
+          "lines": [
+            "ConsoleAutoMapper.UserViewModel, ConsoleAutoMapper, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null: ConsoleAutoMapper.User, ConsoleAutoMapper, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          ]
+        },
+        {
+          "name": "Profiles",
+          "lines": []
+        }
+      ]
+    }
+  ]
+}

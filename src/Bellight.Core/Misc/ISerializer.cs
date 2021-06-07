@@ -1,11 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
 using System;
 
 namespace Bellight.Core.Misc
 {
     public interface ISerializer : ITransientDependency
     {
-        JsonSerializerSettings Settings { get; set; }
+        JsonSerializerOptions Settings { get; set; }
         string SerializeObject(object value);
 
         T DeserializeObject<T>(string value);

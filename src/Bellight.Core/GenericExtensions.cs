@@ -1,5 +1,5 @@
 ﻿using Bellight.Core.Misc;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Bellight.Core
 {
@@ -7,7 +7,7 @@ namespace Bellight.Core
     {
         public static string ToJson<T> (this T item)
         {
-            return JsonConvert.SerializeObject(item, BellightJsonSerializer.DefaultJsonSerializerSettings);
+            return JsonSerializer.Serialize(item, BellightJsonSerializer.DefaultJsonSerializerSettings);
         }
     }
 }

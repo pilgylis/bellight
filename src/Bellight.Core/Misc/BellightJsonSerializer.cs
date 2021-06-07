@@ -1,25 +1,24 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using System;
+﻿using System;
+using System.Text.Json;
 
 namespace Bellight.Core.Misc
 {
     public class BellightJsonSerializer: ISerializer
     {
-        public JsonSerializerSettings Settings { get; set; } = DefaultJsonSerializerSettings;
+        public JsonSerializerOptions Settings { get; set; } = DefaultJsonSerializerSettings;
         public string SerializeObject(object value)
         {
-            return JsonConvert.SerializeObject(value, Settings);
+            return JsonSerializer.Serialize(value, Settings);
         }
 
         public T DeserializeObject<T>(string value)
         {
-            return JsonConvert.DeserializeObject<T>(value, Settings);
+            return JsonSerializer.Deserialize<T>(value, Settings);
         }
 
         public object DeserializeObject(string value, Type type)
         {
-            return JsonConvert.DeserializeObject(value, type, Settings);
+            return JsonSerializer.Deserialize(value, type, Settings);
         }
 
         public object DeserializeObject(string value, string typeName)
@@ -48,15 +47,14 @@ namespace Bellight.Core.Misc
             return Try(() => DeserializeObject(value, typeName));
         }
 
-        public static JsonSerializerSettings DefaultJsonSerializerSettings
+        public static JsonSerializerOptions DefaultJsonSerializerSettings
         {
             get
             {
-                return new JsonSerializerSettings
+                return new JsonSerializerOptions
                 {
-                    DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-                    NullValueHandling = NullValueHandling.Ignore,
-                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                    WriteIndented = false,
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                 };
             }
         }

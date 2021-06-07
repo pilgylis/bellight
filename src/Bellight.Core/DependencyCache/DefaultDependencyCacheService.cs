@@ -1,6 +1,7 @@
 ﻿using Bellight.Core.Misc;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -75,7 +76,7 @@ namespace Bellight.Core.DependencyCache
 
             if (_options.DependencyCacheOptions.PrettyPrint)
             {
-                _serializer.Settings.Formatting = Formatting.Indented;
+                _serializer.Settings.WriteIndented = true;
             }
 
             var serializedContent = _serializer.TrySerializeObject(item);

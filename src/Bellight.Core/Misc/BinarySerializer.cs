@@ -11,7 +11,9 @@ namespace Bellight.Core.Misc
             try
             {
                 var formatter = new BinaryFormatter();
+#pragma warning disable SYSLIB0011 // Type or member is obsolete
                 formatter.Serialize(ms, item);
+#pragma warning restore SYSLIB0011 // Type or member is obsolete
                 return ms.ToArray();
             }
             finally
@@ -26,7 +28,9 @@ namespace Bellight.Core.Misc
             try
             {
                 var formatter = new BinaryFormatter();
+#pragma warning disable SYSLIB0011 // Type or member is obsolete
                 return (T)formatter.Deserialize(ms);
+#pragma warning restore SYSLIB0011 // Type or member is obsolete
             }
             finally
             {
