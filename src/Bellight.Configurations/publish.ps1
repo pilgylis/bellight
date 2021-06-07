@@ -1,2 +1,4 @@
+$ver = $args[0]
+$key = $args[1]
 dotnet build -c "Release"
-..\Tools\nuget.exe push -Source "abiding-feed" -ApiKey VSTS bin\Release\Bellight.Framework.1.8.3.nupkg
+dotnet nuget push bin\Release\Bellight.Configurations.$ver.nupkg -k $key -s https://api.nuget.org/v3/index.json
