@@ -1,2 +1,4 @@
+$ver = $args[0]
+$key = $args[1]
 dotnet build -c "Release"
-dotnet nuget push bin\Release\Bellight.MessageBus.Abstractions.1.0.2.nupkg -k <key here> -s https://api.nuget.org/v3/index.json
+dotnet nuget push bin\Release\Bellight.MessageBus.Abstractions.$ver.nupkg -k $key -s https://api.nuget.org/v3/index.json
