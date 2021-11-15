@@ -1,6 +1,5 @@
 ﻿using Bellight.MessageBus.Abstractions;
 using Microsoft.Extensions.Options;
-using System;
 
 namespace Bellight.MessageBus.Amqp
 {
@@ -19,7 +18,7 @@ namespace Bellight.MessageBus.Amqp
 
         public IPublisher GetPublisher(string topic)
         {
-            return new AmqpPublisher(_options.CurrentValue.Endpoint, NormalizeTopic(topic), _messageBusType);
+            return new AmqpPublisher(_options.CurrentValue.Endpoint!, NormalizeTopic(topic), _messageBusType);
         }
 
         public ISubscription Subscribe(string topic, Action<string> messageReceivedAction)

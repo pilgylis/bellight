@@ -12,7 +12,7 @@
         /// <summary>
         /// Location of the cache file. Default: current directory
         /// </summary>
-        public string FileLocation { get; set; }
+        public string? FileLocation { get; set; }
 
         public bool PrettyPrint { get; set; } = false;
     }

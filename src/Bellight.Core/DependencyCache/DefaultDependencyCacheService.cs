@@ -1,11 +1,5 @@
 ﻿using Bellight.Core.Misc;
 using Microsoft.Extensions.DependencyInjection;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace Bellight.Core.DependencyCache
 {
@@ -45,7 +39,7 @@ namespace Bellight.Core.DependencyCache
 
             var model = _serializer.TryDeserializeObject<DependencyCacheModel>(content);
 
-            if (model == null || !VerifyAssembles(model.Assemblies))
+            if (model == null || !VerifyAssembles(model.Assemblies!))
             {
                 return false;
             }
@@ -58,9 +52,9 @@ namespace Bellight.Core.DependencyCache
             var loadSuccess = SafeExecute.Sync(() => {
                 foreach (var item in model.TypeHandlers)
                 {
-                    var type = Type.GetType(item.Name);
-                    var handler = _serviceProvider.GetService(type) as ITypeHandler;
-                    handler.LoadCache(item.Sections);
+                    var type = Type.GetType(item.Name!);
+                    var handler = _serviceProvider.GetService(type!) as ITypeHandler;
+                    handler?.LoadCache(item.Sections!);
                 }
             });
 

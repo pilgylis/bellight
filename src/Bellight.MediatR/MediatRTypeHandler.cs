@@ -4,9 +4,6 @@ using MediatR;
 using MediatR.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Bellight.MediatR
 {
@@ -97,7 +94,7 @@ namespace Bellight.MediatR
             {
                 var isCloseServicesSection = !"Services".Equals(section.Name, StringComparison.OrdinalIgnoreCase);
 
-                foreach (var line in section.Lines)
+                foreach (var line in section.Lines!)
                 {
                     var colonIndex = line.IndexOf(':');
                     if (colonIndex < 0)
@@ -111,15 +108,19 @@ namespace Bellight.MediatR
                     var interfaceType = Type.GetType(interfaceTypeName);
                     var implementationType = Type.GetType(implementationTypeName);
 
-                    if (!isCloseServicesSection)
+                    if (!isCloseServicesSection && interfaceType != null && implementationType != null)
                     {
                         services.AddTransient(interfaceType, implementationType);
                         continue;
                     }
 
+                    if (interfaceType == null || implementationType == null) {
+                        continue;
+                    }
+
                     try
                     {
-                        services.TryAddTransient(interfaceType, implementationType.MakeGenericType(interfaceType.GenericTypeArguments));
+                        services.TryAddTransient(interfaceType!, implementationType.MakeGenericType(interfaceType.GenericTypeArguments));
                     }
 #pragma warning disable RCS1075 // Avoid empty catch clause that catches System.Exception.
                     catch (Exception)

@@ -1,7 +1,6 @@
 ﻿using Bellight.Core.Exceptions;
 using Bellight.Core.Misc;
 using Microsoft.Extensions.Configuration;
-using System;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Bellight.MessageBus.Abstractions
@@ -22,19 +21,19 @@ namespace Bellight.MessageBus.Abstractions
         {
             var provider = GetProvider(messageBusType);
             var messageBusTypeText = messageBusType == MessageBusType.Queue ? "Queue" : "Pub/Sub";
-            StaticLog.Information($"MessageBus - Publisher provider created: {messageBusTypeText} - {provider.GetType().Name}");
-            return provider.GetPublisher(topic);
+            StaticLog.Information($"MessageBus - Publisher provider created: {messageBusTypeText} - {provider?.GetType().Name}");
+            return provider!.GetPublisher(topic);
         }
 
         public ISubscription Subscribe(string topic, Action<string> messageReceivedAction, MessageBusType messageBusType = MessageBusType.Queue)
         {
             var provider = GetProvider(messageBusType);
             var messageBusTypeText = messageBusType == MessageBusType.Queue ? "Queue" : "Pub/Sub";
-            StaticLog.Information($"MessageBus - Subscriber provider created: {messageBusTypeText} - {provider.GetType().Name}");
-            return provider.Subscribe(topic, messageReceivedAction);
+            StaticLog.Information($"MessageBus - Subscriber provider created: {messageBusTypeText} - {provider?.GetType().Name}");
+            return provider!.Subscribe(topic, messageReceivedAction);
         }
 
-        private IMessageBusProvider GetProvider(MessageBusType messageBusType)
+        private IMessageBusProvider? GetProvider(MessageBusType messageBusType)
         {
             try
             {
@@ -53,7 +52,7 @@ namespace Bellight.MessageBus.Abstractions
             }
         }
 
-        private IMessageBusProvider GetProviderFromConfig(MessageBusType messageBusType)
+        private IMessageBusProvider? GetProviderFromConfig(MessageBusType messageBusType)
         {
             var configurationKey = messageBusType == MessageBusType.Queue ?
                 _queueConfigSection : _pubsubConfigSection;
@@ -74,14 +73,14 @@ namespace Bellight.MessageBus.Abstractions
 
             var type = Type.GetType(providerTypeName);
 
-            return _serviceProvider.GetService(type) as IMessageBusProvider;
+            return _serviceProvider.GetService(type!) as IMessageBusProvider;
         }
 
-        private IMessageBusProvider GetProviderFromDi(MessageBusType messageBusType)
+        private IMessageBusProvider? GetProviderFromDi(MessageBusType messageBusType)
         {
             return messageBusType == MessageBusType.Queue ?
-                (IMessageBusProvider)_serviceProvider.GetService<IQueueProvider>()
-                : _serviceProvider.GetService<IPubsubProvider>();
+                (IMessageBusProvider?)_serviceProvider.GetService<IQueueProvider>()
+                : _serviceProvider.GetService<IPubsubProvider>()!;
         }
     }
 }

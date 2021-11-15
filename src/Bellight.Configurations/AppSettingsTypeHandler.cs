@@ -2,9 +2,6 @@
 using Bellight.Core.DependencyCache;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Bellight.Configurations
@@ -25,7 +22,7 @@ namespace Bellight.Configurations
             _configuration = configuration;
 
             _configureMethod = typeof(OptionsConfigurationServiceCollectionExtensions)
-                .GetMethod("Configure", new[] { typeof(IServiceCollection), typeof(IConfiguration) });
+                .GetMethod("Configure", new[] { typeof(IServiceCollection), typeof(IConfiguration) })!;
         }
 
         public void LoadCache(IEnumerable<TypeHandlerCacheSection> sections)
@@ -36,7 +33,7 @@ namespace Bellight.Configurations
                 return;
             }
 
-            foreach (var line in section.Lines)
+            foreach (var line in section.Lines!)
             {
                 var colonIndex = line.IndexOf(':');
                 if (colonIndex < 0 || colonIndex >= line.Length)
@@ -55,7 +52,7 @@ namespace Bellight.Configurations
                     continue;
                 }
 
-                var genericConfigureMethod = _configureMethod.MakeGenericMethod(type);
+                var genericConfigureMethod = _configureMethod.MakeGenericMethod(type!);
                 genericConfigureMethod.Invoke(null, new object[] { _builder, configurationSection });
             }
         }

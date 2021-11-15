@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Bellight.MediatR
+﻿namespace Bellight.MediatR
 {
     public static class TypeExtensions
     {
@@ -32,7 +28,7 @@ namespace Bellight.MediatR
                     yield return interfaceType;
                 }
             }
-            else if (pluggedType.BaseType.IsGenericType &&
+            else if (pluggedType.BaseType != null && pluggedType.BaseType.IsGenericType &&
                      (pluggedType.BaseType.GetGenericTypeDefinition() == templateType))
             {
                 yield return pluggedType.BaseType;
@@ -40,7 +36,7 @@ namespace Bellight.MediatR
 
             if (pluggedType.BaseType == typeof(object)) yield break;
 
-            foreach (var interfaceType in FindInterfacesThatClosesCore(pluggedType.BaseType, templateType))
+            foreach (var interfaceType in FindInterfacesThatClosesCore(pluggedType.BaseType!, templateType))
             {
                 yield return interfaceType;
             }

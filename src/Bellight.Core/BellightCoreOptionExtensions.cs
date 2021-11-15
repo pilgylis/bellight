@@ -15,7 +15,7 @@ namespace Bellight.Core
                     startupContainerServices.AddScoped<ITypeHandler, DependencyTypeHandler>();
                 })
                 .AddStartupContainerAction((startupServiceProvider, services) => {
-                    var keyedServiceRegistry = startupServiceProvider.GetService<IKeyedServiceRegistry>();
+                    var keyedServiceRegistry = startupServiceProvider.GetRequiredService<IKeyedServiceRegistry>();
                     var keyedTypeDictionary = keyedServiceRegistry.GetDictionary();
                     services.AddScoped<IKeyedServiceFactory>(sp => new KeyedServiceFactory(keyedTypeDictionary, sp));
                 });

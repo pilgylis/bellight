@@ -1,10 +1,7 @@
 ﻿using Bellight.Core;
-using System;
 using System.Reflection;
 using AutoMapper;
 using Bellight.Core.DependencyCache;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Bellight.AutoMapper
 {
@@ -48,14 +45,14 @@ namespace Bellight.AutoMapper
             {
                 if (ProfileSectionName.Equals(section.Name, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    foreach (var line in section.Lines)
+                    foreach (var line in section.Lines!)
                     {
                         var type = Type.GetType(line);
-                        _modelRegistrationService.AddProfile(type);
+                        _modelRegistrationService.AddProfile(type!);
                     }
                 } else
                 {
-                    foreach(var line in section.Lines)
+                    foreach(var line in section.Lines!)
                     {
                         if (line.IndexOf(':') < 0)
                         {
@@ -74,7 +71,7 @@ namespace Bellight.AutoMapper
                         var sourceType = Type.GetType(sourceTypeName);
                         var destinationType = Type.GetType(destinationTypeName);
 
-                        _modelRegistrationService.AddMapping(sourceType, destinationType);
+                        _modelRegistrationService.AddMapping(sourceType!, destinationType!);
                     }
                 }
             }
@@ -93,7 +90,7 @@ namespace Bellight.AutoMapper
                 new TypeHandlerCacheSection
                 {
                     Name = ProfileSectionName,
-                    Lines = profiles.Select(profile => profile.AssemblyQualifiedName)
+                    Lines = profiles.Select(profile => profile.AssemblyQualifiedName)!
                 }
 
             };

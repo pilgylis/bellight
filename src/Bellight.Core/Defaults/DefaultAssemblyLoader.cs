@@ -16,7 +16,7 @@ namespace Bellight.Core.Defaults
 
             var assemblies = new List<Assembly>();
             var entryAssembly = Assembly.GetEntryAssembly();
-            var entryAssemblyName = entryAssembly.GetShortName(); // in case of unit testing, the entry assembly is 'testhost'
+            var entryAssemblyName = entryAssembly?.GetShortName(); // in case of unit testing, the entry assembly is 'testhost'
 
             if ("testhost".Equals(entryAssemblyName, StringComparison.OrdinalIgnoreCase))
             {

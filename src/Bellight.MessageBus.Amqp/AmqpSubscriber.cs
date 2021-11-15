@@ -3,8 +3,6 @@ using Amqp.Framing;
 using Amqp.Types;
 using Bellight.Core.Misc;
 using Bellight.MessageBus.Abstractions;
-using System;
-using System.Threading;
 
 namespace Bellight.MessageBus.Amqp
 {
@@ -14,7 +12,7 @@ namespace Bellight.MessageBus.Amqp
 
         private readonly SubscriberOptions _options;
 
-        public AmqpSubscriber(SubscriberOptions options) : base(options.Endpoint)
+        public AmqpSubscriber(SubscriberOptions options) : base(options.Endpoint!)
         {
             _options = options;
         }
@@ -23,7 +21,7 @@ namespace Bellight.MessageBus.Amqp
         {
             var tokenSource = new CancellationTokenSource();
             SafeExecute.Sync(() => ThreadPool.QueueUserWorkItem(s => {
-                var cancellationToken = (CancellationToken)s;
+                var cancellationToken = (CancellationToken)s!;
                 while (!cancellationToken.IsCancellationRequested)
                 {
                     SafeExecute.SyncCatch(

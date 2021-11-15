@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using Bellight.Core.DependencyCache;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -104,8 +101,8 @@ namespace Bellight.Core.Defaults
         #region Load Cache
         public void LoadCache(IEnumerable<TypeHandlerCacheSection> sections)
         {
-            Action<Type> typeAction = null;
-            Action<Type, Type> mapAction = null;
+            Action<Type>? typeAction = null;
+            Action<Type, Type>? mapAction = null;
             foreach (var section in sections)
             {
                 if ("SingletonTypes".Equals(section.Name, StringComparison.InvariantCultureIgnoreCase))
@@ -123,13 +120,13 @@ namespace Bellight.Core.Defaults
                     typeAction = type => _services.AddTransient(type);
                     mapAction = (interfaceType, implementationType) => _services.AddTransient(interfaceType, implementationType);
 
-                    foreach (var line in section.Lines)
+                    foreach (var line in section.Lines!)
                     {
                         var colonIndex = line.IndexOf(':');
                         if (colonIndex < 0)
                         {
                             var type = Type.GetType(line);
-                            _services.AddTransient(type);
+                            _services.AddTransient(type!);
                             continue;
                         }
 
@@ -146,8 +143,8 @@ namespace Bellight.Core.Defaults
                         var interfaceType = Type.GetType(interfaceTypeName);
                         var implementationType = Type.GetType(implementationTypeName);
 
-                        _keyedServiceRegistry.Add(key, implementationType);
-                        _services.AddTransient(interfaceType, implementationType);
+                        _keyedServiceRegistry.Add(key, implementationType!);
+                        _services.AddTransient(interfaceType!, implementationType!);
                     }
 
                     continue;
@@ -158,13 +155,13 @@ namespace Bellight.Core.Defaults
                     mapAction = (interfaceType, implementationType) => _services.AddTransient(interfaceType, implementationType);
                 }
 
-                foreach (var line in section.Lines)
+                foreach (var line in section.Lines!)
                 {
                     var colonIndex = line.IndexOf(':');
                     if (colonIndex < 0)
                     {
                         var type = Type.GetType(line);
-                        typeAction(type);
+                        typeAction(type!);
                         continue;
                     }
 
@@ -173,7 +170,7 @@ namespace Bellight.Core.Defaults
 
                     var interfaceType = Type.GetType(interfaceTypeName);
                     var implementationType = Type.GetType(typeName);
-                    mapAction(interfaceType, implementationType);
+                    mapAction(interfaceType!, implementationType!);
                 }
             }
         }
@@ -211,7 +208,7 @@ namespace Bellight.Core.Defaults
 
             var lines = new List<string>();
 
-            lines.AddRange(types.Distinct().Select(t => t.AssemblyQualifiedName));
+            lines.AddRange(types.Distinct().Select(t => t.AssemblyQualifiedName)!);
             lines.AddRange(maps.Select(tuple => string.Format("{0}: {1}", tuple.Item1.AssemblyQualifiedName, tuple.Item2.AssemblyQualifiedName)));
 
             section.Lines = lines;
@@ -226,10 +223,10 @@ namespace Bellight.Core.Defaults
             var keyAttribute = type.GetCustomAttribute<KeyedServiceAttribute>();
             if (keyAttribute == null)
             {
-                return type.FullName;
+                return type.FullName!;
             }
 
-            return !string.IsNullOrEmpty(keyAttribute?.Name) ? keyAttribute.Name : type.FullName;
+            return !string.IsNullOrEmpty(keyAttribute?.Name) ? keyAttribute.Name : type.FullName!;
         }
     }
 }

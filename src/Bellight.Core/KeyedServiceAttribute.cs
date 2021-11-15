@@ -5,7 +5,11 @@ namespace Bellight.Core
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class KeyedServiceAttribute : Attribute
     {
-        public KeyedServiceAttribute() { }
+        public KeyedServiceAttribute()
+        {
+            Name = string.Empty;
+        }
+        
         public KeyedServiceAttribute(string name)
         {
             Name = name;

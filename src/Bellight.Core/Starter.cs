@@ -34,14 +34,14 @@ namespace Bellight.Core
             var startupServiceProvider = startupContainerServices.BuildServiceProvider();
 
 
-            IServiceCollection innerServices = null;
+            IServiceCollection? innerServices = null;
             using (var cacheScope = startupServiceProvider.CreateScope())
             {
-                var dependencyCacheService = cacheScope.ServiceProvider.GetService<IDependencyCacheService>();
+                var dependencyCacheService = cacheScope.ServiceProvider.GetRequiredService<IDependencyCacheService>();
 
                 if (dependencyCacheService.Load())
                 {
-                    innerServices = cacheScope.ServiceProvider.GetService<IServiceCollection>();
+                    innerServices = cacheScope.ServiceProvider.GetRequiredService<IServiceCollection>();
                 }
             }
 
@@ -53,9 +53,9 @@ namespace Bellight.Core
             {
                 using (var loadScope = startupServiceProvider.CreateScope())
                 {
-                    var assemblyScanner = loadScope.ServiceProvider.GetService<IAssemblyScanner>();
+                    var assemblyScanner = loadScope.ServiceProvider.GetRequiredService<IAssemblyScanner>();
                     var dependencyModel = assemblyScanner.Scan();
-                    innerServices = loadScope.ServiceProvider.GetService<IServiceCollection>();
+                    innerServices = loadScope.ServiceProvider.GetRequiredService<IServiceCollection>();
                     MergeServiceCollections(services, innerServices);
 
                     Task.Factory.StartNew(() => SaveDependencyCache(dependencyModel, startupServiceProvider));
@@ -77,7 +77,7 @@ namespace Bellight.Core
         {
             using (var scope = rootServiceProvider.CreateScope())
             {
-                var dependencyCacheService = scope.ServiceProvider.GetService<IDependencyCacheService>();
+                var dependencyCacheService = scope.ServiceProvider.GetRequiredService<IDependencyCacheService>();
                 dependencyCacheService.Save(model);
             }
         }

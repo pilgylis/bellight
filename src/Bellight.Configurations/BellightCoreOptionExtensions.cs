@@ -19,7 +19,7 @@ namespace Bellight.Core
                 });
         }
 
-        public static BellightCoreOptions AddBellightConfigurations(this BellightCoreOptions options, bool isDevelopment = false, string environment = null, string[] args = null)
+        public static BellightCoreOptions AddBellightConfigurations(this BellightCoreOptions options, bool isDevelopment = false, string? environment = null, string[]? args = null)
         {
             var configuration = new ConfigurationBuilder()
                 .InitialiseBellightConfigurations(isDevelopment, environment, args)

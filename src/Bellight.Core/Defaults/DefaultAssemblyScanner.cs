@@ -31,7 +31,7 @@ namespace Bellight.Core.Defaults
             var thisAssemblyName = thisAssembly.GetName().Name;
 
             var loadedAssemblies = _assemblyLoader.Load()
-                .Where(a => assemblyPredicate(a, thisAssemblyName));
+                .Where(a => assemblyPredicate(a, thisAssemblyName!));
 
             if (loadedAssemblies?.Any() == true)
             {
@@ -50,7 +50,7 @@ namespace Bellight.Core.Defaults
 
             return new DependencyCacheModel
             {
-                Assemblies = assemblies.Select(a => a.FullName),
+                Assemblies = assemblies.Select(a => a.FullName)!,
                 TypeHandlers = _typeHandlers.Select(h => new TypeHandlerCacheModel
                 {
                     Name = h.GetType().AssemblyQualifiedName,

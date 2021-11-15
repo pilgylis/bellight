@@ -12,7 +12,7 @@ namespace Bellight.MediatR
             return options.AddStartupServiceAction(startupContainerServices => {
                 startupContainerServices.AddTypeHandler<MediatRTypeHandler>();
             }).AddStartupContainerAction((_, services) => {
-                services.AddTransient<ServiceFactory>(p => p.GetService);
+                services.AddTransient<ServiceFactory>(p => p.GetService!);
                 services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPreProcessorBehavior<,>));
                 services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPostProcessorBehavior<,>));
                 services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestExceptionActionProcessorBehavior<,>));

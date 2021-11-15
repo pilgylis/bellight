@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace Bellight.Core.Misc
 {
@@ -13,18 +12,18 @@ namespace Bellight.Core.Misc
 
         public T DeserializeObject<T>(string value)
         {
-            return JsonSerializer.Deserialize<T>(value, Settings);
+            return JsonSerializer.Deserialize<T>(value, Settings)!;
         }
 
         public object DeserializeObject(string value, Type type)
         {
-            return JsonSerializer.Deserialize(value, type, Settings);
+            return JsonSerializer.Deserialize(value, type, Settings)!;
         }
 
         public object DeserializeObject(string value, string typeName)
         {
             var type = Type.GetType(typeName);
-            return DeserializeObject(value, type);
+            return DeserializeObject(value, type!);
         }
 
         public string TrySerializeObject(object value)
@@ -69,7 +68,7 @@ namespace Bellight.Core.Misc
             catch (Exception ex)
             {
                 StaticLog.Error(ex, ex.Message);
-                return default(T);
+                return default(T)!;
             }
         }
     }

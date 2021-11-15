@@ -24,7 +24,10 @@ namespace Bellight.Core
 
         internal static string GetShortName(this Assembly assembly)
         {
-            return ExtractAssemblyShortName(assembly.FullName);
+            if (assembly is null) {
+                throw new ArgumentNullException(nameof(assembly));
+            }
+            return ExtractAssemblyShortName(assembly.FullName!);
         }
 
         internal static string GetQualifiedName(this Assembly assembly)
@@ -32,8 +35,12 @@ namespace Bellight.Core
             return ExtractAssemblyName(assembly.ManifestModule.Name);
         }
 
-        internal static string GetAssemblyNameFromFileName(this string fileName)
+        internal static string GetAssemblyNameFromFileName(this string? fileName)
         {
+            if (string.IsNullOrEmpty(fileName)) {
+                return string.Empty;
+            }
+            
             fileName = fileName.ToLowerInvariant();
             return fileName.EndsWith(".dll")
                 ? fileName : fileName.Substring(0, fileName.Length - 4);

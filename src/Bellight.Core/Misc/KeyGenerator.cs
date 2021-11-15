@@ -24,7 +24,7 @@ namespace Bellight.Core.Misc
 
         private static string GenerateRandom(char[] chars, int length)
         {
-            using (var crypto = new RNGCryptoServiceProvider())
+            using (var crypto = RandomNumberGenerator.Create())
             {
                 var data = new byte[length];
                 // If chars.Length isn't a power of 2 then there is a bias if
@@ -33,7 +33,7 @@ namespace Bellight.Core.Misc
 
                 // buffer used if we encounter an unusable random byte. We will
                 // regenerate it in this buffer
-                byte[] smallBuffer = null;
+                byte[]? smallBuffer = null;
 
                 // Maximum random number that can be used without introducing a
                 // bias

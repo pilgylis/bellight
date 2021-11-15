@@ -1,13 +1,12 @@
 ﻿using AutoMapper;
 using Bellight.AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 
 namespace Bellight.Core
 {
     public static class BellightCoreOptionExtenstions
     {
-        public static BellightCoreOptions AddAutoMapper(this BellightCoreOptions options, Action<IMapperConfigurationExpression> configAction = null)
+        public static BellightCoreOptions AddAutoMapper(this BellightCoreOptions options, Action<IMapperConfigurationExpression>? configAction = null)
         {
             return options
                 .AddStartupServiceAction(startupContainerServices => {
@@ -17,7 +16,7 @@ namespace Bellight.Core
                 .AddStartupContainerAction((startupServiceProvider, services) => {
                     var modelRegistrationService = startupServiceProvider.GetService<IModelRegistrationService>();
 
-                    services.AddSingleton<IModelMappingService>(new ModelMappingService(modelRegistrationService, configAction));
+                    services.AddSingleton<IModelMappingService>(new ModelMappingService(modelRegistrationService!, configAction!));
                 });
         }
     }

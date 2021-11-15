@@ -5,9 +5,9 @@ namespace Bellight.MessageBus.Amqp
 {
     public abstract class AmqpLinkWrapper<T> : IDisposable where T : ILink
     {
-        private Connection _connection;
-        private Session _session;
-        private T _link;
+        private Connection? _connection;
+        private Session? _session;
+        private T? _link;
         private readonly string _endpoint;
 
         public AmqpLinkWrapper(string endpoint)

@@ -6,14 +6,14 @@
         {
             if (enumerable == null || action == null)
             {
-                return enumerable;
+                return enumerable!;
             }
 
             foreach (var item in enumerable)
             {
                 action(item);
             }
-            return enumerable;
+            return enumerable!;
         }
     }
 }

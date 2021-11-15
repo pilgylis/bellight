@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Bellight.Core.Exceptions
+﻿namespace Bellight.Core.Exceptions
 {
     public class ProviderNotFoundException: Exception
     {

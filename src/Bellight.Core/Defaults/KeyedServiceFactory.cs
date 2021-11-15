@@ -18,11 +18,11 @@ namespace Bellight.Core.Defaults
         {
             if (!_keyedTypeDictionary.ContainsKey(name))
             {
-                return default;
+                return default!;
             }
 
             var type = _keyedTypeDictionary[name];
-            return (T)_serviceProvider.GetService(type);
+            return (T)_serviceProvider.GetService(type)!;
         }
     }
 }

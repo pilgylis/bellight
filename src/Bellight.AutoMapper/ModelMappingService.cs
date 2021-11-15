@@ -1,8 +1,5 @@
 ﻿using AutoMapper;
 using Bellight.AutoMapper.Converters;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Bellight.AutoMapper
 {
@@ -15,7 +12,7 @@ namespace Bellight.AutoMapper
         {
             _modelRegistrationService = modelRegistrationService;
 
-            Init(configAction);
+            _mapper = Init(configAction);
         }
 
         public T Map<T>(object source)
@@ -29,7 +26,7 @@ namespace Bellight.AutoMapper
             return _mapper.Map(source, sourceType, destinationType);
         }
 
-        private void Init(Action<IMapperConfigurationExpression> configAction)
+        private IMapper Init(Action<IMapperConfigurationExpression> configAction)
         {
             var profiles = _modelRegistrationService.GetAllProfiles();
             var mappings = _modelRegistrationService.GetAllMappings();
@@ -61,7 +58,7 @@ namespace Bellight.AutoMapper
                 
             });
 
-            _mapper = config.CreateMapper();
+            return config.CreateMapper();
         }
     }
 }
