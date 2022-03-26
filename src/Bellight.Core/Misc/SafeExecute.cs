@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
 
 namespace Bellight.Core.Misc
 {
@@ -27,11 +26,11 @@ namespace Bellight.Core.Misc
                     var timeout = millisecondsTimeOut < 100 ? 100 : millisecondsTimeOut;
                     Task.Delay(TimeSpan.FromMilliseconds(timeout)).Wait();
                     currentRetry++;
-                    StaticLog.Error(ex, $"Error occurred. Retrying number {currentRetry}");
+                    CoreLogging.Logger?.LogError(ex, "Error occurred. Retrying number {currentRetry}", currentRetry);
                     return Sync(action, maxRetries, millisecondsTimeOut, currentRetry);
                 }
 
-                StaticLog.Error(ex, ex.Message);
+                CoreLogging.Logger?.LogError(ex, "Error occurred: {message}", ex.Message);
                 return false;
             }
         }
@@ -50,11 +49,11 @@ namespace Bellight.Core.Misc
                     var timeout = millisecondsTimeOut < 100 ? 100 : millisecondsTimeOut;
                     Task.Delay(TimeSpan.FromMilliseconds(timeout)).Wait();
                     currentRetry++;
-                    StaticLog.Error(ex, $"Error occurred. Retrying number {currentRetry}");
+                    CoreLogging.Logger?.LogError(ex, "Error occurred. Retrying number {currentRetry}", currentRetry);
                     return Sync(action, maxRetries, millisecondsTimeOut, currentRetry);
                 }
 
-                StaticLog.Error(ex, ex.Message);
+                CoreLogging.Logger?.LogError(ex, "Error occurred: {message}", ex.Message);
                 actionCatch?.Invoke();
                 return false;
             }
@@ -83,7 +82,7 @@ namespace Bellight.Core.Misc
                     await Task.Delay(TimeSpan.FromMilliseconds(timeout));
                     currentRetry++;
 
-                    StaticLog.Error(ex, $"Error occurred. Retrying number {currentRetry}");
+                    CoreLogging.Logger?.LogError(ex, "Error occurred. Retrying number {currentRetry}", currentRetry);
                     var nextTimeout = timeout * 10;
                     if (nextTimeout > 120 * 1000)
                     {
@@ -93,7 +92,7 @@ namespace Bellight.Core.Misc
                     return await Async(action, maxRetries, nextTimeout, currentRetry);
                 }
 
-                StaticLog.Error(ex, ex.Message);
+                CoreLogging.Logger?.LogError(ex, "Error occurred: {message}", ex.Message);
                 return false;
             }
         }
@@ -112,11 +111,11 @@ namespace Bellight.Core.Misc
                     var timeout = millisecondsTimeOut < 100 ? 100 : millisecondsTimeOut;
                     await Task.Delay(TimeSpan.FromMilliseconds(timeout));
                     currentRetry++;
-                    StaticLog.Error(ex, $"Error occurred. Retrying number {currentRetry}");
+                    CoreLogging.Logger?.LogError(ex, "Error occurred. Retrying number {currentRetry}", currentRetry);
                     return await Async(action, maxRetries, millisecondsTimeOut, currentRetry);
                 }
 
-                StaticLog.Error(ex, ex.Message);
+                CoreLogging.Logger?.LogError(ex, "Error occurred: {message}", ex.Message);
                 actionCatch?.Invoke();
 
                 return false;

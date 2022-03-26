@@ -1,5 +1,6 @@
 ﻿using Bellight.Core.Misc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Bellight.Core.DependencyCache
 {
@@ -88,7 +89,7 @@ namespace Bellight.Core.DependencyCache
             }
             catch
             {
-                StaticLog.Warning($"Cannot write cache file: {filePath}. As a consequence, next startup may suffer a performance issue.");
+                CoreLogging.Logger?.LogWarning("Cannot write cache file: {filePath}. As a consequence, next startup may suffer a performance issue.", filePath);
             }
         }
 
@@ -105,7 +106,7 @@ namespace Bellight.Core.DependencyCache
             }
             catch
             {
-                StaticLog.Warning($"Cannot open cache file: {fileName}");
+                CoreLogging.Logger?.LogWarning("Cannot open cache file: {fileName}", fileName);
                 return string.Empty;
             }            
         }

@@ -1,10 +1,18 @@
-﻿using System.Text.Json;
+﻿using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace Bellight.Core.Misc
 {
     public class BellightJsonSerializer: ISerializer
     {
+        private readonly ILogger<BellightJsonSerializer> logger;
+
         public JsonSerializerOptions Settings { get; set; } = DefaultJsonSerializerSettings;
+        public BellightJsonSerializer(ILogger<BellightJsonSerializer> logger)
+        {
+            this.logger = logger;
+        }
+
         public string SerializeObject(object value)
         {
             return JsonSerializer.Serialize(value, Settings);
@@ -67,8 +75,8 @@ namespace Bellight.Core.Misc
             }
             catch (Exception ex)
             {
-                StaticLog.Error(ex, ex.Message);
-                return default(T)!;
+                logger.LogError(ex, "An error has occurred: {message}", ex.Message);
+                return default!;
             }
         }
     }

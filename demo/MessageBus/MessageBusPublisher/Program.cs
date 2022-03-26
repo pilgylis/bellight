@@ -1,5 +1,7 @@
-﻿using Bellight.MessageBus.Abstractions;
+﻿using Bellight.Core.Misc;
+using Bellight.MessageBus.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using System;
 using System.Net;
 
@@ -9,12 +11,12 @@ namespace MessageBusPublisher
     {
         static void Main(string[] args)
         {
-            var topic = args.Length < 2 || string.IsNullOrEmpty(args[1]) ? "bellight.q1" : args[1];
-            var messageBusType = 
-                        args.Length >= 1 
-                        && !string.IsNullOrEmpty(args[0]) 
-                        && args[0].StartsWith("p", StringComparison.InvariantCultureIgnoreCase) 
-                    ? MessageBusType.PubSub : MessageBusType.Queue;
+            Log.Logger = new LoggerConfiguration()
+              .Enrich.FromLogContext()
+              .WriteTo.Console()
+              .CreateLogger();
+            var topic = "test1";
+            var messageBusType = MessageBusType.PubSub;
 
             var typeText = messageBusType == MessageBusType.Queue ? "queue" : "topic";
             Console.WriteLine($"Sending messages to {typeText} '{topic}'");
@@ -25,17 +27,22 @@ namespace MessageBusPublisher
             // var namespaceUrl = ""; 
 
             // var connectionString = $"amqps://{policyName}:{key}@{namespaceUrl}/";
-            var connectionString = "amqp://artemis:simetraehcapa@localhost:5672";
+            // var connectionString = "amqp://artemis:simetraehcapa@localhost:5672";
+            var connectionString = $"amqps://{WebUtility.UrlEncode("emp-activemq-dev")}:{WebUtility.UrlEncode("O51kq[lVt1a(Xzeh")}@b-f11a93b0-e1b6-4af3-aa71-0052af70eb1a-1.mq.us-west-2.amazonaws.com:5671";
 
             var services = new ServiceCollection();
+            services.AddLogging(loggingBuilder =>
+                loggingBuilder.AddSerilog(dispose: true));
+
             services.AddBellightMessageBus()
                 .AddAmqp(options => {
                     options.Endpoint = connectionString;
-                    options.IsAzureMessageBus = "true";
+                    options.IsAzureMessageBus = "false";
                     options.SubscriberName = "sub1";
                 });
 
             var serviceProvider = services.BuildServiceProvider();
+            CoreLogging.SetServiceProvider(serviceProvider);
 
             var messageBusFactory = serviceProvider.GetService<IMessageBusFactory>();
             var publisher = messageBusFactory.GetPublisher(topic, messageBusType);

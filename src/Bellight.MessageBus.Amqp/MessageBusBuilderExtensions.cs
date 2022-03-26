@@ -1,6 +1,5 @@
 ﻿using Bellight.MessageBus.Abstractions;
 using Bellight.MessageBus.Amqp;
-using System;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

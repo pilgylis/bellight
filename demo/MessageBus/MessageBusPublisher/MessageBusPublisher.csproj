@@ -6,6 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+	  <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
+	  <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
     <ProjectReference Include="..\..\..\src\Bellight.MessageBus.Amqp\Bellight.MessageBus.Amqp.csproj" />
   </ItemGroup>
 

@@ -2,6 +2,7 @@
 using Bellight.Core.Misc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Bellight.MessageBus.Abstractions
 {
@@ -11,17 +12,19 @@ namespace Bellight.MessageBus.Abstractions
         private readonly string _pubsubConfigSection = "Providers:MessageBusPubsub";
 
         private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger<MessageBusFactory> logger;
 
-        public MessageBusFactory(IServiceProvider serviceProvider)
+        public MessageBusFactory(IServiceProvider serviceProvider, ILogger<MessageBusFactory> logger)
         {
             _serviceProvider = serviceProvider;
+            this.logger = logger;
         }
 
         public IPublisher GetPublisher(string topic, MessageBusType messageBusType = MessageBusType.Queue)
         {
             var provider = GetProvider(messageBusType);
             var messageBusTypeText = messageBusType == MessageBusType.Queue ? "Queue" : "Pub/Sub";
-            StaticLog.Information($"MessageBus - Publisher provider created: {messageBusTypeText} - {provider?.GetType().Name}");
+            logger.LogInformation("MessageBus - Publisher provider created: {messageBusTypeText} - {name}", messageBusTypeText, provider?.GetType().Name);
             return provider!.GetPublisher(topic);
         }
 
@@ -29,7 +32,7 @@ namespace Bellight.MessageBus.Abstractions
         {
             var provider = GetProvider(messageBusType);
             var messageBusTypeText = messageBusType == MessageBusType.Queue ? "Queue" : "Pub/Sub";
-            StaticLog.Information($"MessageBus - Subscriber provider created: {messageBusTypeText} - {provider?.GetType().Name}");
+            logger.LogInformation("MessageBus - Subscriber provider created: {messageBusTypeText} - {name}", messageBusTypeText, provider?.GetType().Name);
             return provider!.Subscribe(topic, messageReceivedAction);
         }
 
@@ -47,7 +50,7 @@ namespace Bellight.MessageBus.Abstractions
             }
             catch (Exception ex)
             {
-                StaticLog.Warning($"An error has occurred while trying to retrieve provider for Message Bus: {ex.Message}");
+                logger.LogError(ex, "An error has occurred while trying to retrieve provider for Message Bus: {message}", ex.Message);
                 return GetProviderFromConfig(messageBusType);
             }
         }
