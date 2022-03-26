@@ -55,19 +55,19 @@ namespace Bellight.MessageBus.Amqp
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                SafeExecute.SyncCatch(() =>
+                SafeExecute.AsyncCatch(async () =>
                 {
                     var link = GetLink();
-                    var message = link.Receive(TimeSpan.FromMilliseconds(_options.PollingInterval));
+                    var message = await link.ReceiveAsync(TimeSpan.FromMilliseconds(_options.PollingInterval));
                     if (message == null)
                     {
-                        Thread.Sleep(_options.WaitDuration);
+                        await Task.Delay(_options.WaitDuration);
                         return;
                     }
 
                     link.Accept(message);
                     messageReceivedAction.Invoke((string)message.Body);
-                }, () => Thread.Sleep(_options.WaitDuration));
+                }, () => Thread.Sleep(_options.WaitDuration)).Wait(cancellationToken);
 
             }
         }

@@ -1,6 +1,7 @@
 ﻿using Bellight.Core.Misc;
 using Bellight.MessageBus.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
 using System.Net;
@@ -19,7 +20,7 @@ namespace MessageBusPublisher
             var messageBusType = MessageBusType.PubSub;
 
             var typeText = messageBusType == MessageBusType.Queue ? "queue" : "topic";
-            Console.WriteLine($"Sending messages to {typeText} '{topic}'");
+            Console.WriteLine("Sending messages to {0} '{1}'", typeText, topic);
 
             // Settings for Azure Message Bus
             // var policyName = WebUtility.UrlEncode(""); // enter policy name
@@ -42,7 +43,7 @@ namespace MessageBusPublisher
                 });
 
             var serviceProvider = services.BuildServiceProvider();
-            CoreLogging.SetServiceProvider(serviceProvider);
+            serviceProvider.ConfigureCoreLogging();
 
             var messageBusFactory = serviceProvider.GetService<IMessageBusFactory>();
             var publisher = messageBusFactory.GetPublisher(topic, messageBusType);
@@ -58,10 +59,10 @@ namespace MessageBusPublisher
             Console.WriteLine("Done!");
             while (acceptInput)
             {
-                Console.WriteLine("Enter text and press [Enter] to add message to queue:");
+                CoreLogging.Logger?.LogInformation("Enter text and press [Enter] to add message to queue:");
                 var text = Console.ReadLine();
                 publisher.Send(text);
-                Console.WriteLine("Message sent!");
+                CoreLogging.Logger?.LogInformation("Message sent!");
             }
         }
     }

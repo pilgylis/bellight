@@ -20,9 +20,10 @@ namespace Bellight.Core.Misc
                 return logger;
             }
         }
-        public static void SetServiceProvider(IServiceProvider serviceProvider)
+        public static IServiceProvider ConfigureCoreLogging(this IServiceProvider serviceProvider)
         {
             CoreLogging.serviceProvider = serviceProvider;
+            return serviceProvider;
         }
     }
 }
