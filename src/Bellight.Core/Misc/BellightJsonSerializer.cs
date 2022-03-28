@@ -5,13 +5,8 @@ namespace Bellight.Core.Misc
 {
     public class BellightJsonSerializer: ISerializer
     {
-        private readonly ILogger<BellightJsonSerializer> logger;
 
         public JsonSerializerOptions Settings { get; set; } = DefaultJsonSerializerSettings;
-        public BellightJsonSerializer(ILogger<BellightJsonSerializer> logger)
-        {
-            this.logger = logger;
-        }
 
         public string SerializeObject(object value)
         {
@@ -75,7 +70,7 @@ namespace Bellight.Core.Misc
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error has occurred: {message}", ex.Message);
+                CoreLogging.Logger?.LogError(ex, "An error has occurred: {message}", ex.Message);
                 return default!;
             }
         }

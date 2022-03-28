@@ -59,10 +59,12 @@ namespace MessageBusPublisher
             Console.WriteLine("Done!");
             while (acceptInput)
             {
-                CoreLogging.Logger?.LogInformation("Enter text and press [Enter] to add message to queue:");
+                var enter = "[Enter]";
+                CoreLogging.Logger?.LogInformation("Enter text and press {enter} to add message to queue:", 
+                    enter.ToLowerInvariant());
                 var text = Console.ReadLine();
                 publisher.Send(text);
-                CoreLogging.Logger?.LogInformation("Message sent!");
+                CoreLogging.Logger?.LogInformation("Message {text} sent!", text);
             }
         }
     }

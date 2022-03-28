@@ -9,17 +9,14 @@ namespace Bellight.Core.DependencyCache
         private readonly BellightCoreOptions _options;
         private readonly ISerializer _serializer;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IServiceCollection _services;
 
         public DefaultDependencyCacheService(
             BellightCoreOptions options, 
             ISerializer serializer, 
-            IServiceCollection services,
             IServiceProvider serviceProvider) {
             _options = options;
             _serializer = serializer;
             _serviceProvider = serviceProvider;
-            _services = services;
         }
 
         public bool Load()
