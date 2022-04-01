@@ -7,14 +7,22 @@ namespace Bellight.Core.Misc
     {
         private static IServiceProvider? serviceProvider;
         private static ILogger? logger;
+        private static bool loggerSet = false;
+
         public static ILogger? Logger
         {
             get
             {
-                if (logger == null && serviceProvider != null)
+                if (!loggerSet && serviceProvider != null)
                 {
                     var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
                     logger = loggerFactory.CreateLogger("Bellight.Core");
+                    loggerSet = true;
+                }
+
+                if (logger == null)
+                {
+                    logger = InitializeConsoleLogger();
                 }
 
                 return logger;
@@ -24,6 +32,18 @@ namespace Bellight.Core.Misc
         {
             CoreLogging.serviceProvider = serviceProvider;
             return serviceProvider;
+        }
+
+        private static ILogger InitializeConsoleLogger()
+        {
+            var loggerFactory = LoggerFactory.Create(builder => {
+                builder
+                .AddFilter("Microsoft", LogLevel.Information)
+                .AddFilter("System", LogLevel.Information)
+                .AddConsole();
+            });
+
+            return loggerFactory.CreateLogger("Bellight.Core");
         }
     }
 }
