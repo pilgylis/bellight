@@ -26,8 +26,8 @@ namespace MessageBusSubscriber
 
             // var connectionString = $"amqps://{policyName}:{key}@{namespaceUrl}/";
             
-            //var connectionString = "amqp://artemis:simetraehcapa@localhost:5672";
-            var connectionString = $"amqps://{WebUtility.UrlEncode("emp-activemq-dev")}:{WebUtility.UrlEncode("O51kq[lVt1a(Xzeh")}@b-f11a93b0-e1b6-4af3-aa71-0052af70eb1a-1.mq.us-west-2.amazonaws.com:5671";
+            var connectionString = "amqp://artemis:simetraehcapa@localhost:5672";
+            //var connectionString = $"amqps://{WebUtility.UrlEncode("emp-activemq-dev")}:{WebUtility.UrlEncode("O51kq[lVt1a(Xzeh")}@b-f11a93b0-e1b6-4af3-aa71-0052af70eb1a-1.mq.us-west-2.amazonaws.com:5671";
 
             Console.WriteLine(connectionString);
             var services = new ServiceCollection();
@@ -42,7 +42,7 @@ namespace MessageBusSubscriber
                 });
 
             var serviceProvider = services.BuildServiceProvider();
-            CoreLogging.SetServiceProvider(serviceProvider);
+            serviceProvider.ConfigureCoreLogging();
 
             var messageBusFactory = serviceProvider.GetService<IMessageBusFactory>();
 
