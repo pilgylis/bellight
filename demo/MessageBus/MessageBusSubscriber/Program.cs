@@ -26,10 +26,8 @@ namespace MessageBusSubscriber
 
             // var connectionString = $"amqps://{policyName}:{key}@{namespaceUrl}/";
 
-            //var connectionString = "amqp://artemis:simetraehcapa@localhost:5672";
-            //var connectionString = $"amqps://{WebUtility.UrlEncode("emp-activemq-dev")}:{WebUtility.UrlEncode("O51kq[lVt1a(Xzeh")}@b-f11a93b0-e1b6-4af3-aa71-0052af70eb1a-1.mq.us-west-2.amazonaws.com:5671";
-            var connectionString = "amqps://ESAdmin:x%40kfZ2m9JGsdgdvXF4%21WkPf@b-e9a3baa3-50ec-43c8-a0ff-563a28220c85-1.mq.us-west-2.amazonaws.com:5671";
-
+            var connectionString = "amqp://artemis:simetraehcapa@localhost:5672";
+            
             Console.WriteLine(connectionString);
             var services = new ServiceCollection();
             services.AddLogging(loggingBuilder =>
