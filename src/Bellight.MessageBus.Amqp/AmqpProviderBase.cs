@@ -6,19 +6,22 @@ namespace Bellight.MessageBus.Amqp
     public abstract class AmqpProviderBase
     {
         private readonly MessageBusType _messageBusType;
+        private readonly IAmqpConnectionFactory connectionFactory;
         private readonly IOptionsMonitor<AmqpOptions> _options;
 
         public AmqpProviderBase(
+            IAmqpConnectionFactory connectionFactory,
             IOptionsMonitor<AmqpOptions> options,
             MessageBusType messageBusType)
         {
             _messageBusType = messageBusType;
+            this.connectionFactory = connectionFactory;
             _options = options;
         }
 
         public IPublisher GetPublisher(string topic)
         {
-            return new AmqpPublisher(_options.CurrentValue.Endpoint!, NormalizeTopic(topic), _messageBusType);
+            return new AmqpPublisher(connectionFactory, NormalizeTopic(topic), _messageBusType);
         }
 
         public ISubscription Subscribe(string topic, Action<string> messageReceivedAction)
@@ -26,7 +29,6 @@ namespace Bellight.MessageBus.Amqp
             var options = _options.CurrentValue;
             var subscriberOptions = new SubscriberOptions
             {
-                Endpoint = options.Endpoint,
                 Topic = NormalizeTopic(topic),
                 MessageBusType = _messageBusType,
                 PollingInterval = options.PollingIntervalMilliseconds,
@@ -35,7 +37,7 @@ namespace Bellight.MessageBus.Amqp
                 SubscriberName = options.SubscriberName
             };
 
-            var subscriber = new AmqpSubscriber(subscriberOptions);
+            var subscriber = new AmqpSubscriber(connectionFactory, subscriberOptions);
 
             return subscriber.Subscribe(messageReceivedAction);
         }

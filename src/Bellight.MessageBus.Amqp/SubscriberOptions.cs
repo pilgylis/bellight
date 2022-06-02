@@ -4,7 +4,6 @@ namespace Bellight.MessageBus.Amqp
 {
     public class SubscriberOptions
     {
-        public string? Endpoint { get; set; }
         public string? Topic { get; set; }
         public string? SubscriberName { get; set; }
         public MessageBusType MessageBusType { get; set; }

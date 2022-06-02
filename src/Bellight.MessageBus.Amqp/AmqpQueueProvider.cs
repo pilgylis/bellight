@@ -5,8 +5,8 @@ namespace Bellight.MessageBus.Amqp
 {
     public class AmqpQueueProvider : AmqpProviderBase, IQueueProvider
     {
-        public AmqpQueueProvider(IOptionsMonitor<AmqpOptions> options)
-            : base(options, MessageBusType.Queue)
+        public AmqpQueueProvider(IAmqpConnectionFactory connectionFactory, IOptionsMonitor<AmqpOptions> options)
+            : base(connectionFactory, options, MessageBusType.Queue)
         {
         }
     }

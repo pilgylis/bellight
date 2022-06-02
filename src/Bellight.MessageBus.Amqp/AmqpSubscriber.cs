@@ -12,7 +12,7 @@ namespace Bellight.MessageBus.Amqp
 
         private readonly SubscriberOptions _options;
 
-        public AmqpSubscriber(SubscriberOptions options) : base(options.Endpoint!)
+        public AmqpSubscriber(IAmqpConnectionFactory connectionFactory, SubscriberOptions options) : base(connectionFactory)
         {
             _options = options;
         }

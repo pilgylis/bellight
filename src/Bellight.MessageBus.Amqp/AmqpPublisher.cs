@@ -2,7 +2,6 @@
 using Amqp.Framing;
 using Amqp.Types;
 using Bellight.MessageBus.Abstractions;
-using System.Threading.Tasks;
 
 namespace Bellight.MessageBus.Amqp
 {
@@ -12,8 +11,8 @@ namespace Bellight.MessageBus.Amqp
         private readonly string _topic;
         private readonly MessageBusType _messageBusType;
 
-        public AmqpPublisher(string endpoint, string topic, MessageBusType messageBusType)
-            :base(endpoint)
+        public AmqpPublisher(IAmqpConnectionFactory connectionFactory, string topic, MessageBusType messageBusType)
+            : base(connectionFactory)
         {
             _topic = topic;
             _messageBusType = messageBusType;

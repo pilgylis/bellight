@@ -1,18 +1,16 @@
 ﻿using Amqp;
-using System;
 
 namespace Bellight.MessageBus.Amqp
 {
     public abstract class AmqpLinkWrapper<T> : IDisposable where T : ILink
     {
-        private Connection? _connection;
         private Session? _session;
         private T? _link;
-        private readonly string _endpoint;
+        private readonly IAmqpConnectionFactory connectionFactory;
 
-        public AmqpLinkWrapper(string endpoint)
+        public AmqpLinkWrapper(IAmqpConnectionFactory connectionFactory)
         {
-            _endpoint = endpoint;
+            this.connectionFactory = connectionFactory;
         }
 
         protected abstract T InitialiseLink(Session session);
@@ -31,14 +29,10 @@ namespace Bellight.MessageBus.Amqp
 
         private Session GetSession()
         {
-            if (_connection?.IsClosed != false)
-            {
-                _connection = new Connection(new Address(_endpoint));
-            }
-
             if (_session?.IsClosed != false)
             {
-                _session = new Session(_connection);
+                var connection = connectionFactory.GetConnection();
+                _session = new Session(connection);
             }
 
             return _session;
@@ -54,11 +48,6 @@ namespace Bellight.MessageBus.Amqp
             if (_session?.IsClosed == false)
             {
                 _session.Close();
-            }
-
-            if (_connection?.IsClosed == false)
-            {
-                _connection.Close();
             }
         }
     }

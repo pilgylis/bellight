@@ -10,6 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.Configure(configureOption);
             builder.AddPubsubProvider<AmqpPubsubProvider>()
                 .AddQueueProvider<AmqpQueueProvider>();
+            builder.Services.AddSingleton<IAmqpConnectionFactory, AmqpConnectionFactory>();
             return builder;
         }
     }
