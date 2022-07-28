@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Company>Nguyen Viet Trung</Company>
+    <Copyright>Nguyen Viet Trung</Copyright>
+    <Description>Data management abstraction</Description>
+    <Authors>Nguyen Viet Trung</Authors>
+    <PackageDescription>Bellight Data Management</PackageDescription>
+    <PackageProjectUrl>https://github.com/pilgylis/bellight</PackageProjectUrl>
+    <PackageTags>bellight, data, management</PackageTags>
+    <PackageLanguage>en-US</PackageLanguage>
+    <IncludeSymbols>true</IncludeSymbols>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE.txt" Pack="true" PackagePath="$(PackageLicenseFile)">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="readme.md" />
+  </ItemGroup>
+
+</Project>
