@@ -4,14 +4,16 @@ namespace Bellight.DataManagement;
 
 public class BellightEnlistmentScope : IEnlistmentNotification
 {
-    private readonly ITransactionAccessor transactionAccessor;
+    private readonly ITransactionFactory transactionFactory;
     private readonly Unregister unregister;
 
     public delegate void Unregister();
 
-    public BellightEnlistmentScope(ITransactionAccessor transactionAccessor, Unregister unregister)
+    private ITransactionSession? session;
+
+    public BellightEnlistmentScope(ITransactionFactory transactionFactory, Unregister unregister)
     {
-        this.transactionAccessor = transactionAccessor;
+        this.transactionFactory = transactionFactory;
         this.unregister = unregister;
     }
 
@@ -19,11 +21,13 @@ public class BellightEnlistmentScope : IEnlistmentNotification
     {
         try
         {
-            transactionAccessor.GetCurrentTransaction()?.Commit();
+            session?.Commit();
             enlistment.Done();
         }
         finally
         {
+            session?.Dispose();
+            session = null;
             unregister();
         }
     }
@@ -32,17 +36,20 @@ public class BellightEnlistmentScope : IEnlistmentNotification
     {
         try
         {
-            transactionAccessor.GetCurrentTransaction()?.Abort();
+            session?.Abort();
             enlistment.Done();
         }
         finally
         {
+            session?.Dispose();
+            session = null;
             unregister();
         }
     }
 
     public void Prepare(PreparingEnlistment preparingEnlistment)
     {
+        session = transactionFactory.CreateTransaction();
         preparingEnlistment.Prepared();
     }
 
@@ -50,11 +57,13 @@ public class BellightEnlistmentScope : IEnlistmentNotification
     {
         try
         {
-            transactionAccessor.GetCurrentTransaction()?.Abort();
+            session?.Abort();
             enlistment.Done();
         }
         finally
         {
+            session?.Dispose();
+            session = null;
             unregister();
         }
     }
