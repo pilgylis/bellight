@@ -1,26 +1,43 @@
 ﻿using Amqp;
 using Microsoft.Extensions.Options;
 
-namespace Bellight.MessageBus.Amqp
+namespace Bellight.MessageBus.Amqp;
+
+public class AmqpConnectionFactory : IAmqpConnectionFactory
 {
-    public class AmqpConnectionFactory : IAmqpConnectionFactory
+    private readonly IOptionsMonitor<AmqpOptions> options;
+    private Connection? connection;
+    private readonly Dictionary<string, Session> sessions = new();
+
+    public AmqpConnectionFactory(IOptionsMonitor<AmqpOptions> options)
     {
-        private readonly IOptionsMonitor<AmqpOptions> options;
-        private Connection? connection;
+        this.options = options;
+    }
 
-        public AmqpConnectionFactory(IOptionsMonitor<AmqpOptions> options)
+    public Connection GetConnection()
+    {
+        if (connection == null || connection.IsClosed)
         {
-            this.options = options;
+            connection = new Connection(new Address(options.CurrentValue.Endpoint));
         }
 
-        public Connection GetConnection()
+        return connection;
+    }
+
+    public Session GetSession(string name = "default")
+    {
+        if (sessions.ContainsKey(name))
         {
-            if (connection == null || connection.IsClosed)
+            var session = sessions[name];
+            if (session is not null && !session.IsClosed)
             {
-                connection = new Connection(new Address(options.CurrentValue.Endpoint));
+                return session;
             }
-
-            return connection;
         }
+        var connection = GetConnection();
+        var newSession = new Session(connection);
+        sessions.Add(name, newSession);
+
+        return newSession;
     }
 }

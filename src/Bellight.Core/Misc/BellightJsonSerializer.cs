@@ -1,78 +1,83 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
-namespace Bellight.Core.Misc
+namespace Bellight.Core.Misc;
+
+public class BellightJsonSerializer: ISerializer
 {
-    public class BellightJsonSerializer: ISerializer
+    private readonly ILogger<BellightJsonSerializer> logger;
+
+    public BellightJsonSerializer(ILogger<BellightJsonSerializer> logger)
     {
+        this.logger = logger;
+    }
 
-        public JsonSerializerOptions Settings { get; set; } = DefaultJsonSerializerSettings;
+    public JsonSerializerOptions Settings { get; set; } = DefaultJsonSerializerSettings;
 
-        public string SerializeObject(object value)
+    public string SerializeObject(object value)
+    {
+        return JsonSerializer.Serialize(value, Settings);
+    }
+
+    public T DeserializeObject<T>(string value)
+    {
+        return JsonSerializer.Deserialize<T>(value, Settings)!;
+    }
+
+    public object DeserializeObject(string value, Type type)
+    {
+        return JsonSerializer.Deserialize(value, type, Settings)!;
+    }
+
+    public object DeserializeObject(string value, string typeName)
+    {
+        var type = Type.GetType(typeName);
+        return DeserializeObject(value, type!);
+    }
+
+    public string TrySerializeObject(object value)
+    {
+        return Try(() => SerializeObject(value));
+    }
+
+    public T TryDeserializeObject<T>(string value)
+    {
+        return Try(() => DeserializeObject<T>(value));
+    }
+
+    public object TryDeserializeObject(string value, Type type)
+    {
+        return Try(() => DeserializeObject(value, type));
+    }
+
+    public object TryDeserializeObject(string value, string typeName)
+    {
+        return Try(() => DeserializeObject(value, typeName));
+    }
+
+    public static JsonSerializerOptions DefaultJsonSerializerSettings
+    {
+        get
         {
-            return JsonSerializer.Serialize(value, Settings);
-        }
-
-        public T DeserializeObject<T>(string value)
-        {
-            return JsonSerializer.Deserialize<T>(value, Settings)!;
-        }
-
-        public object DeserializeObject(string value, Type type)
-        {
-            return JsonSerializer.Deserialize(value, type, Settings)!;
-        }
-
-        public object DeserializeObject(string value, string typeName)
-        {
-            var type = Type.GetType(typeName);
-            return DeserializeObject(value, type!);
-        }
-
-        public string TrySerializeObject(object value)
-        {
-            return Try(() => SerializeObject(value));
-        }
-
-        public T TryDeserializeObject<T>(string value)
-        {
-            return Try(() => DeserializeObject<T>(value));
-        }
-
-        public object TryDeserializeObject(string value, Type type)
-        {
-            return Try(() => DeserializeObject(value, type));
-        }
-
-        public object TryDeserializeObject(string value, string typeName)
-        {
-            return Try(() => DeserializeObject(value, typeName));
-        }
-
-        public static JsonSerializerOptions DefaultJsonSerializerSettings
-        {
-            get
+            return new JsonSerializerOptions
             {
-                return new JsonSerializerOptions
-                {
-                    WriteIndented = false,
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
-                };
-            }
+                WriteIndented = false,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+            };
         }
+    }
 
-        private T Try<T>(Func<T> func)
+    private T Try<T>(Func<T> func)
+    {
+        try
         {
-            try
-            {
-                return func();
-            }
-            catch (Exception ex)
-            {
-                CoreLogging.Logger?.LogError(ex, "An error has occurred: {message}", ex.Message);
-                return default!;
-            }
+            return func();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error has occurred: {message}", ex.Message);
+            return default!;
         }
     }
 }

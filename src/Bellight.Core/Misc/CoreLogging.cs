@@ -1,49 +1,48 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Bellight.Core.Misc
+namespace Bellight.Core.Misc;
+
+public static class CoreLogging
 {
-    public static class CoreLogging
+    private static IServiceProvider? serviceProvider;
+    private static ILogger? logger;
+    private static bool loggerSet = false;
+
+    public static ILogger? Logger
     {
-        private static IServiceProvider? serviceProvider;
-        private static ILogger? logger;
-        private static bool loggerSet = false;
-
-        public static ILogger? Logger
+        get
         {
-            get
+            if (!loggerSet && serviceProvider != null)
             {
-                if (!loggerSet && serviceProvider != null)
-                {
-                    var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-                    logger = loggerFactory.CreateLogger("Bellight.Core");
-                    loggerSet = true;
-                }
-
-                if (logger == null)
-                {
-                    logger = InitializeConsoleLogger();
-                }
-
-                return logger;
+                var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+                logger = loggerFactory.CreateLogger("Bellight.Core");
+                loggerSet = true;
             }
-        }
-        public static IServiceProvider ConfigureCoreLogging(this IServiceProvider serviceProvider)
-        {
-            CoreLogging.serviceProvider = serviceProvider;
-            return serviceProvider;
-        }
 
-        private static ILogger InitializeConsoleLogger()
-        {
-            var loggerFactory = LoggerFactory.Create(builder => {
-                builder
-                .AddFilter("Microsoft", LogLevel.Information)
-                .AddFilter("System", LogLevel.Information)
-                .AddConsole();
-            });
+            if (logger == null)
+            {
+                logger = InitializeConsoleLogger();
+            }
 
-            return loggerFactory.CreateLogger("Bellight.Core");
+            return logger;
         }
+    }
+    public static IServiceProvider ConfigureCoreLogging(this IServiceProvider serviceProvider)
+    {
+        CoreLogging.serviceProvider = serviceProvider;
+        return serviceProvider;
+    }
+
+    private static ILogger InitializeConsoleLogger()
+    {
+        var loggerFactory = LoggerFactory.Create(builder => {
+            builder
+            .AddFilter("Microsoft", LogLevel.Information)
+            .AddFilter("System", LogLevel.Information)
+            .AddConsole();
+        });
+
+        return loggerFactory.CreateLogger("Bellight.Core");
     }
 }

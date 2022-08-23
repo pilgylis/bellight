@@ -11,12 +11,12 @@ namespace Bellight.MongoDb
         Task UpdateAsync(Tid id, UpdateDefinition<T> update, CancellationToken cancellationToken = default);
         Task UpdateAsync(Tid id, Func<UpdateDefinition<T>, UpdateDefinition<T>> updateFunc, CancellationToken cancellationToken = default);
         Task<long> UpdateManyAsync(
-            Expression<Func<T, bool>> filter, 
-            UpdateDefinition<T> update, 
+            Expression<Func<T, bool>> filter,
+            UpdateDefinition<T> update,
             CancellationToken cancellationToken = default);
         Task<long> UpdateManyAsync(
-            Expression<Func<T, bool>> filter, 
-            Func<UpdateDefinition<T>, UpdateDefinition<T>> updateFunc, 
+            Expression<Func<T, bool>> filter,
+            Func<UpdateDefinition<T>, UpdateDefinition<T>> updateFunc,
             CancellationToken cancellationToken = default);
 
         Task<long> UpdateManyAsync(FilterDefinition<T> filter, UpdateDefinition<T> update, CancellationToken cancellationToken = default);

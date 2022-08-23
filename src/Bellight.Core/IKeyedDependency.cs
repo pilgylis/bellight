@@ -1,6 +1,5 @@
-namespace Bellight.Core
+namespace Bellight.Core;
+
+public interface IKeyedDependency: ITransientDependency
 {
-    public interface IKeyedDependency: ITransientDependency
-    {
-    }
 }

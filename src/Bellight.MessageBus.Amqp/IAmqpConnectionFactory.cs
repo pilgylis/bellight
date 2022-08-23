@@ -1,9 +1,9 @@
 ﻿using Amqp;
 
-namespace Bellight.MessageBus.Amqp
+namespace Bellight.MessageBus.Amqp;
+
+public interface IAmqpConnectionFactory
 {
-    public interface IAmqpConnectionFactory
-    {
-        Connection GetConnection();
-    }
+    Connection GetConnection();
+    Session GetSession(string name = "default");
 }

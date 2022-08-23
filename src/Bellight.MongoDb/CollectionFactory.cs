@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Bellight.MongoDb.Transactions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -55,7 +56,7 @@ public class CollectionFactory : ICollectionFactory
         return Database.GetCollection<T>(collectionName);
     }
 
-    private MongoClient CreateClient()
+    private IMongoClient CreateClient()
     {
         var url = new MongoUrl(_settings.ConnectionString);
         var clientSettings = MongoClientSettings.FromUrl(url);
@@ -68,18 +69,19 @@ public class CollectionFactory : ICollectionFactory
             };
         }
 
-
         if ("true".Equals(_settings.LogQuery, StringComparison.OrdinalIgnoreCase))
         {
             clientSettings.ClusterConfigurator = cb =>
             {
                 cb.Subscribe<CommandStartedEvent>(e =>
-                {
-                    Logger?.LogInformation("Executing query: {commandName} - {command}", e.CommandName, e.Command);
-                });
+                    Logger?.LogInformation("Executing query: {commandName} - {command}",
+                        e.CommandName,
+                        e.Command));
             };
         }
 
-        return new MongoClient(clientSettings);
+        var client = new MongoClient(clientSettings);
+
+        return client.AsTransactionClient();
     }
 }

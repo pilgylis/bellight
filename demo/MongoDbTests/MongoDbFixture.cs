@@ -4,6 +4,9 @@ using System.Security.Cryptography;
 
 namespace MongoDbTests;
 
+#pragma warning disable CS8601 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8602 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
 public class MongoDbFixture
 {
     public IServiceProvider Services { get; }
@@ -16,6 +19,8 @@ public class MongoDbFixture
             options.ConnectionString = "mongodb://localhost:27017";
             options.DatabaseName = "test";
         });
+
+
 
         Services = services.BuildServiceProvider();
 
@@ -1127,15 +1132,13 @@ public class MongoDbFixture
         await orderRepository.DeleteAsync(o => true).ConfigureAwait(false); ;
 
         var customerIds = await customerRepository.FindAsync(c => true, c => c.Id).ConfigureAwait(false);
-#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
         var products = (await productRepository.FindAsync(p => true, p => new { p.Id, p.Price }).ConfigureAwait(false)).ToList();
-#pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
         var productCount = products.Count;
 
         foreach (var customerId in customerIds)
         {
             var numberOfOrders = RandomNumberGenerator.GetInt32(1, 10);
-            
+
             for (var orderIndex = 1; orderIndex < numberOfOrders + 1; orderIndex++)
             {
                 var numberOfProducts = RandomNumberGenerator.GetInt32(1, 10);
@@ -1149,13 +1152,12 @@ public class MongoDbFixture
                     do
                     {
                         var currentProductIndex = RandomNumberGenerator.GetInt32(0, productCount - 1);
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
                         product = products[currentProductIndex];
-#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
-                    } while (orderProducts.Exists(p => product.Id.Equals(p.ProductId, StringComparison.InvariantCulture)));
+                    } while (orderProducts.Exists(p => product.Id.Equals(p.ProductId, StringComparison.Ordinal)));
 
                     var quantity = RandomNumberGenerator.GetInt32(1, 100);
-                    orderProducts.Add(new OrderProduct {
+                    orderProducts.Add(new OrderProduct
+                    {
                         ProductId = product.Id,
                         Quantity = quantity
                     });
@@ -1163,7 +1165,8 @@ public class MongoDbFixture
                     total += (product.Price ?? 0) * quantity;
                 }
 
-                var order = new Order {
+                var order = new Order
+                {
                     CustomerId = customerId,
                     OrderDate = DateTime.UtcNow,
                     Products = orderProducts,
@@ -1173,7 +1176,10 @@ public class MongoDbFixture
 
                 await orderRepository.AddAsync(order).ConfigureAwait(false);
             }
-            
+
         }
     }
+#pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+#pragma warning restore CS8601 // Dereference of a possibly null reference.
 }

@@ -7,7 +7,6 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddMongoDb(this IServiceCollection services, Action<MongoDbSettings> settingsConfigure)
     {
-        services.AddTransaction();
         services.AddSingleton<ICollectionFactory, CollectionFactory>();
         services.AddTransient(typeof(IRepository<,>), typeof(MongoRepository<,>));
         services.AddTransient(typeof(IMongoRepository<,>), typeof(MongoRepository<,>));

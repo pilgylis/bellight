@@ -6,7 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static MessageBusBuilder AddBellightMessageBus(this IServiceCollection services)
         {
-            services.AddTransient<IMessageBusFactory, MessageBusFactory>();
+            services.AddSingleton<IMessageBusFactory, MessageBusFactory>();
             return new MessageBusBuilder(services);
         }
     }

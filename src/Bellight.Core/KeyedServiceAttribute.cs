@@ -1,19 +1,16 @@
-using System;
+namespace Bellight.Core;
 
-namespace Bellight.Core
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+public class KeyedServiceAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class KeyedServiceAttribute : Attribute
+    public KeyedServiceAttribute()
     {
-        public KeyedServiceAttribute()
-        {
-            Name = string.Empty;
-        }
-        
-        public KeyedServiceAttribute(string name)
-        {
-            Name = name;
-        }
-        public string Name { get; set; }
+        Name = string.Empty;
     }
+
+    public KeyedServiceAttribute(string name)
+    {
+        Name = name;
+    }
+    public string Name { get; set; }
 }

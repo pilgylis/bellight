@@ -1,75 +1,76 @@
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Linq;
+using Bellight.Core.Misc;
 using Microsoft.Extensions.DependencyModel;
+using Microsoft.Extensions.Logging;
+using System.Reflection;
 
-namespace Bellight.Core.Defaults
+namespace Bellight.Core.Defaults;
+
+public class DefaultAssemblyLoader : IAssemblyLoader
 {
-    public class DefaultAssemblyLoader : IAssemblyLoader
+    private static readonly string ThisAssemblyName = typeof(DefaultAssemblyLoader).GetTypeInfo().Assembly.GetQualifiedName();
+
+    public Assembly[] Load()
     {
-        private static readonly string ThisAssemblyName = typeof(DefaultAssemblyLoader).GetTypeInfo().Assembly.GetQualifiedName();
+        var dependencies = DependencyContext.Default.RuntimeLibraries;
 
-        public Assembly[] Load()
+        var assemblies = new List<Assembly>();
+        var entryAssembly = Assembly.GetEntryAssembly();
+        var entryAssemblyName = entryAssembly?.GetShortName(); // in case of unit testing, the entry assembly is 'testhost'
+
+        if ("testhost".Equals(entryAssemblyName, StringComparison.OrdinalIgnoreCase))
         {
-            var dependencies = DependencyContext.Default.RuntimeLibraries;
+            try
+            {
+                entryAssembly = Assembly.Load(new AssemblyName(dependencies[0].Name));
+                entryAssemblyName = entryAssembly.GetShortName();
+            }
+            catch (Exception ex)
+            {
+                CoreLogging.Logger?.LogWarning(ex, "Error occurred: {message}", ex.Message);
+            }
+        }
 
-            var assemblies = new List<Assembly>();
-            var entryAssembly = Assembly.GetEntryAssembly();
-            var entryAssemblyName = entryAssembly?.GetShortName(); // in case of unit testing, the entry assembly is 'testhost'
+        var directDependencies = (from library in dependencies
+                                  where library.Name.Equals(entryAssemblyName, StringComparison.OrdinalIgnoreCase)
+                                        || library.Name.Equals(ThisAssemblyName, StringComparison.OrdinalIgnoreCase)
+                                        || library.Dependencies.Any(d =>
+                                            d.Name.Equals(ThisAssemblyName, StringComparison.OrdinalIgnoreCase))
+                                  select library).ToList();
 
-            if ("testhost".Equals(entryAssemblyName, StringComparison.OrdinalIgnoreCase))
+        var entryLibrary = directDependencies.FirstOrDefault(d => d.Name.Equals(entryAssemblyName, StringComparison.OrdinalIgnoreCase));
+
+        // 
+        if (entryLibrary != null)
+        {
+            foreach (var entryDependency in entryLibrary
+                .Dependencies
+                .Where(dependency => !directDependencies.Any(d => d.Name.Equals(dependency.Name, StringComparison.OrdinalIgnoreCase))))
             {
                 try
                 {
-                    entryAssembly = Assembly.Load(new AssemblyName(dependencies.First().Name));
-                    entryAssemblyName = entryAssembly.GetShortName();
-                }
-                catch { }
-            }
-
-            var directDependencies = (from library in dependencies
-                where library.Name.Equals(entryAssemblyName, StringComparison.OrdinalIgnoreCase)
-                      || library.Name.Equals(ThisAssemblyName, StringComparison.OrdinalIgnoreCase)
-                      || library.Dependencies.Any(d => 
-                          d.Name.Equals(ThisAssemblyName, StringComparison.OrdinalIgnoreCase))
-                select library).ToList();
-
-            var entryLibrary = directDependencies.FirstOrDefault(d => d.Name.Equals(entryAssemblyName, StringComparison.OrdinalIgnoreCase));
-
-            // 
-            if (entryLibrary != null)
-            {
-                foreach (var entryDependency in entryLibrary
-                    .Dependencies
-                    .Where(dependency => !directDependencies.Any(d => d.Name.Equals(dependency.Name, StringComparison.OrdinalIgnoreCase))))
-                {
-                    try
-                    {
-                        var assembly = Assembly.Load(new AssemblyName(entryDependency.Name));
-                        assemblies.Add(assembly);
-                    }
-                    catch
-                    {
-                        // ignore
-                    }
-                }
-            }
-
-            foreach (var directDependency in directDependencies)
-            {
-                try
-                {
-                    var assembly = Assembly.Load(new AssemblyName(directDependency.Name));
+                    var assembly = Assembly.Load(new AssemblyName(entryDependency.Name));
                     assemblies.Add(assembly);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // ignore
+                    CoreLogging.Logger?.LogWarning(ex, "Error occurred: {message}", ex.Message);
                 }
             }
-
-            return assemblies.ToArray();
         }
+
+        foreach (var directDependency in directDependencies)
+        {
+            try
+            {
+                var assembly = Assembly.Load(new AssemblyName(directDependency.Name));
+                assemblies.Add(assembly);
+            }
+            catch (Exception ex)
+            {
+                CoreLogging.Logger?.LogWarning(ex, "Error occurred: {message}", ex.Message);
+            }
+        }
+
+        return assemblies.ToArray();
     }
 }

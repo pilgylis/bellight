@@ -1,5 +1,4 @@
 ﻿using Bellight.Core.Exceptions;
-using Bellight.Core.Misc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -14,6 +13,8 @@ namespace Bellight.MessageBus.Abstractions
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<MessageBusFactory> logger;
 
+        private readonly Dictionary<MessageBusKey, IPublisher> publisherDictionary = new();
+
         public MessageBusFactory(IServiceProvider serviceProvider, ILogger<MessageBusFactory> logger)
         {
             _serviceProvider = serviceProvider;
@@ -22,10 +23,30 @@ namespace Bellight.MessageBus.Abstractions
 
         public IPublisher GetPublisher(string topic, MessageBusType messageBusType = MessageBusType.Queue)
         {
+            var key = new MessageBusKey
+            {
+                Topic = topic,
+                MessageBusType = messageBusType
+            };
+
+            if (publisherDictionary.ContainsKey(key))
+            {
+                return publisherDictionary[key];
+            }
+
             var provider = GetProvider(messageBusType);
             var messageBusTypeText = messageBusType == MessageBusType.Queue ? "Queue" : "Pub/Sub";
             logger.LogInformation("MessageBus - Publisher provider created: {messageBusTypeText} - {name}", messageBusTypeText, provider?.GetType().Name);
-            return provider!.GetPublisher(topic);
+            var publisher = provider!.GetPublisher(topic);
+
+            if (publisher is null)
+            {
+                throw new Exception($"Could not create publisher for {topic} - {messageBusType}");
+            }
+
+            publisherDictionary.Add(key, publisher);
+
+            return publisher;
         }
 
         public ISubscription Subscribe(string topic, Action<string> messageReceivedAction, MessageBusType messageBusType = MessageBusType.Queue)

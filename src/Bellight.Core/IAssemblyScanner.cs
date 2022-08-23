@@ -1,9 +1,8 @@
 ﻿using Bellight.Core.DependencyCache;
 
-namespace Bellight.Core
+namespace Bellight.Core;
+
+public interface IAssemblyScanner
 {
-    public interface IAssemblyScanner
-    {
-        DependencyCacheModel Scan();
-    }
+    DependencyCacheModel Scan();
 }

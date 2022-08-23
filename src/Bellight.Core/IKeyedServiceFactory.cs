@@ -1,7 +1,6 @@
-namespace Bellight.Core
+namespace Bellight.Core;
+
+public interface IKeyedServiceFactory
 {
-    public interface IKeyedServiceFactory
-    {
-        T Resolve<T>(string name);
-    }
+    T Resolve<T>(string name);
 }

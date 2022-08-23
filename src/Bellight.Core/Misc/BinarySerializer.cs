@@ -1,41 +1,39 @@
-﻿using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+﻿using System.Runtime.Serialization.Formatters.Binary;
 
-namespace Bellight.Core.Misc
+namespace Bellight.Core.Misc;
+
+public static class BinarySerializer
 {
-    public static class BinarySerializer
+    public static byte[]? Serialize(object item)
     {
-        public static byte[] Serialize(object item)
+        var ms = new MemoryStream();
+        try
         {
-            var ms = new MemoryStream();
-            try
-            {
-                var formatter = new BinaryFormatter();
+            var formatter = new BinaryFormatter();
 #pragma warning disable SYSLIB0011 // Type or member is obsolete
-                formatter.Serialize(ms, item);
+            formatter.Serialize(ms, item);
 #pragma warning restore SYSLIB0011 // Type or member is obsolete
-                return ms.ToArray();
-            }
-            finally
-            {
-                ms.Close();
-            }
+            return ms.ToArray();
         }
-
-        public static T Deserialize<T>(byte[] byteArray)
+        finally
         {
-            var ms = new MemoryStream(byteArray);
-            try
-            {
-                var formatter = new BinaryFormatter();
+            ms.Close();
+        }
+    }
+
+    public static T? Deserialize<T>(byte[] byteArray)
+    {
+        var ms = new MemoryStream(byteArray);
+        try
+        {
+            var formatter = new BinaryFormatter();
 #pragma warning disable SYSLIB0011 // Type or member is obsolete
-                return (T)formatter.Deserialize(ms);
+            return (T)formatter.Deserialize(ms);
 #pragma warning restore SYSLIB0011 // Type or member is obsolete
-            }
-            finally
-            {
-                ms.Close();
-            }
+        }
+        finally
+        {
+            ms.Close();
         }
     }
 }

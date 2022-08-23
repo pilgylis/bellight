@@ -1,13 +1,10 @@
 using Bellight.Core.DependencyCache;
-using System;
-using System.Collections.Generic;
 
-namespace Bellight.Core
+namespace Bellight.Core;
+
+public interface ITypeHandler
 {
-    public interface ITypeHandler
-    {
-        void Process(Type type);
-        void LoadCache(IEnumerable<TypeHandlerCacheSection> sections);
-        IEnumerable<TypeHandlerCacheSection> SaveCache();
-    }
+    void Process(Type type);
+    void LoadCache(IEnumerable<TypeHandlerCacheSection> sections);
+    IEnumerable<TypeHandlerCacheSection> SaveCache();
 }

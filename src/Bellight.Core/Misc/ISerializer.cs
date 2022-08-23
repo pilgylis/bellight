@@ -1,23 +1,21 @@
 ﻿using System.Text.Json;
-using System;
 
-namespace Bellight.Core.Misc
+namespace Bellight.Core.Misc;
+
+public interface ISerializer : ITransientDependency
 {
-    public interface ISerializer : ITransientDependency
-    {
-        JsonSerializerOptions Settings { get; set; }
-        string SerializeObject(object value);
+    JsonSerializerOptions Settings { get; set; }
+    string SerializeObject(object value);
 
-        T DeserializeObject<T>(string value);
+    T DeserializeObject<T>(string value);
 
-        object DeserializeObject(string value, Type type);
-        object DeserializeObject(string value, string typeName);
+    object DeserializeObject(string value, Type type);
+    object DeserializeObject(string value, string typeName);
 
-        string TrySerializeObject(object value);
+    string TrySerializeObject(object value);
 
-        T TryDeserializeObject<T>(string value);
+    T TryDeserializeObject<T>(string value);
 
-        object TryDeserializeObject(string value, Type type);
-        object TryDeserializeObject(string value, string typeName);
-    }
+    object TryDeserializeObject(string value, Type type);
+    object TryDeserializeObject(string value, string typeName);
 }

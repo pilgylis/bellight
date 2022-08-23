@@ -13,11 +13,11 @@ internal class MongoDbEntityUpdateDefinition<TObject> : EntityUpdateDefinition<T
         if (update is null)
         {
             var builder = Builders<TObject>.Update;
-            builder.Set(field, fieldValue);
+            update = builder.Set(field, fieldValue);
         }
         else
         {
-            update.Set(field, fieldValue);
+            update = update.Set(field, fieldValue);
         }
 
         return this;

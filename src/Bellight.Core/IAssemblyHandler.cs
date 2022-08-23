@@ -1,9 +1,8 @@
 using System.Reflection;
 
-namespace Bellight.Core
+namespace Bellight.Core;
+
+public interface IAssemblyHandler
 {
-    public interface IAssemblyHandler
-    {
-        void Process(Assembly assembly);
-    }
+    void Process(Assembly assembly);
 }

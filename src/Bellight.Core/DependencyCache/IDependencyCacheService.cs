@@ -1,8 +1,7 @@
-﻿namespace Bellight.Core.DependencyCache
+﻿namespace Bellight.Core.DependencyCache;
+
+public interface IDependencyCacheService
 {
-    public interface IDependencyCacheService
-    {
-        bool Load();
-        void Save(DependencyCacheModel item);
-    }
+    bool Load();
+    void Save(DependencyCacheModel item);
 }

@@ -1,5 +1,6 @@
 ﻿using Bellight.MongoDb;
 using Microsoft.Extensions.DependencyInjection;
+using System.Transactions;
 
 namespace MongoDbTests;
 
@@ -14,34 +15,63 @@ public class CounterTests : IClassFixture<MongoDbFixture>
         this.fixture = fixture;
     }
 
-    private void CounterThread()
+    [Fact]
+    public async Task TransactionAbortTest() {
+        using var scope = fixture.Services.CreateScope();
+        var counterRepository = scope.ServiceProvider.GetRequiredService<IMongoRepository<Counter, string>>();
+        await counterRepository.DeleteAsync(c => true, softDelete: false);
+        var counter = (await counterRepository.FindAsync(c => true, pageIndex: 0, pageSize: 1)
+            .ConfigureAwait(false)).FirstOrDefault();
+
+        counter = new Counter
+        {
+            Value = 1
+        };
+
+        await counterRepository.AddAsync(counter)
+            .ConfigureAwait(false);
+
+        var itemId = counter.Id;
+
+        var transactionScope = new TransactionScope();
+        await counterRepository.UpdateAsync(itemId, update => update.Set(c => c.Value, 10));
+
+        transactionScope.Dispose();
+
+        var item = await counterRepository.GetByIdAsync(itemId);
+
+        Assert.NotNull(item);
+        Assert.Equal(1, item.Value);
+    }
+
+    [Fact]
+    public async Task TransactionCommitTest()
     {
-        Task.Run(async () => {
-            var cancellationToken = cancellationTokenSource.Token;
-            using var scope = fixture.Services.CreateScope();
-            var counterRepository = scope.ServiceProvider.GetRequiredService<IMongoRepository<Counter, string>>();
-            var counter = (await counterRepository.FindAsync(c => true, pageIndex: 0, pageSize: 1)
-                .ConfigureAwait(false)).FirstOrDefault();
+        using var scope = fixture.Services.CreateScope();
+        var counterRepository = scope.ServiceProvider.GetRequiredService<IMongoRepository<Counter, string>>();
+        await counterRepository.DeleteAsync(c => true, softDelete: false);
+        var counter = (await counterRepository.FindAsync(c => true, pageIndex: 0, pageSize: 1)
+            .ConfigureAwait(false)).FirstOrDefault();
 
-            if (counter is null)
-            {
-                counter = new Counter
-                {
-                    Value = 1
-                };
+        counter = new Counter
+        {
+            Value = 1
+        };
 
-                await counterRepository.AddAsync(counter)
-                    .ConfigureAwait(false);
-            }
+        await counterRepository.AddAsync(counter)
+            .ConfigureAwait(false);
 
-            var id = counter.Id;
+        var itemId = counter.Id;
 
-            var value = 1;
+        using var transactionScope = new TransactionScope();
+        await counterRepository.UpdateAsync(itemId, update => update.Set(c => c.Value, 10));
 
-            while (!cancellationToken.IsCancellationRequested)
-            {
+        transactionScope.Complete();
+        transactionScope?.Dispose();
 
-            }
-        });
+        var item = await counterRepository.GetByIdAsync(itemId);
+
+        Assert.NotNull(item);
+        Assert.Equal(10, item.Value);
     }
 }
