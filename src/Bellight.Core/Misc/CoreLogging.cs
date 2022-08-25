@@ -20,28 +20,29 @@ public static class CoreLogging
                 loggerSet = true;
             }
 
-            if (logger == null)
-            {
-                logger = InitializeConsoleLogger();
-            }
+            logger ??= InitializeConsoleLogger();
 
             return logger;
         }
     }
+
     public static IServiceProvider ConfigureCoreLogging(this IServiceProvider serviceProvider)
     {
         CoreLogging.serviceProvider = serviceProvider;
         return serviceProvider;
     }
 
-    private static ILogger InitializeConsoleLogger()
+    public static ILoggingBuilder ConfigureStandardLogging(this ILoggingBuilder builder)
     {
-        var loggerFactory = LoggerFactory.Create(builder => {
-            builder
+        return builder
             .AddFilter("Microsoft", LogLevel.Information)
             .AddFilter("System", LogLevel.Information)
             .AddConsole();
-        });
+    }
+
+    private static ILogger InitializeConsoleLogger()
+    {
+        var loggerFactory = LoggerFactory.Create(builder => builder.ConfigureStandardLogging());
 
         return loggerFactory.CreateLogger("Bellight.Core");
     }

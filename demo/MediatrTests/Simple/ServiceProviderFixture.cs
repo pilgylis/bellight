@@ -13,10 +13,12 @@ namespace MediatrTests.Simple
 
         private readonly IServiceScope scope;
 
-        public ServiceProviderFixture() {
+        public ServiceProviderFixture()
+        {
             var services = new ServiceCollection();
 
-            services.AddBellightCore(options => {
+            services.AddBellightCore(options =>
+            {
                 options.DependencyCacheOptions.PrettyPrint = true;
                 options.DependencyCacheOptions.Enabled = false;
 

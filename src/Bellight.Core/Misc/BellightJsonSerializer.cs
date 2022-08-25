@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace Bellight.Core.Misc;
 
-public class BellightJsonSerializer: ISerializer
+public class BellightJsonSerializer : ISerializer
 {
     private readonly ILogger<BellightJsonSerializer> logger;
 

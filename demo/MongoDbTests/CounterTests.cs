@@ -9,6 +9,7 @@ public class CounterTests : IClassFixture<MongoDbFixture>
     private readonly IMongoRepository<Counter, string> repository;
     private readonly MongoDbFixture fixture;
     private readonly CancellationTokenSource cancellationTokenSource = new();
+
     public CounterTests(MongoDbFixture fixture)
     {
         repository = fixture.Services.GetRequiredService<IMongoRepository<Counter, string>>();
@@ -16,7 +17,8 @@ public class CounterTests : IClassFixture<MongoDbFixture>
     }
 
     [Fact]
-    public async Task TransactionAbortTest() {
+    public async Task TransactionAbortTest()
+    {
         using var scope = fixture.Services.CreateScope();
         var counterRepository = scope.ServiceProvider.GetRequiredService<IMongoRepository<Counter, string>>();
         await counterRepository.DeleteAsync(c => true, softDelete: false);

@@ -1,5 +1,5 @@
 namespace Bellight.Core;
 
-public interface ISingletonDependency: ITransientDependency
+public interface ISingletonDependency : ITransientDependency
 {
 }

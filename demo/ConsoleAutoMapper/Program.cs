@@ -5,26 +5,27 @@ using System;
 
 namespace ConsoleAutoMapper
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             Console.WriteLine("Demo auto mapper");
 
             var services = new ServiceCollection();
 
-            services.AddBellightCore(options => {
+            services.AddBellightCore(options =>
+            {
                 options.DependencyCacheOptions.PrettyPrint = true;
 
-                options.AddAutoMapper(cfg => {
-                    cfg.CreateMap<string, decimal>().ConvertUsing(s => string.IsNullOrEmpty(s) ? default: Convert.ToDecimal(s));
+                options.AddAutoMapper(cfg =>
+                {
+                    cfg.CreateMap<string, decimal>().ConvertUsing(s => string.IsNullOrEmpty(s) ? default : Convert.ToDecimal(s));
                     cfg.CreateMap<string, decimal?>().ConvertUsing(s => string.IsNullOrEmpty(s) ? null : (decimal?)Convert.ToDecimal(s));
                     //cfg.CreateMap<decimal, string>().ConvertUsing(v => v.ToString());
                 });
             });
 
             var serviceProvider = services.BuildServiceProvider();
-
 
             var mapperService = serviceProvider.GetService<IModelMappingService>();
 

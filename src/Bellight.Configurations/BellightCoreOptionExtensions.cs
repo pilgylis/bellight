@@ -9,11 +9,13 @@ namespace Bellight.Core
         public static BellightCoreOptions AddConfigurations(this BellightCoreOptions options, IConfiguration configuration)
         {
             return options
-                .AddStartupServiceAction(startupContainerServices => {
+                .AddStartupServiceAction(startupContainerServices =>
+                {
                     startupContainerServices.AddSingleton(configuration);
                     startupContainerServices.AddTypeHandler<AppSettingsTypeHandler>();
                 })
-                .AddStartupContainerAction((_, services) => {
+                .AddStartupContainerAction((_, services) =>
+                {
                     services.AddSingleton(configuration);
                     services.AddOptions();
                 });

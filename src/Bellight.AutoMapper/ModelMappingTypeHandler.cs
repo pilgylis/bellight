@@ -1,7 +1,7 @@
-﻿using Bellight.Core;
-using System.Reflection;
-using AutoMapper;
+﻿using AutoMapper;
+using Bellight.Core;
 using Bellight.Core.DependencyCache;
+using System.Reflection;
 
 namespace Bellight.AutoMapper
 {
@@ -34,7 +34,6 @@ namespace Bellight.AutoMapper
                 else
                 {
                     _modelRegistrationService.AddMapping(type, targetType);
-
                 }
             }
         }
@@ -50,9 +49,10 @@ namespace Bellight.AutoMapper
                         var type = Type.GetType(line);
                         _modelRegistrationService.AddProfile(type!);
                     }
-                } else
+                }
+                else
                 {
-                    foreach(var line in section.Lines!)
+                    foreach (var line in section.Lines!)
                     {
                         if (line.IndexOf(':') < 0)
                         {
@@ -92,7 +92,6 @@ namespace Bellight.AutoMapper
                     Name = ProfileSectionName,
                     Lines = profiles.Select(profile => profile.AssemblyQualifiedName)!
                 }
-
             };
         }
     }

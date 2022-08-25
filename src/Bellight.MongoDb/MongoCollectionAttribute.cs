@@ -5,7 +5,8 @@ public class MongoCollectionAttribute : Attribute
 {
     public string? ObjectType { get; set; }
 
-    public MongoCollectionAttribute() { }
+    public MongoCollectionAttribute()
+    { }
 
     public MongoCollectionAttribute(string objectType)
     {

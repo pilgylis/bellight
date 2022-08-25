@@ -1,5 +1,5 @@
 namespace Bellight.Core;
 
-public interface IScopedDependency: ITransientDependency
+public interface IScopedDependency : ITransientDependency
 {
 }

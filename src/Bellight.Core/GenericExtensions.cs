@@ -5,7 +5,7 @@ namespace Bellight.Core;
 
 public static class GenericExtensions
 {
-    public static string ToJson<T> (this T item)
+    public static string ToJson<T>(this T item)
     {
         return JsonSerializer.Serialize(item, BellightJsonSerializer.DefaultJsonSerializerSettings);
     }

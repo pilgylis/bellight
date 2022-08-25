@@ -1,6 +1,6 @@
 ﻿namespace Bellight.Core.Exceptions;
 
-public class ProviderNotFoundException: Exception
+public class ProviderNotFoundException : Exception
 {
     public ProviderNotFoundException() : base()
     {

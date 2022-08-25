@@ -18,7 +18,7 @@
     <PackageLanguage>en-US</PackageLanguage>
     <IncludeSymbols>true</IncludeSymbols>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	  <Version>6.0.3</Version>
+    <Version>6.0.3</Version>
   </PropertyGroup>
 
   <ItemGroup>

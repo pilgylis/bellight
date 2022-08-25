@@ -3,6 +3,7 @@
 public class DefaultKeyedServiceRegistry : IKeyedServiceRegistry
 {
     private readonly IDictionary<string, Type> _dictionary = new Dictionary<string, Type>();
+
     public void Add(string key, Type type)
     {
         if (_dictionary.ContainsKey(key))

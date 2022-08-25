@@ -7,9 +7,11 @@ namespace MongoDbTests;
 #pragma warning disable CS8601 // Converting null literal or possible null value to non-nullable type.
 #pragma warning disable CS8602 // Converting null literal or possible null value to non-nullable type.
 #pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
+
 public class MongoDbFixture
 {
     public IServiceProvider Services { get; }
+
     public MongoDbFixture()
     {
         var services = new ServiceCollection();
@@ -19,8 +21,6 @@ public class MongoDbFixture
             options.ConnectionString = "mongodb://localhost:27017";
             options.DatabaseName = "test";
         });
-
-
 
         Services = services.BuildServiceProvider();
 
@@ -49,6 +49,7 @@ public class MongoDbFixture
         await customerRepository.DeleteAsync(c => true).ConfigureAwait(false);
 
         #region Customer Data
+
         var customerData = @"Kimmy Pachta,kpachta0@shareasale.com
             Claybourne Bance, cbance1@unblog.fr
             Matti Portch,mportch2 @merriam-webster.com
@@ -59,6 +60,7 @@ public class MongoDbFixture
             Selle Gammill,sgammill7 @comsenz.com
             Trstram Bolding,tbolding8 @alexa.com
             Linus Napton,lnapton9 @gmpg.org";
+
         #endregion Customer Data
 
         foreach (var line in customerData.Split('\r'))
@@ -91,6 +93,7 @@ public class MongoDbFixture
         await productRepository.DeleteAsync(p => true).ConfigureAwait(false);
 
         #region Product Data
+
         var productData = @"Eel Fresh,5948282
             Oil - Shortening - All - Purpose,2698362
             Bread - White Epi Baguette,3600146
@@ -1092,7 +1095,9 @@ public class MongoDbFixture
             Puree - Strawberry,1575581
             Turnip - Wax,4826920
             ";
+
         #endregion Product Data
+
         foreach (var line in productData.Split('\r'))
         {
             var lineTrimmed = line.Trim();
@@ -1176,9 +1181,9 @@ public class MongoDbFixture
 
                 await orderRepository.AddAsync(order).ConfigureAwait(false);
             }
-
         }
     }
+
 #pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
 #pragma warning restore CS8601 // Dereference of a possibly null reference.

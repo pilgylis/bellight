@@ -1,5 +1,4 @@
-﻿
-using Bellight.MessageBus.Abstractions;
+﻿using Bellight.MessageBus.Abstractions;
 using MessageBusPublisherWeb.Models;
 using Microsoft.AspNetCore.Mvc;
 

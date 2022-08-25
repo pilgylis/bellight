@@ -4,12 +4,15 @@ using System.Threading.Tasks;
 
 namespace MediatrTests.Simple
 {
-    public class OneWay : IRequest { }
+    public class OneWay : IRequest
+    { }
+
     public class OneWayHandlerWithBaseClass : AsyncRequestHandler<OneWay>
     {
         private readonly IAssertService<OneWay> assertService;
 
-        public OneWayHandlerWithBaseClass(IAssertService<OneWay> assertService) {
+        public OneWayHandlerWithBaseClass(IAssertService<OneWay> assertService)
+        {
             this.assertService = assertService;
         }
 

@@ -7,6 +7,7 @@ public static class KeyGenerator
     private static readonly char[] _numerics = "1234567890".ToCharArray();
     private static readonly char[] _alphabets = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
     private static readonly char[] _alphanumerics = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".ToCharArray();
+
     public static string Generate(int length = 7)
     {
         return GenerateRandom(_alphanumerics, length);

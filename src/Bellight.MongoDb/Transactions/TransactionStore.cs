@@ -1,6 +1,6 @@
+using MongoDB.Driver;
 using System.Collections.Concurrent;
 using System.Transactions;
-using MongoDB.Driver;
 
 namespace Bellight.MongoDb.Transactions
 {
@@ -21,7 +21,6 @@ namespace Bellight.MongoDb.Transactions
 
             sessionHandle = null!;
             return false;
-
         }
 
         private static IClientSessionHandle GetOrCreateTransaction(

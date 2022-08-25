@@ -4,13 +4,14 @@ using System;
 
 namespace SimpleIoC
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var services = new ServiceCollection();
 
-            services.AddBellightCore(options => {
+            services.AddBellightCore(options =>
+            {
                 options.DependencyCacheOptions.PrettyPrint = true;
             });
 

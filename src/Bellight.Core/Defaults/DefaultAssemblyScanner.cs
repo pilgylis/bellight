@@ -7,6 +7,7 @@ public class DefaultAssemblyScanner : IAssemblyScanner
 {
     private readonly IAssemblyLoader _assemblyLoader;
     private readonly IAssemblyHandler _assemblyHandler;
+
     public DefaultAssemblyScanner(
         BellightCoreOptions options,
         IAssemblyLoader assemblyLoader,
@@ -58,6 +59,7 @@ public class DefaultAssemblyScanner : IAssemblyScanner
 
     private readonly Func<Assembly, string, bool> assemblyPredicate = (a, b)
         => a.GetReferencedAssemblies().Any(asb => string.CompareOrdinal(asb.Name, b) == 0);
+
     private readonly BellightCoreOptions _options;
     private readonly IEnumerable<ITypeHandler> _typeHandlers;
 }

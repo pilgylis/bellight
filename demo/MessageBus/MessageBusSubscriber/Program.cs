@@ -3,13 +3,12 @@ using Bellight.MessageBus.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System;
-using System.Net;
 
 namespace MessageBusSubscriber
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var topic = "test1";
             var messageBusType = MessageBusType.PubSub;
@@ -22,19 +21,20 @@ namespace MessageBusSubscriber
             // Settings for Azure Message Bus
             // var policyName = WebUtility.UrlEncode(""); // enter policy name
             // var key = WebUtility.UrlEncode(""); // enter key
-            // var namespaceUrl = ""; 
+            // var namespaceUrl = "";
 
             // var connectionString = $"amqps://{policyName}:{key}@{namespaceUrl}/";
 
             var connectionString = "amqp://artemis:simetraehcapa@localhost:5672";
-            
+
             Console.WriteLine(connectionString);
             var services = new ServiceCollection();
             services.AddLogging(loggingBuilder =>
                 loggingBuilder.AddSerilog(dispose: true));
 
             services.AddBellightMessageBus()
-                .AddAmqp(options => {
+                .AddAmqp(options =>
+                {
                     options.Endpoint = connectionString;
                     options.IsAzureMessageBus = "false";
                     options.SubscriberName = subscriberName;
@@ -50,7 +50,7 @@ namespace MessageBusSubscriber
             subscription.Dispose();
         }
 
-        static void OnMessageReceived(string message)
+        private static void OnMessageReceived(string message)
         {
             Console.WriteLine(message);
         }

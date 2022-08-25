@@ -45,6 +45,7 @@ public class CollectionFactory : ICollectionFactory
             return _database;
         }
     }
+
     public CollectionFactory(IOptions<MongoDbSettings> optionsAccessor, IServiceProvider serviceProvider)
     {
         _settings = optionsAccessor.Value;

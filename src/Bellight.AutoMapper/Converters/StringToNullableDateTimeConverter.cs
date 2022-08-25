@@ -1,6 +1,5 @@
-using System;
-using System.Globalization;
 using AutoMapper;
+using System.Globalization;
 
 namespace Bellight.AutoMapper.Converters
 {
@@ -8,7 +7,8 @@ namespace Bellight.AutoMapper.Converters
     {
         public DateTime? Convert(string source, DateTime? destination, ResolutionContext context)
         {
-            if (string.IsNullOrEmpty(source)) {
+            if (string.IsNullOrEmpty(source))
+            {
                 return null;
             }
 

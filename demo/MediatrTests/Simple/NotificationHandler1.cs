@@ -8,7 +8,8 @@ namespace MediatrTests.Simple
     {
         private readonly IAssertService<NotificationMessage> assertService;
 
-        public NotificationHandler1(IAssertService<NotificationMessage> assertService) {
+        public NotificationHandler1(IAssertService<NotificationMessage> assertService)
+        {
             this.assertService = assertService;
         }
 

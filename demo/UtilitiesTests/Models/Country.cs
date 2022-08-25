@@ -49,7 +49,6 @@ namespace UtilitiesTests.Models
         public string NativeName { get; set; }
         public string NumericCode { get; set; }
 
-
         public IEnumerable<CountryCurrency> Currencies { get; set; }
         public IEnumerable<CountryLanguage> Languages { get; set; }
         public IDictionary<string, string> Translations { get; set; }

@@ -1,10 +1,9 @@
-using System;
-using System.Globalization;
 using AutoMapper;
+using System.Globalization;
 
 namespace Bellight.AutoMapper.Converters
 {
-    public class DateTimeToStringConverter: ITypeConverter<DateTime,string>
+    public class DateTimeToStringConverter : ITypeConverter<DateTime, string>
     {
         public string Convert(DateTime source, string destination, ResolutionContext context)
         {

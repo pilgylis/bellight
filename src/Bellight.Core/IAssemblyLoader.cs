@@ -24,7 +24,8 @@ public static class AssemblyLoaderExtensions
 
     internal static string GetShortName(this Assembly assembly)
     {
-        if (assembly is null) {
+        if (assembly is null)
+        {
             throw new ArgumentNullException(nameof(assembly));
         }
         return ExtractAssemblyShortName(assembly.FullName!);
@@ -37,10 +38,11 @@ public static class AssemblyLoaderExtensions
 
     internal static string GetAssemblyNameFromFileName(this string? fileName)
     {
-        if (string.IsNullOrEmpty(fileName)) {
+        if (string.IsNullOrEmpty(fileName))
+        {
             return string.Empty;
         }
-        
+
         fileName = fileName.ToLowerInvariant();
         return fileName.EndsWith(".dll")
             ? fileName : fileName.Substring(0, fileName.Length - 4);

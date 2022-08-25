@@ -6,7 +6,7 @@ using Xunit;
 
 namespace MediatrTests.Simple
 {
-    public class SimpleTests: IClassFixture<ServiceProviderFixture>
+    public class SimpleTests : IClassFixture<ServiceProviderFixture>
     {
         private readonly ServiceProviderFixture fixture;
 

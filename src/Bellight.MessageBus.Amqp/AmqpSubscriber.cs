@@ -20,7 +20,8 @@ public class AmqpSubscriber : AmqpLinkWrapper<ReceiverLink>, ISubscriber
     public ISubscription Subscribe(Action<string> messageReceivedAction)
     {
         var tokenSource = new CancellationTokenSource();
-        SafeExecute.Sync(() => ThreadPool.QueueUserWorkItem(s => {
+        SafeExecute.Sync(() => ThreadPool.QueueUserWorkItem(s =>
+        {
             var cancellationToken = (CancellationToken)s!;
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -35,7 +36,7 @@ public class AmqpSubscriber : AmqpLinkWrapper<ReceiverLink>, ISubscriber
     protected override ReceiverLink InitialiseLink(Session session)
     {
         if ("true".Equals(_options.IsAzureMessageBus, StringComparison.InvariantCultureIgnoreCase)
-            && _options.MessageBusType == MessageBusType.PubSub) 
+            && _options.MessageBusType == MessageBusType.PubSub)
         {
             return new ReceiverLink(session, _linkName, $"{_options.Topic}/Subscriptions/{_options.SubscriberName}");
         }
@@ -68,7 +69,6 @@ public class AmqpSubscriber : AmqpLinkWrapper<ReceiverLink>, ISubscriber
                 link.Accept(message);
                 messageReceivedAction.Invoke((string)message.Body);
             }, () => Thread.Sleep(_options.WaitDuration)).Wait(cancellationToken);
-
         }
     }
 }

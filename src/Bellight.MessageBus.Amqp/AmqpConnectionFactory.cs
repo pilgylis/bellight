@@ -16,7 +16,7 @@ public class AmqpConnectionFactory : IAmqpConnectionFactory
 
     public Connection GetConnection()
     {
-        if (connection == null || connection.IsClosed)
+        if (connection?.IsClosed != false)
         {
             connection = new Connection(new Address(options.CurrentValue.Endpoint));
         }

@@ -39,7 +39,7 @@ public class DefaultAssemblyLoader : IAssemblyLoader
 
         var entryLibrary = directDependencies.FirstOrDefault(d => d.Name.Equals(entryAssemblyName, StringComparison.OrdinalIgnoreCase));
 
-        // 
+        //
         if (entryLibrary != null)
         {
             foreach (var entryDependency in entryLibrary

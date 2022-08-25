@@ -8,5 +8,6 @@ public abstract class MongoBaseEntity<IdType> : IEntity<IdType>
 {
     [BsonRepresentation(BsonType.ObjectId)]
     public IdType? Id { get; set; }
+
     public bool IsDeleted { get; set; }
 }

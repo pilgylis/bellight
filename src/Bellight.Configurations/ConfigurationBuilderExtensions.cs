@@ -6,9 +6,9 @@ namespace Bellight.Configurations
     public static class ConfigurationBuilderExtensions
     {
         public static IConfigurationBuilder InitialiseBellightConfigurations(
-            this IConfigurationBuilder configurationBuilder, 
-            bool isDevelopment, 
-            string? environmentName = null, 
+            this IConfigurationBuilder configurationBuilder,
+            bool isDevelopment,
+            string? environmentName = null,
             string[]? args = null)
         {
             configurationBuilder.AddJsonFile("appsettings.json", true, true);

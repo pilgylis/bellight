@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Bellight.AutoMapper
+﻿namespace Bellight.AutoMapper
 {
     public class DefaultModelRegistrationService : IModelRegistrationService
     {
-
         private readonly IList<Tuple<Type, Type>> _mappings = new List<Tuple<Type, Type>>();
         private readonly IList<Type> _mappingProfiles = new List<Type>();
 

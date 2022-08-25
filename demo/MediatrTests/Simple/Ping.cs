@@ -2,5 +2,6 @@
 
 namespace MediatrTests.Simple
 {
-    public class Ping : IRequest<string> { }
+    public class Ping : IRequest<string>
+    { }
 }

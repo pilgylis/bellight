@@ -99,6 +99,7 @@ public class DependencyTypeHandler : ITypeHandler
     }
 
     #region Load Cache
+
     public void LoadCache(IEnumerable<TypeHandlerCacheSection> sections)
     {
         Action<Type>? typeAction = null;
@@ -178,6 +179,7 @@ public class DependencyTypeHandler : ITypeHandler
     #endregion Load Cache
 
     #region Save Cache
+
     public IEnumerable<TypeHandlerCacheSection> SaveCache()
     {
         var sections = new List<TypeHandlerCacheSection>

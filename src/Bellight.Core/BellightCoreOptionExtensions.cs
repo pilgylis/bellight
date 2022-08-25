@@ -14,7 +14,8 @@ public static class BellightCoreOptionExtensions
                 startupContainerServices.AddScoped<DependencyTypeHandler>();
                 startupContainerServices.AddScoped<ITypeHandler, DependencyTypeHandler>();
             })
-            .AddStartupContainerAction((startupServiceProvider, services) => {
+            .AddStartupContainerAction((startupServiceProvider, services) =>
+            {
                 var keyedServiceRegistry = startupServiceProvider.GetRequiredService<IKeyedServiceRegistry>();
                 var keyedTypeDictionary = keyedServiceRegistry.GetDictionary();
                 services.AddScoped<IKeyedServiceFactory>(sp => new KeyedServiceFactory(keyedTypeDictionary, sp));

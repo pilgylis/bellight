@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace Bellight.MessageBus.Abstractions
+﻿namespace Bellight.MessageBus.Abstractions
 {
-    public interface ISubscriber: IDisposable
+    public interface ISubscriber : IDisposable
     {
         ISubscription Subscribe(Action<string> messageReceivedAction);
     }

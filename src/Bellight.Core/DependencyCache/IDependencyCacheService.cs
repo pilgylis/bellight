@@ -3,5 +3,6 @@
 public interface IDependencyCacheService
 {
     bool Load();
+
     void Save(DependencyCacheModel item);
 }

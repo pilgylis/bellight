@@ -7,7 +7,8 @@ namespace Bellight.Core;
 
 public class BellightCoreOptions
 {
-    internal BellightCoreOptions() { }
+    internal BellightCoreOptions()
+    { }
 
     /// <summary>
     /// Location of the cache file. Default: current directory

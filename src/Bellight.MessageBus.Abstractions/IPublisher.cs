@@ -1,11 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Bellight.MessageBus.Abstractions
+﻿namespace Bellight.MessageBus.Abstractions
 {
-    public interface IPublisher: IDisposable
+    public interface IPublisher : IDisposable
     {
         void Send(string message);
+
         Task SendAsync(string message);
     }
 }

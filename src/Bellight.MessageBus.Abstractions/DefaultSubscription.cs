@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Bellight.MessageBus.Abstractions
+﻿namespace Bellight.MessageBus.Abstractions
 {
     public class DefaultSubscription : ISubscription
     {

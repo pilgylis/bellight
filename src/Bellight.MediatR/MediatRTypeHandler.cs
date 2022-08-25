@@ -34,7 +34,8 @@ namespace Bellight.MediatR
 
         private readonly IServiceCollection services;
 
-        public MediatRTypeHandler(IServiceCollection services) {
+        public MediatRTypeHandler(IServiceCollection services)
+        {
             this.services = services;
         }
 
@@ -114,7 +115,8 @@ namespace Bellight.MediatR
                         continue;
                     }
 
-                    if (interfaceType == null || implementationType == null) {
+                    if (interfaceType == null || implementationType == null)
+                    {
                         continue;
                     }
 
@@ -132,11 +134,13 @@ namespace Bellight.MediatR
 
         public IEnumerable<TypeHandlerCacheSection> SaveCache()
         {
-            yield return new TypeHandlerCacheSection {
+            yield return new TypeHandlerCacheSection
+            {
                 Name = "Services",
                 Lines = typeMap.Select(tuple => string.Format("{0}: {1}", tuple.Item1.AssemblyQualifiedName, tuple.Item2.AssemblyQualifiedName))
             };
-            yield return new TypeHandlerCacheSection {
+            yield return new TypeHandlerCacheSection
+            {
                 Name = "PossibleCloseServices",
                 Lines = possibleCloseMap.Select(tuple => string.Format("{0}: {1}", tuple.Item1.AssemblyQualifiedName, tuple.Item2.AssemblyQualifiedName))
             };

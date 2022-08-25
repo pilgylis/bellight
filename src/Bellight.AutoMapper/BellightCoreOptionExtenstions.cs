@@ -9,11 +9,13 @@ namespace Bellight.Core
         public static BellightCoreOptions AddAutoMapper(this BellightCoreOptions options, Action<IMapperConfigurationExpression>? configAction = null)
         {
             return options
-                .AddStartupServiceAction(startupContainerServices => {
+                .AddStartupServiceAction(startupContainerServices =>
+                {
                     startupContainerServices.AddTypeHandler<ModelMappingTypeHandler>();
                     startupContainerServices.AddSingleton<IModelRegistrationService, DefaultModelRegistrationService>();
                 })
-                .AddStartupContainerAction((startupServiceProvider, services) => {
+                .AddStartupContainerAction((startupServiceProvider, services) =>
+                {
                     var modelRegistrationService = startupServiceProvider.GetService<IModelRegistrationService>();
 
                     services.AddSingleton<IModelMappingService>(new ModelMappingService(modelRegistrationService!, configAction!));

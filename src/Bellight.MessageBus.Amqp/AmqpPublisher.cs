@@ -7,7 +7,6 @@ namespace Bellight.MessageBus.Amqp;
 
 public class AmqpPublisher : AmqpLinkWrapper<SenderLink>, IPublisher
 {
-    private const string _linkName = "sender-link";
     private readonly string _topic;
     private readonly MessageBusType _messageBusType;
 
@@ -30,14 +29,17 @@ public class AmqpPublisher : AmqpLinkWrapper<SenderLink>, IPublisher
 
     protected override SenderLink InitialiseLink(Session session)
     {
+        var messageBusTypeText = _messageBusType == MessageBusType.Queue ? "queue" : "topic";
         var target = new Target
         {
             Address = _topic,
             Capabilities = new Symbol[] {
-                new Symbol(_messageBusType == MessageBusType.Queue ? "queue" : "topic")
+                new Symbol(messageBusTypeText)
             }
         };
 
-        return new SenderLink(session, _linkName, target, null);
+        var linkName = $"{messageBusTypeText}.{_topic}";
+
+        return new SenderLink(session, linkName, target, null);
     }
 }

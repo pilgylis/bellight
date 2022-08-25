@@ -9,7 +9,8 @@ services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
 services.AddBellightMessageBus()
-    .AddAmqp(options => {
+    .AddAmqp(options =>
+    {
         options.Endpoint = configuration["ServiceBus:ConnectionString"];
         options.IsAzureMessageBus = "false";
         options.SubscriberName = "sub1";

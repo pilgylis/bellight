@@ -55,7 +55,6 @@ namespace Bellight.AutoMapper
                         cfg.CreateMap(tuple.Item2, tuple.Item1).IgnoreAllNonExisting(tuple.Item2, tuple.Item1);
                     }
                 }
-                
             });
 
             return config.CreateMapper();

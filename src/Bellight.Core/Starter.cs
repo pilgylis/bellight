@@ -2,6 +2,7 @@ using Bellight.Core.Defaults;
 using Bellight.Core.DependencyCache;
 using Bellight.Core.Misc;
 using Microsoft.Extensions.DependencyInjection;
+
 namespace Bellight.Core;
 
 internal static class Starter
@@ -10,13 +11,15 @@ internal static class Starter
     {
         var startupContainerServices = new ServiceCollection();
 
-        startupContainerServices.AddLogging(options.LoggingBuilder);
+        var loggingBuilder = options.LoggingBuilder;
+        loggingBuilder ??= (builder) => builder.ConfigureStandardLogging();
+
+        startupContainerServices.AddLogging(loggingBuilder);
 
         startupContainerServices.AddTransient<ISerializer, BellightJsonSerializer>();
         startupContainerServices.AddTransient<IAssemblyLoader, DefaultAssemblyLoader>();
         startupContainerServices.AddTransient<IAssemblyHandler, DefaultAssemblyHandler>();
         startupContainerServices.AddTransient<IAssemblyScanner, DefaultAssemblyScanner>();
-
 
         startupContainerServices.AddSingleton(options);
 
@@ -32,7 +35,6 @@ internal static class Starter
         }
 
         var startupServiceProvider = startupContainerServices.BuildServiceProvider();
-
 
         IServiceCollection? innerServices = null;
         using (var cacheScope = startupServiceProvider.CreateScope())
@@ -74,11 +76,9 @@ internal static class Starter
 
     private static void SaveDependencyCache(DependencyCacheModel model, IServiceProvider rootServiceProvider)
     {
-        using (var scope = rootServiceProvider.CreateScope())
-        {
-            var dependencyCacheService = scope.ServiceProvider.GetRequiredService<IDependencyCacheService>();
-            dependencyCacheService.Save(model);
-        }
+        using var scope = rootServiceProvider.CreateScope();
+        var dependencyCacheService = scope.ServiceProvider.GetRequiredService<IDependencyCacheService>();
+        dependencyCacheService.Save(model);
     }
 
     private static void MergeServiceCollections(IServiceCollection target, IServiceCollection source)

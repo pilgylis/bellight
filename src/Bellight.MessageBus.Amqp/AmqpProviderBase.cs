@@ -42,6 +42,6 @@ public abstract class AmqpProviderBase
         return subscriber.Subscribe(messageReceivedAction);
     }
 
-    private string NormalizeTopic(string topic) => string.IsNullOrEmpty(_options.CurrentValue.InstanceName) ? 
+    private string NormalizeTopic(string topic) => string.IsNullOrEmpty(_options.CurrentValue.InstanceName) ?
         topic : $"{_options.CurrentValue.InstanceName}.{topic}";
 }

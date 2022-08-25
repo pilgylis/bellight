@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MongoDbTests
 {
-    public class FixtureContentTests: IClassFixture<MongoDbFixture>
+    public class FixtureContentTests : IClassFixture<MongoDbFixture>
     {
         private readonly MongoDbFixture fixture;
 
