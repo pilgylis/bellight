@@ -14,6 +14,7 @@ namespace Bellight.MessageBus.Abstractions
         private readonly ILogger<MessageBusFactory> logger;
 
         private readonly Dictionary<MessageBusKey, IPublisher> publisherDictionary = new();
+        private readonly SemaphoreSlim semaphore = new(1);
 
         public MessageBusFactory(IServiceProvider serviceProvider, ILogger<MessageBusFactory> logger)
         {
@@ -23,15 +24,17 @@ namespace Bellight.MessageBus.Abstractions
 
         public IPublisher GetPublisher(string topic, MessageBusType messageBusType = MessageBusType.Queue)
         {
+            semaphore.Wait();
             var key = new MessageBusKey
             {
                 Topic = topic,
                 MessageBusType = messageBusType
             };
 
-            if (publisherDictionary.ContainsKey(key))
+            if (publisherDictionary.TryGetValue(key, out var existingPublisher))
             {
-                return publisherDictionary[key];
+                semaphore.Release();
+                return existingPublisher;
             }
 
             var provider = GetProvider(messageBusType);
@@ -41,11 +44,12 @@ namespace Bellight.MessageBus.Abstractions
 
             if (publisher is null)
             {
-                throw new Exception($"Could not create publisher for {topic} - {messageBusType}");
+                throw new MessageBusException($"Could not create publisher for {topic} - {messageBusType}");
             }
 
-            publisherDictionary.Add(key, publisher);
+            publisherDictionary.TryAdd(key, publisher);
 
+            semaphore.Release();
             return publisher;
         }
 
@@ -62,12 +66,7 @@ namespace Bellight.MessageBus.Abstractions
             try
             {
                 var provider = GetProviderFromDi(messageBusType);
-                if (provider != null)
-                {
-                    return provider;
-                }
-
-                return GetProviderFromConfig(messageBusType);
+                return provider ?? GetProviderFromConfig(messageBusType);
             }
             catch (Exception ex)
             {
