@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <Company>Nguyen Viet Trung</Company>
     <Copyright>Nguyen Viet Trung</Copyright>
-    <Description>Data management abstraction</Description>
+    <Description>MongoDB implementation of Generic Repository in Bellight.DataManagement</Description>
     <Authors>Nguyen Viet Trung</Authors>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageDescription>Bellight Data Management</PackageDescription>
