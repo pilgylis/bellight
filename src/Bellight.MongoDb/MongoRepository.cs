@@ -9,8 +9,6 @@ namespace Bellight.MongoDb;
 #pragma warning disable CS8602, CS8604, RSC1202 // Dereference of a possibly null reference.
 public class MongoRepository<T, Tid> : IMongoRepository<T, Tid> where T : class, IEntity<Tid>
 {
-    private IMongoCollection<T>? _collection;
-
     public IMongoCollection<T> Collection => CollectionFactory.GetCollection<T>(GetObjectType());
 
     protected ICollectionFactory CollectionFactory { get; }
@@ -437,7 +435,7 @@ public class MongoRepository<T, Tid> : IMongoRepository<T, Tid> where T : class,
 
     protected string? GetObjectType()
     {
-        if (!string.IsNullOrEmpty(_objectType)) return _objectType;
+        if (!string.IsNullOrEmpty(_objectType)) { return _objectType; }
 
         var attribute = typeof(T).GetCustomAttribute<MongoCollectionAttribute>();
 

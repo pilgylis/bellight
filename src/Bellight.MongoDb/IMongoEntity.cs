@@ -7,7 +7,7 @@ namespace Bellight.MongoDb;
 public abstract class MongoBaseEntity<IdType> : IEntity<IdType>
 {
     [BsonRepresentation(BsonType.ObjectId)]
-    public IdType? Id { get; set; }
+    public IdType Id { get; set; } = default!;
 
     public bool IsDeleted { get; set; }
 }

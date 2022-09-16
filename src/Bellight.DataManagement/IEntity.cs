@@ -7,5 +7,5 @@ public interface IEntity
 
 public interface IEntity<IdType> : IEntity
 {
-    IdType? Id { get; set; }
+    IdType Id { get; set; }
 }

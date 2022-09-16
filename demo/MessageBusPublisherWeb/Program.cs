@@ -8,6 +8,11 @@ services.AddControllers();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
+services.AddBellightCore(options =>
+{
+    options.DependencyCacheOptions.Enabled = false;
+});
+
 services.AddBellightMessageBus()
     .AddAmqp(options =>
     {

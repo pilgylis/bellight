@@ -51,9 +51,9 @@ public class DefaultAssemblyLoader : IAssemblyLoader
                     var assembly = Assembly.Load(new AssemblyName(entryDependency.Name));
                     assemblies.Add(assembly);
                 }
-                catch (Exception ex)
+                catch
                 {
-                    CoreLogging.Logger?.LogWarning(ex, "Error occurred: {message}", ex.Message);
+                    // ignore
                 }
             }
         }
@@ -65,9 +65,9 @@ public class DefaultAssemblyLoader : IAssemblyLoader
                 var assembly = Assembly.Load(new AssemblyName(directDependency.Name));
                 assemblies.Add(assembly);
             }
-            catch (Exception ex)
+            catch
             {
-                CoreLogging.Logger?.LogWarning(ex, "Error occurred: {message}", ex.Message);
+                // ignore
             }
         }
 
