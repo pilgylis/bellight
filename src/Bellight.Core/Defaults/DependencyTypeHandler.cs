@@ -1,4 +1,5 @@
 ﻿using Bellight.Core.DependencyCache;
+using Bellight.Core.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -134,7 +135,7 @@ public class DependencyTypeHandler : ITypeHandler
                     var parts = line.Split(':');
                     if (parts.Length != 3)
                     {
-                        throw new Exception($"Error parsing keyed dependency: {line}");
+                        throw new BellightStartupException($"Error parsing keyed dependency: {line}");
                     }
 
                     var key = parts[0].Trim();
@@ -166,8 +167,8 @@ public class DependencyTypeHandler : ITypeHandler
                     continue;
                 }
 
-                var interfaceTypeName = line.Substring(0, colonIndex).Trim();
-                var typeName = line.Substring(colonIndex + 1);
+                var interfaceTypeName = line[..colonIndex].Trim();
+                var typeName = line[(colonIndex + 1)..];
 
                 var interfaceType = Type.GetType(interfaceTypeName);
                 var implementationType = Type.GetType(typeName);
@@ -186,23 +187,22 @@ public class DependencyTypeHandler : ITypeHandler
         {
             CreateSection("SingletonTypes", _singletonTypes, _singletonMaps),
             CreateSection("ScopeTypes", _scopedTypes, _scopedMaps),
-            CreateSection("TransientTypes", _transientTypes, _transientMaps)
+            CreateSection("TransientTypes", _transientTypes, _transientMaps),
+            // keyed
+            new TypeHandlerCacheSection
+            {
+                Name = "KeyedTypes",
+                Lines = _keyedMaps.Select(tuple => string.Format("{0}: {1}: {2}",
+                    tuple.Item1,
+                    tuple.Item2.AssemblyQualifiedName,
+                    tuple.Item3.AssemblyQualifiedName))
+            }
         };
-
-        // keyed
-        sections.Add(new TypeHandlerCacheSection
-        {
-            Name = "KeyedTypes",
-            Lines = _keyedMaps.Select(tuple => string.Format("{0}: {1}: {2}",
-                tuple.Item1,
-                tuple.Item2.AssemblyQualifiedName,
-                tuple.Item3.AssemblyQualifiedName))
-        });
 
         return sections;
     }
 
-    private TypeHandlerCacheSection CreateSection(string name, IEnumerable<Type> types, IEnumerable<Tuple<Type, Type>> maps)
+    private static TypeHandlerCacheSection CreateSection(string name, IEnumerable<Type> types, IEnumerable<Tuple<Type, Type>> maps)
     {
         var section = new TypeHandlerCacheSection
         {

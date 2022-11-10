@@ -63,7 +63,7 @@ public static class AsyncHelpers
         var oldContext = SynchronizationContext.Current;
         var synch = new ExclusiveSynchronizationContext();
         SynchronizationContext.SetSynchronizationContext(synch);
-        T ret = default(T)!;
+        T ret = default!;
         synch.Post(async _ =>
         {
             try
@@ -85,7 +85,7 @@ public static class AsyncHelpers
         return ret;
     }
 
-    private class ExclusiveSynchronizationContext : SynchronizationContext
+    private sealed class ExclusiveSynchronizationContext : SynchronizationContext
     {
         private bool done;
         public Exception? InnerException { get; set; }

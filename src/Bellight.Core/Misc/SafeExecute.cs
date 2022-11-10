@@ -30,7 +30,7 @@ public static class SafeExecute
                 return Sync(action, maxRetries, millisecondsTimeOut, currentRetry);
             }
 
-            CoreLogging.Logger?.LogError(ex, "Error occurred: {message}", ex.Message);
+            CoreLogging.Logger?.LogError(ex, "Error occurred: {errorMessage}", ex.Message);
             return false;
         }
     }
@@ -53,7 +53,7 @@ public static class SafeExecute
                 return Sync(action, maxRetries, millisecondsTimeOut, currentRetry);
             }
 
-            CoreLogging.Logger?.LogError(ex, "Error occurred: {message}", ex.Message);
+            CoreLogging.Logger?.LogError(ex, "Error occurred: {errorMessage}", ex.Message);
             actionCatch?.Invoke();
             return false;
         }
@@ -92,7 +92,7 @@ public static class SafeExecute
                 return await Async(action, maxRetries, nextTimeout, currentRetry);
             }
 
-            CoreLogging.Logger?.LogError(ex, "Error occurred: {message}", ex.Message);
+            CoreLogging.Logger?.LogError(ex, "Error occurred: {errorMessage}", ex.Message);
             return false;
         }
     }
@@ -115,7 +115,7 @@ public static class SafeExecute
                 return await Async(action, maxRetries, millisecondsTimeOut, currentRetry);
             }
 
-            CoreLogging.Logger?.LogError(ex, "Error occurred: {message}", ex.Message);
+            CoreLogging.Logger?.LogError(ex, "Error occurred: {errorMessage}", ex.Message);
             actionCatch?.Invoke();
 
             return false;

@@ -11,7 +11,7 @@ public class DefaultAssemblyLoader : IAssemblyLoader
 
     public Assembly[] Load()
     {
-        var dependencies = DependencyContext.Default.RuntimeLibraries;
+        var dependencies = DependencyContext.Default?.RuntimeLibraries!;
 
         var assemblies = new List<Assembly>();
         var entryAssembly = Assembly.GetEntryAssembly();
@@ -26,7 +26,7 @@ public class DefaultAssemblyLoader : IAssemblyLoader
             }
             catch (Exception ex)
             {
-                CoreLogging.Logger?.LogWarning(ex, "Error occurred: {message}", ex.Message);
+                CoreLogging.Logger?.LogWarning(ex, "Error occurred: {errorMessage}", ex.Message);
             }
         }
 
@@ -37,7 +37,7 @@ public class DefaultAssemblyLoader : IAssemblyLoader
                                             d.Name.Equals(ThisAssemblyName, StringComparison.OrdinalIgnoreCase))
                                   select library).ToList();
 
-        var entryLibrary = directDependencies.FirstOrDefault(d => d.Name.Equals(entryAssemblyName, StringComparison.OrdinalIgnoreCase));
+        var entryLibrary = directDependencies.Find(d => d.Name.Equals(entryAssemblyName, StringComparison.OrdinalIgnoreCase));
 
         //
         if (entryLibrary != null)
