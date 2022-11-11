@@ -26,7 +26,7 @@ namespace MessageBusPublisherWeb.Controllers
             var topic = configuration["ServiceBus:Topic"];
             var messageBusType = "PubSub".Equals(configuration["ServiceBus:Type"], StringComparison.InvariantCultureIgnoreCase) ?
                 MessageBusType.PubSub : MessageBusType.Queue;
-            var publisher = messageBusFactory.GetPublisher(topic, messageBusType);
+            var publisher = messageBusFactory.GetPublisher(topic!, messageBusType);
 
             await publisher.SendAsync(message.Content);
             return Ok();
