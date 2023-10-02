@@ -1,6 +1,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using MongoDB.Driver.Search;
 using System.Runtime.CompilerServices;
 
 #pragma warning disable 618
@@ -1069,6 +1070,8 @@ namespace Bellight.MongoDb.Transactions
         public IMongoIndexManager<T> Indexes => _collection.Indexes;
 
         public MongoCollectionSettings Settings => _collection.Settings;
+
+        public IMongoSearchIndexManager SearchIndexes => _collection.SearchIndexes;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool TryGetSession(out IClientSessionHandle sessionHandle) =>

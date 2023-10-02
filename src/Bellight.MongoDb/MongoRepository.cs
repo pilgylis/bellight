@@ -85,6 +85,8 @@ public class MongoRepository<T, Tid> : IMongoRepository<T, Tid> where T : class,
         }
 
         return await find.Project(projection)
+            .Skip(pageIndex * pageSize)
+            .Limit(pageSize)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
     }
@@ -108,6 +110,8 @@ public class MongoRepository<T, Tid> : IMongoRepository<T, Tid> where T : class,
         }
 
         return await find.Project(projection)
+            .Skip(pageIndex * pageSize)
+            .Limit(pageSize)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
     }
@@ -130,7 +134,10 @@ public class MongoRepository<T, Tid> : IMongoRepository<T, Tid> where T : class,
             find = find.Sort(sort);
         }
 
-        return await find.ToListAsync(cancellationToken)
+        return await find
+            .Skip(pageIndex * pageSize)
+            .Limit(pageSize)
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
     }
 
