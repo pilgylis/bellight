@@ -4,17 +4,11 @@ using System.Transactions;
 
 namespace MongoDbTests;
 
-public class CounterTests : IClassFixture<MongoDbFixture>
+public class CounterTests(MongoDbFixture fixture) : IClassFixture<MongoDbFixture>
 {
-    private readonly IMongoRepository<Counter, string> repository;
-    private readonly MongoDbFixture fixture;
+    private readonly IMongoRepository<Counter, string> repository = fixture.Services.GetRequiredService<IMongoRepository<Counter, string>>();
+    private readonly MongoDbFixture fixture = fixture;
     private readonly CancellationTokenSource cancellationTokenSource = new();
-
-    public CounterTests(MongoDbFixture fixture)
-    {
-        repository = fixture.Services.GetRequiredService<IMongoRepository<Counter, string>>();
-        this.fixture = fixture;
-    }
 
     [Fact]
     public async Task TransactionAbortTest()
@@ -22,21 +16,24 @@ public class CounterTests : IClassFixture<MongoDbFixture>
         using var scope = fixture.Services.CreateScope();
         var counterRepository = scope.ServiceProvider.GetRequiredService<IMongoRepository<Counter, string>>();
         await counterRepository.DeleteAsync(c => true, softDelete: false);
-        var counter = (await counterRepository.FindAsync(c => true, pageIndex: 0, pageSize: 1)
-            .ConfigureAwait(false)).FirstOrDefault();
+        var counter = (await counterRepository.FindAsync(
+            c => true, 
+            pageIndex: 0, 
+            pageSize: 1)).FirstOrDefault();
 
         counter = new Counter
         {
             Value = 1
         };
 
-        await counterRepository.AddAsync(counter)
-            .ConfigureAwait(false);
+        await counterRepository.AddAsync(counter);
 
         var itemId = counter.Id;
 
         var transactionScope = new TransactionScope();
-        await counterRepository.UpdateAsync(itemId, update => update.Set(c => c.Value, 10));
+        await counterRepository.UpdateAsync(
+            itemId, 
+            update => update.Set(c => c.Value, 10));
 
         transactionScope.Dispose();
 
@@ -52,16 +49,17 @@ public class CounterTests : IClassFixture<MongoDbFixture>
         using var scope = fixture.Services.CreateScope();
         var counterRepository = scope.ServiceProvider.GetRequiredService<IMongoRepository<Counter, string>>();
         await counterRepository.DeleteAsync(c => true, softDelete: false);
-        var counter = (await counterRepository.FindAsync(c => true, pageIndex: 0, pageSize: 1)
-            .ConfigureAwait(false)).FirstOrDefault();
+        var counter = (await counterRepository.FindAsync(
+            c => true, 
+            pageIndex: 0, 
+            pageSize: 1)).FirstOrDefault();
 
         counter = new Counter
         {
             Value = 1
         };
 
-        await counterRepository.AddAsync(counter)
-            .ConfigureAwait(false);
+        await counterRepository.AddAsync(counter);
 
         var itemId = counter.Id;
 

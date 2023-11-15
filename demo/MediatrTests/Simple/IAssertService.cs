@@ -1,7 +1,6 @@
-﻿namespace MediatrTests.Simple
+﻿namespace MediatrTests.Simple;
+
+public interface IAssertService<T>
 {
-    public interface IAssertService<T>
-    {
-        void Process(T item);
-    }
+    void Process(T item);
 }

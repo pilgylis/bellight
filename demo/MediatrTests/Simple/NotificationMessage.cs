@@ -1,8 +1,7 @@
 ﻿using MediatR;
 
-namespace MediatrTests.Simple
+namespace MediatrTests.Simple;
+
+public class NotificationMessage : INotification
 {
-    public class NotificationMessage : INotification
-    {
-    }
 }

@@ -2,24 +2,18 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MediatrTests.Simple
+namespace MediatrTests.Simple;
+
+public class OneWay : IRequest
+{ }
+
+public class OneWayHandlerWithBaseClass(IAssertService<OneWay> assertService) : IRequestHandler<OneWay>
 {
-    public class OneWay : IRequest
-    { }
+    private readonly IAssertService<OneWay> assertService = assertService;
 
-    public class OneWayHandlerWithBaseClass : AsyncRequestHandler<OneWay>
+    public Task Handle(OneWay request, CancellationToken cancellationToken)
     {
-        private readonly IAssertService<OneWay> assertService;
-
-        public OneWayHandlerWithBaseClass(IAssertService<OneWay> assertService)
-        {
-            this.assertService = assertService;
-        }
-
-        protected override Task Handle(OneWay request, CancellationToken cancellationToken)
-        {
-            assertService.Process(request);
-            return Task.CompletedTask;
-        }
+        assertService.Process(request);
+        return Task.CompletedTask;
     }
 }

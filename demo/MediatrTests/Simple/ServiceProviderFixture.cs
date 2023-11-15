@@ -3,41 +3,40 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
 
-namespace MediatrTests.Simple
+namespace MediatrTests.Simple;
+
+public class ServiceProviderFixture : IDisposable
 {
-    public class ServiceProviderFixture : IDisposable
+    public IServiceProvider ServiceProvider { get; }
+    public Mock<IAssertService<OneWay>> AssertOneWay { get; }
+    public Mock<IAssertService<NotificationMessage>> AssertNotification { get; }
+
+    private readonly IServiceScope scope;
+
+    public ServiceProviderFixture()
     {
-        public IServiceProvider ServiceProvider { get; }
-        public Mock<IAssertService<OneWay>> AssertOneWay { get; }
-        public Mock<IAssertService<NotificationMessage>> AssertNotification { get; }
+        var services = new ServiceCollection();
 
-        private readonly IServiceScope scope;
-
-        public ServiceProviderFixture()
+        services.AddBellightCore(options =>
         {
-            var services = new ServiceCollection();
+            options.DependencyCacheOptions.PrettyPrint = true;
+            options.DependencyCacheOptions.Enabled = false;
 
-            services.AddBellightCore(options =>
-            {
-                options.DependencyCacheOptions.PrettyPrint = true;
-                options.DependencyCacheOptions.Enabled = false;
+            options.AddMediatR();
+        });
 
-                options.AddMediatR();
-            });
+        AssertOneWay = new Mock<IAssertService<OneWay>>();
+        services.AddSingleton(AssertOneWay.Object);
 
-            AssertOneWay = new Mock<IAssertService<OneWay>>();
-            services.AddSingleton(AssertOneWay.Object);
+        AssertNotification = new Mock<IAssertService<NotificationMessage>>();
+        services.AddSingleton(AssertNotification.Object);
 
-            AssertNotification = new Mock<IAssertService<NotificationMessage>>();
-            services.AddSingleton(AssertNotification.Object);
+        scope = services.BuildServiceProvider().CreateScope();
+        ServiceProvider = scope.ServiceProvider;
+    }
 
-            scope = services.BuildServiceProvider().CreateScope();
-            ServiceProvider = scope.ServiceProvider;
-        }
-
-        public void Dispose()
-        {
-            scope?.Dispose();
-        }
+    public void Dispose()
+    {
+        scope?.Dispose();
     }
 }

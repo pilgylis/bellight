@@ -1,0 +1,41 @@
+{
+  "assemblies": [
+    "Bellight.Core, Version=8.0.0.0, Culture=neutral, PublicKeyToken=null",
+    "SimpleIoC, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+  ],
+  "typeHandlers": [
+    {
+      "name": "Bellight.Core.Defaults.DependencyTypeHandler, Bellight.Core, Version=8.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "sections": [
+        {
+          "name": "SingletonTypes",
+          "lines": []
+        },
+        {
+          "name": "ScopeTypes",
+          "lines": []
+        },
+        {
+          "name": "TransientTypes",
+          "lines": [
+            "Bellight.Core.Misc.BellightJsonSerializer, Bellight.Core, Version=8.0.0.0, Culture=neutral, PublicKeyToken=null",
+            "SimpleIoC.KeyedServiceC1, SimpleIoC, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+            "SimpleIoC.KeyedServiceC2, SimpleIoC, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+            "SimpleIoC.ServiceA, SimpleIoC, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+            "SimpleIoC.ServiceB, SimpleIoC, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+            "Bellight.Core.Misc.ISerializer, Bellight.Core, Version=8.0.0.0, Culture=neutral, PublicKeyToken=null: Bellight.Core.Misc.BellightJsonSerializer, Bellight.Core, Version=8.0.0.0, Culture=neutral, PublicKeyToken=null",
+            "SimpleIoC.IService, SimpleIoC, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null: SimpleIoC.ServiceA, SimpleIoC, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+            "SimpleIoC.IService, SimpleIoC, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null: SimpleIoC.ServiceB, SimpleIoC, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          ]
+        },
+        {
+          "name": "KeyedTypes",
+          "lines": [
+            "C1: SimpleIoC.IKeyedServiceC, SimpleIoC, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null: SimpleIoC.KeyedServiceC1, SimpleIoC, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+            "C2: SimpleIoC.IKeyedServiceC, SimpleIoC, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null: SimpleIoC.KeyedServiceC2, SimpleIoC, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          ]
+        }
+      ]
+    }
+  ]
+}

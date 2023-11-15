@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace Bellight.Core.Exceptions;
+﻿namespace Bellight.Core.Exceptions;
 
 [Serializable]
 public class ProviderNotFoundException : Exception
@@ -14,11 +12,6 @@ public class ProviderNotFoundException : Exception
     }
 
     public ProviderNotFoundException(string message, Exception innerException) : base(message, innerException)
-    {
-    }
-
-    protected ProviderNotFoundException(SerializationInfo serializationInfo, StreamingContext streamingContext)
-        : base(serializationInfo, streamingContext)
     {
     }
 }

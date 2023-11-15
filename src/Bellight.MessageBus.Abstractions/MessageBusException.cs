@@ -16,8 +16,4 @@ public class MessageBusException : Exception
     public MessageBusException(string? message, Exception? innerException) : base(message, innerException)
     {
     }
-
-    protected MessageBusException(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
-    }
 }

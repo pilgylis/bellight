@@ -4,44 +4,38 @@ using Moq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace MediatrTests.Simple
+namespace MediatrTests.Simple;
+
+public class SimpleTests(ServiceProviderFixture fixture) : IClassFixture<ServiceProviderFixture>
 {
-    public class SimpleTests : IClassFixture<ServiceProviderFixture>
+    private readonly ServiceProviderFixture fixture = fixture;
+
+    [Fact]
+    public async Task PingPongTest()
     {
-        private readonly ServiceProviderFixture fixture;
+        var mediator = fixture.ServiceProvider.GetService<IMediator>();
 
-        public SimpleTests(ServiceProviderFixture fixture)
-        {
-            this.fixture = fixture;
-        }
+        var response = await mediator.Send(new Ping());
 
-        [Fact]
-        public async Task PingPongTest()
-        {
-            var mediator = fixture.ServiceProvider.GetService<IMediator>();
+        Assert.Equal("Pong", response);
+    }
 
-            var response = await mediator.Send(new Ping());
+    [Fact]
+    public async Task OneWayTest()
+    {
+        var mediator = fixture.ServiceProvider.GetService<IMediator>();
 
-            Assert.Equal("Pong", response);
-        }
+        await mediator.Send(new OneWay());
 
-        [Fact]
-        public async Task OneWayTest()
-        {
-            var mediator = fixture.ServiceProvider.GetService<IMediator>();
+        fixture.AssertOneWay.Verify(x => x.Process(It.IsAny<OneWay>()), Times.Once);
+    }
 
-            await mediator.Send(new OneWay());
+    [Fact]
+    public async Task NotificationTest()
+    {
+        var mediator = fixture.ServiceProvider.GetService<IMediator>();
+        await mediator.Publish(new NotificationMessage());
 
-            fixture.AssertOneWay.Verify(x => x.Process(It.IsAny<OneWay>()), Times.Once);
-        }
-
-        [Fact]
-        public async Task NotificationTest()
-        {
-            var mediator = fixture.ServiceProvider.GetService<IMediator>();
-            await mediator.Publish(new NotificationMessage());
-
-            fixture.AssertNotification.Verify(x => x.Process(It.IsAny<NotificationMessage>()), Times.Exactly(2));
-        }
+        fixture.AssertNotification.Verify(x => x.Process(It.IsAny<NotificationMessage>()), Times.Exactly(2));
     }
 }
