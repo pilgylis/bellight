@@ -1,7 +1,6 @@
-﻿namespace Bellight.MessageBus.Abstractions
+﻿namespace Bellight.MessageBus.Abstractions;
+
+public interface IPublisherFactory
 {
-    public interface IPublisherFactory
-    {
-        IPublisher GetPublisher(string topic, MessageBusType messageBusType = MessageBusType.Queue);
-    }
+    IPublisher GetPublisher(string topic, MessageBusType messageBusType = MessageBusType.Queue);
 }

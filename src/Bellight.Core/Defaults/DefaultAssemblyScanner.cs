@@ -3,22 +3,14 @@ using System.Reflection;
 
 namespace Bellight.Core.Defaults;
 
-public class DefaultAssemblyScanner : IAssemblyScanner
+public class DefaultAssemblyScanner(
+    BellightCoreOptions options,
+    IAssemblyLoader assemblyLoader,
+    IAssemblyHandler assemblyHandler,
+    IEnumerable<ITypeHandler> typeHandlers) : IAssemblyScanner
 {
-    private readonly IAssemblyLoader _assemblyLoader;
-    private readonly IAssemblyHandler _assemblyHandler;
-
-    public DefaultAssemblyScanner(
-        BellightCoreOptions options,
-        IAssemblyLoader assemblyLoader,
-        IAssemblyHandler assemblyHandler,
-        IEnumerable<ITypeHandler> typeHandlers)
-    {
-        _assemblyLoader = assemblyLoader;
-        _assemblyHandler = assemblyHandler;
-        _options = options;
-        _typeHandlers = typeHandlers;
-    }
+    private readonly IAssemblyLoader _assemblyLoader = assemblyLoader;
+    private readonly IAssemblyHandler _assemblyHandler = assemblyHandler;
 
     public DependencyCacheModel Scan()
     {
@@ -60,6 +52,6 @@ public class DefaultAssemblyScanner : IAssemblyScanner
     private readonly Func<Assembly, string, bool> assemblyPredicate = (a, b)
         => a.GetReferencedAssemblies().Any(asb => string.CompareOrdinal(asb.Name, b) == 0);
 
-    private readonly BellightCoreOptions _options;
-    private readonly IEnumerable<ITypeHandler> _typeHandlers;
+    private readonly BellightCoreOptions _options = options;
+    private readonly IEnumerable<ITypeHandler> _typeHandlers = typeHandlers;
 }

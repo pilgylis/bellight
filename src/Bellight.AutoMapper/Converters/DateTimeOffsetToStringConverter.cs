@@ -1,13 +1,12 @@
 using AutoMapper;
 using System.Globalization;
 
-namespace Bellight.AutoMapper.Converters
+namespace Bellight.AutoMapper.Converters;
+
+public class DateTimeOffsetToStringConverter : ITypeConverter<DateTimeOffset, string>
 {
-    public class DateTimeOffsetToStringConverter : ITypeConverter<DateTimeOffset, string>
+    public string Convert(DateTimeOffset source, string destination, ResolutionContext context)
     {
-        public string Convert(DateTimeOffset source, string destination, ResolutionContext context)
-        {
-            return source.ToString(Constants.StandardDatetimeFormat, CultureInfo.InvariantCulture);
-        }
+        return source.ToString(Constants.StandardDatetimeFormat, CultureInfo.InvariantCulture);
     }
 }

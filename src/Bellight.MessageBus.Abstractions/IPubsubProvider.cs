@@ -1,6 +1,5 @@
-﻿namespace Bellight.MessageBus.Abstractions
+﻿namespace Bellight.MessageBus.Abstractions;
+
+public interface IPubsubProvider : IMessageBusProvider
 {
-    public interface IPubsubProvider : IMessageBusProvider
-    {
-    }
 }

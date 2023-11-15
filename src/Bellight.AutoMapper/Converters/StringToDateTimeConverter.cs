@@ -1,14 +1,13 @@
 using AutoMapper;
 using System.Globalization;
 
-namespace Bellight.AutoMapper.Converters
+namespace Bellight.AutoMapper.Converters;
+
+public class StringToDateTimeConverter : ITypeConverter<string, DateTime>
 {
-    public class StringToDateTimeConverter : ITypeConverter<string, DateTime>
+    public DateTime Convert(string source, DateTime destination, ResolutionContext context)
     {
-        public DateTime Convert(string source, DateTime destination, ResolutionContext context)
-        {
-            // TODO: convert to UTC using timezone
-            return DateTime.ParseExact(source, Constants.StandardDatetimeFormat, CultureInfo.InvariantCulture);
-        }
+        // TODO: convert to UTC using timezone
+        return DateTime.ParseExact(source, Constants.StandardDatetimeFormat, CultureInfo.InvariantCulture);
     }
 }

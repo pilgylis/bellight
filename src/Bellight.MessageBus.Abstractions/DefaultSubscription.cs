@@ -1,17 +1,12 @@
-﻿namespace Bellight.MessageBus.Abstractions
+﻿namespace Bellight.MessageBus.Abstractions;
+
+public class DefaultSubscription(Action disposeAction) : ISubscription
 {
-    public class DefaultSubscription : ISubscription
+    private readonly Action _disposeAction = disposeAction ?? throw new ArgumentNullException(nameof(disposeAction));
+
+    public virtual void Dispose()
     {
-        private readonly Action _disposeAction;
-
-        public DefaultSubscription(Action disposeAction)
-        {
-            _disposeAction = disposeAction ?? throw new ArgumentNullException(nameof(disposeAction));
-        }
-
-        public virtual void Dispose()
-        {
-            _disposeAction.Invoke();
-        }
+        GC.SuppressFinalize(this);
+        _disposeAction.Invoke();
     }
 }

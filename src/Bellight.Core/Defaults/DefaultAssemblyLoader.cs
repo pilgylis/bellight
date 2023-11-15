@@ -7,7 +7,8 @@ namespace Bellight.Core.Defaults;
 
 public class DefaultAssemblyLoader : IAssemblyLoader
 {
-    private static readonly string ThisAssemblyName = typeof(DefaultAssemblyLoader).GetTypeInfo().Assembly.GetQualifiedName();
+    private static readonly string ThisAssemblyName = 
+        typeof(DefaultAssemblyLoader).GetTypeInfo().Assembly.GetQualifiedName();
 
     public Assembly[] Load()
     {
@@ -30,12 +31,13 @@ public class DefaultAssemblyLoader : IAssemblyLoader
             }
         }
 
-        var directDependencies = (from library in dependencies
-                                  where library.Name.Equals(entryAssemblyName, StringComparison.OrdinalIgnoreCase)
-                                        || library.Name.Equals(ThisAssemblyName, StringComparison.OrdinalIgnoreCase)
-                                        || library.Dependencies.Any(d =>
-                                            d.Name.Equals(ThisAssemblyName, StringComparison.OrdinalIgnoreCase))
-                                  select library).ToList();
+        var directDependencies = (
+            from library in dependencies
+            where library.Name.Equals(entryAssemblyName, StringComparison.OrdinalIgnoreCase)
+                || library.Name.Equals(ThisAssemblyName, StringComparison.OrdinalIgnoreCase)
+                || library.Dependencies.Any(d =>
+                    d.Name.Equals(ThisAssemblyName, StringComparison.OrdinalIgnoreCase))
+            select library).ToList();
 
         var entryLibrary = directDependencies.Find(d => d.Name.Equals(entryAssemblyName, StringComparison.OrdinalIgnoreCase));
 
@@ -71,6 +73,6 @@ public class DefaultAssemblyLoader : IAssemblyLoader
             }
         }
 
-        return assemblies.ToArray();
+        return [.. assemblies];
     }
 }

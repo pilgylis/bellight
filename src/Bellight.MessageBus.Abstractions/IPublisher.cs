@@ -1,9 +1,8 @@
-﻿namespace Bellight.MessageBus.Abstractions
-{
-    public interface IPublisher : IDisposable
-    {
-        void Send(string message);
+﻿namespace Bellight.MessageBus.Abstractions;
 
-        Task SendAsync(string message);
-    }
+public interface IPublisher : IDisposable
+{
+    void Send(string message);
+
+    Task SendAsync(string message);
 }

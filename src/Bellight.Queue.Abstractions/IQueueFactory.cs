@@ -1,9 +1,8 @@
 ﻿using Bellight.Core;
 
-namespace Bellight.Queue.Abstractions
+namespace Bellight.Queue.Abstractions;
+
+public interface IQueueFactory : ITransientDependency
 {
-    public interface IQueueFactory : ITransientDependency
-    {
-        IQueueService Create();
-    }
+    IQueueService Create();
 }

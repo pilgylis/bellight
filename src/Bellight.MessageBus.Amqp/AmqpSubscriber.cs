@@ -6,16 +6,11 @@ using Bellight.MessageBus.Abstractions;
 
 namespace Bellight.MessageBus.Amqp;
 
-public class AmqpSubscriber : AmqpLinkWrapper<ReceiverLink>, ISubscriber
+public class AmqpSubscriber(IAmqpConnectionFactory connectionFactory, SubscriberOptions options) : AmqpLinkWrapper<ReceiverLink>(connectionFactory), ISubscriber
 {
     private const string _linkName = "receiver-link";
 
-    private readonly SubscriberOptions _options;
-
-    public AmqpSubscriber(IAmqpConnectionFactory connectionFactory, SubscriberOptions options) : base(connectionFactory)
-    {
-        _options = options;
-    }
+    private readonly SubscriberOptions _options = options;
 
     public ISubscription Subscribe(Action<string> messageReceivedAction)
     {
@@ -44,9 +39,9 @@ public class AmqpSubscriber : AmqpLinkWrapper<ReceiverLink>, ISubscriber
         var source = new Source
         {
             Address = _options.Topic,
-            Capabilities = new Symbol[] {
+            Capabilities = [
                 new Symbol(_options.MessageBusType == MessageBusType.Queue ? "queue" : "topic")
-            }
+            ]
         };
 
         return new ReceiverLink(session, _linkName, source, null);

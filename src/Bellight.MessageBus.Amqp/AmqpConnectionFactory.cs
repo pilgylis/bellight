@@ -3,16 +3,11 @@ using Microsoft.Extensions.Options;
 
 namespace Bellight.MessageBus.Amqp;
 
-public class AmqpConnectionFactory : IAmqpConnectionFactory
+public class AmqpConnectionFactory(IOptionsMonitor<AmqpOptions> options) : IAmqpConnectionFactory
 {
-    private readonly IOptionsMonitor<AmqpOptions> options;
+    private readonly IOptionsMonitor<AmqpOptions> options = options;
     private Connection? connection;
     private readonly Dictionary<string, Session> sessions = new();
-
-    public AmqpConnectionFactory(IOptionsMonitor<AmqpOptions> options)
-    {
-        this.options = options;
-    }
 
     public Connection GetConnection()
     {
@@ -26,9 +21,9 @@ public class AmqpConnectionFactory : IAmqpConnectionFactory
 
     public Session GetSession(string name = "default")
     {
-        if (sessions.ContainsKey(name))
+        if (sessions.TryGetValue(name, out Session? value))
         {
-            var session = sessions[name];
+            var session = value;
             if (session is not null && !session.IsClosed)
             {
                 return session;

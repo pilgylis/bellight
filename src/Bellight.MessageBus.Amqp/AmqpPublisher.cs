@@ -5,17 +5,13 @@ using Bellight.MessageBus.Abstractions;
 
 namespace Bellight.MessageBus.Amqp;
 
-public class AmqpPublisher : AmqpLinkWrapper<SenderLink>, IPublisher
+public class AmqpPublisher(
+    IAmqpConnectionFactory connectionFactory, 
+    string topic, 
+    MessageBusType messageBusType) : AmqpLinkWrapper<SenderLink>(connectionFactory), IPublisher
 {
-    private readonly string _topic;
-    private readonly MessageBusType _messageBusType;
-
-    public AmqpPublisher(IAmqpConnectionFactory connectionFactory, string topic, MessageBusType messageBusType)
-        : base(connectionFactory)
-    {
-        _topic = topic;
-        _messageBusType = messageBusType;
-    }
+    private readonly string _topic = topic;
+    private readonly MessageBusType _messageBusType = messageBusType;
 
     public void Send(string message)
     {

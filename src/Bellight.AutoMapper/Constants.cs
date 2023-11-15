@@ -1,7 +1,6 @@
-﻿namespace Bellight.AutoMapper.Converters
+﻿namespace Bellight.AutoMapper.Converters;
+
+internal static class Constants
 {
-    internal static class Constants
-    {
-        public static readonly string StandardDatetimeFormat = "yyyy-MM-ddTHH:mm:sszzz";
-    }
+    public static readonly string StandardDatetimeFormat = "yyyy-MM-ddTHH:mm:sszzz";
 }

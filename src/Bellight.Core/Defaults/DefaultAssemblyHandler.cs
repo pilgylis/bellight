@@ -2,14 +2,9 @@ using System.Reflection;
 
 namespace Bellight.Core.Defaults;
 
-public class DefaultAssemblyHandler : IAssemblyHandler
+public class DefaultAssemblyHandler(IEnumerable<ITypeHandler> typeHandlers) : IAssemblyHandler
 {
-    private readonly IEnumerable<ITypeHandler> _typeHandlers;
-
-    public DefaultAssemblyHandler(IEnumerable<ITypeHandler> typeHandlers)
-    {
-        _typeHandlers = typeHandlers;
-    }
+    private readonly IEnumerable<ITypeHandler> _typeHandlers = typeHandlers;
 
     public void Process(Assembly assembly)
     {

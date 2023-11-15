@@ -3,10 +3,11 @@ using Microsoft.Extensions.Options;
 
 namespace Bellight.MessageBus.Amqp;
 
-public class AmqpPubsubProvider : AmqpProviderBase, IPubsubProvider
+public class AmqpPubsubProvider(
+    IAmqpConnectionFactory connectionFactory, 
+    IOptionsMonitor<AmqpOptions> options) : AmqpProviderBase(
+        connectionFactory, 
+        options, 
+        MessageBusType.PubSub), IPubsubProvider
 {
-    public AmqpPubsubProvider(IAmqpConnectionFactory connectionFactory, IOptionsMonitor<AmqpOptions> options)
-        : base(connectionFactory, options, MessageBusType.PubSub)
-    {
-    }
 }

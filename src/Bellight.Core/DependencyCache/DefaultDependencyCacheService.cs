@@ -3,21 +3,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Bellight.Core.DependencyCache;
 
-public class DefaultDependencyCacheService : IDependencyCacheService
+public class DefaultDependencyCacheService(
+    BellightCoreOptions options,
+    ISerializer serializer,
+    IServiceProvider serviceProvider) : IDependencyCacheService
 {
-    private readonly BellightCoreOptions _options;
-    private readonly ISerializer _serializer;
-    private readonly IServiceProvider _serviceProvider;
-
-    public DefaultDependencyCacheService(
-        BellightCoreOptions options,
-        ISerializer serializer,
-        IServiceProvider serviceProvider)
-    {
-        _options = options;
-        _serializer = serializer;
-        _serviceProvider = serviceProvider;
-    }
+    private readonly BellightCoreOptions _options = options;
+    private readonly ISerializer _serializer = serializer;
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
 
     public bool Load()
     {

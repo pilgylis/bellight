@@ -8,10 +8,10 @@ using System.Security.Authentication;
 
 namespace Bellight.MongoDb;
 
-public class CollectionFactory : ICollectionFactory
+public class CollectionFactory(IOptions<MongoDbSettings> optionsAccessor, IServiceProvider serviceProvider) : ICollectionFactory
 {
-    private readonly MongoDbSettings _settings;
-    private readonly IServiceProvider serviceProvider;
+    private readonly MongoDbSettings _settings = optionsAccessor.Value;
+    private readonly IServiceProvider serviceProvider = serviceProvider;
     private IMongoDatabase? _database;
 
     private ILogger<CollectionFactory>? logger;
@@ -44,12 +44,6 @@ public class CollectionFactory : ICollectionFactory
 
             return _database;
         }
-    }
-
-    public CollectionFactory(IOptions<MongoDbSettings> optionsAccessor, IServiceProvider serviceProvider)
-    {
-        _settings = optionsAccessor.Value;
-        this.serviceProvider = serviceProvider;
     }
 
     public IMongoCollection<T> GetCollection<T>(string collectionName) where T : class

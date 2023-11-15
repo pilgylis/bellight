@@ -16,9 +16,4 @@ public class BellightDataException : Exception
     public BellightDataException(string? message, Exception? innerException) : base(message, innerException)
     {
     }
-
-    protected BellightDataException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-    {
-    }
 }

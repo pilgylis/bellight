@@ -1,6 +1,5 @@
-﻿namespace Bellight.Configurations
+﻿namespace Bellight.Configurations;
+
+public interface IAppSettingSection
 {
-    public interface IAppSettingSection
-    {
-    }
 }

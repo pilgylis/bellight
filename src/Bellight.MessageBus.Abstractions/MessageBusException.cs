@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace Bellight.MessageBus.Abstractions;
+﻿namespace Bellight.MessageBus.Abstractions;
 
 [Serializable]
 public class MessageBusException : Exception

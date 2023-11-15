@@ -1,63 +1,62 @@
 ﻿using AutoMapper;
 using Bellight.AutoMapper.Converters;
 
-namespace Bellight.AutoMapper
+namespace Bellight.AutoMapper;
+
+public class ModelMappingService : IModelMappingService
 {
-    public class ModelMappingService : IModelMappingService
+    private IMapper _mapper;
+    private readonly IModelRegistrationService _modelRegistrationService;
+
+    public ModelMappingService(IModelRegistrationService modelRegistrationService, Action<IMapperConfigurationExpression> configAction)
     {
-        private IMapper _mapper;
-        private readonly IModelRegistrationService _modelRegistrationService;
+        _modelRegistrationService = modelRegistrationService;
 
-        public ModelMappingService(IModelRegistrationService modelRegistrationService, Action<IMapperConfigurationExpression> configAction)
+        _mapper = Init(configAction);
+    }
+
+    public T Map<T>(object source)
+        where T : class
+    {
+        return _mapper.Map<T>(source);
+    }
+
+    public object Map(object source, Type sourceType, Type destinationType)
+    {
+        return _mapper.Map(source, sourceType, destinationType);
+    }
+
+    private IMapper Init(Action<IMapperConfigurationExpression> configAction)
+    {
+        var profiles = _modelRegistrationService.GetAllProfiles();
+        var mappings = _modelRegistrationService.GetAllMappings();
+        var config = new MapperConfiguration(cfg =>
         {
-            _modelRegistrationService = modelRegistrationService;
+            cfg.CreateMap<string, DateTime>().ConvertUsing<StringToDateTimeConverter>();
+            cfg.CreateMap<string, DateTime?>().ConvertUsing<StringToNullableDateTimeConverter>();
+            cfg.CreateMap<DateTime, string>().ConvertUsing<DateTimeToStringConverter>();
+            cfg.CreateMap<DateTimeOffset, string>().ConvertUsing<DateTimeOffsetToStringConverter>();
 
-            _mapper = Init(configAction);
-        }
-
-        public T Map<T>(object source)
-            where T : class
-        {
-            return _mapper.Map<T>(source);
-        }
-
-        public object Map(object source, Type sourceType, Type destinationType)
-        {
-            return _mapper.Map(source, sourceType, destinationType);
-        }
-
-        private IMapper Init(Action<IMapperConfigurationExpression> configAction)
-        {
-            var profiles = _modelRegistrationService.GetAllProfiles();
-            var mappings = _modelRegistrationService.GetAllMappings();
-            var config = new MapperConfiguration(cfg =>
+            if (configAction != null)
             {
-                cfg.CreateMap<string, DateTime>().ConvertUsing<StringToDateTimeConverter>();
-                cfg.CreateMap<string, DateTime?>().ConvertUsing<StringToNullableDateTimeConverter>();
-                cfg.CreateMap<DateTime, string>().ConvertUsing<DateTimeToStringConverter>();
-                cfg.CreateMap<DateTimeOffset, string>().ConvertUsing<DateTimeOffsetToStringConverter>();
+                configAction.Invoke(cfg);
+            }
 
-                if (configAction != null)
+            if (profiles?.Any() == true)
+            {
+                profiles.ForEach(cfg.AddProfile);
+            }
+
+            if (mappings?.Any() == true)
+            {
+                foreach (var tuple in mappings)
                 {
-                    configAction.Invoke(cfg);
+                    cfg.CreateMap(tuple.Item1, tuple.Item2).IgnoreAllNonExisting(tuple.Item1, tuple.Item2);
+                    cfg.CreateMap(tuple.Item2, tuple.Item1).IgnoreAllNonExisting(tuple.Item2, tuple.Item1);
                 }
+            }
+        });
 
-                if (profiles?.Any() == true)
-                {
-                    profiles.ForEach(cfg.AddProfile);
-                }
-
-                if (mappings?.Any() == true)
-                {
-                    foreach (var tuple in mappings)
-                    {
-                        cfg.CreateMap(tuple.Item1, tuple.Item2).IgnoreAllNonExisting(tuple.Item1, tuple.Item2);
-                        cfg.CreateMap(tuple.Item2, tuple.Item1).IgnoreAllNonExisting(tuple.Item2, tuple.Item1);
-                    }
-                }
-            });
-
-            return config.CreateMapper();
-        }
+        return config.CreateMapper();
     }
 }

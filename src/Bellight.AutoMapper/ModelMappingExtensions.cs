@@ -1,22 +1,21 @@
 ﻿using AutoMapper;
 using System.Reflection;
 
-namespace Bellight.AutoMapper
+namespace Bellight.AutoMapper;
+
+public static class ModelMappingExtensions
 {
-    public static class ModelMappingExtensions
+    public static IMappingExpression IgnoreAllNonExisting
+        (this IMappingExpression expression, Type sourceType, Type destinationType)
     {
-        public static IMappingExpression IgnoreAllNonExisting
-            (this IMappingExpression expression, Type sourceType, Type destinationType)
+        const BindingFlags flags = BindingFlags.Public | BindingFlags.Instance;
+        foreach (PropertyInfo property in destinationType.GetProperties(flags))
         {
-            const BindingFlags flags = BindingFlags.Public | BindingFlags.Instance;
-            foreach (PropertyInfo property in destinationType.GetProperties(flags))
+            if (sourceType.GetProperty(property.Name, flags) == null)
             {
-                if (sourceType.GetProperty(property.Name, flags) == null)
-                {
-                    expression.ForMember(property.Name, opt => opt.Ignore());
-                }
+                expression.ForMember(property.Name, opt => opt.Ignore());
             }
-            return expression;
         }
+        return expression;
     }
 }

@@ -189,8 +189,7 @@ public class DependencyTypeHandler : ITypeHandler
             CreateSection("ScopeTypes", _scopedTypes, _scopedMaps),
             CreateSection("TransientTypes", _transientTypes, _transientMaps),
             // keyed
-            new TypeHandlerCacheSection
-            {
+            new() {
                 Name = "KeyedTypes",
                 Lines = _keyedMaps.Select(tuple => string.Format("{0}: {1}: {2}",
                     tuple.Item1,

@@ -3,21 +3,14 @@ using Microsoft.Extensions.Options;
 
 namespace Bellight.MessageBus.Amqp;
 
-public abstract class AmqpProviderBase
+public abstract class AmqpProviderBase(
+    IAmqpConnectionFactory connectionFactory,
+    IOptionsMonitor<AmqpOptions> options,
+    MessageBusType messageBusType)
 {
-    private readonly MessageBusType _messageBusType;
-    private readonly IAmqpConnectionFactory connectionFactory;
-    private readonly IOptionsMonitor<AmqpOptions> _options;
-
-    public AmqpProviderBase(
-        IAmqpConnectionFactory connectionFactory,
-        IOptionsMonitor<AmqpOptions> options,
-        MessageBusType messageBusType)
-    {
-        _messageBusType = messageBusType;
-        this.connectionFactory = connectionFactory;
-        _options = options;
-    }
+    private readonly MessageBusType _messageBusType = messageBusType;
+    private readonly IAmqpConnectionFactory connectionFactory = connectionFactory;
+    private readonly IOptionsMonitor<AmqpOptions> _options = options;
 
     public IPublisher GetPublisher(string topic)
     {

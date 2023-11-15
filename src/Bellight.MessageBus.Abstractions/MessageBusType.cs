@@ -1,8 +1,7 @@
-﻿namespace Bellight.MessageBus.Abstractions
+﻿namespace Bellight.MessageBus.Abstractions;
+
+public enum MessageBusType
 {
-    public enum MessageBusType
-    {
-        Queue,
-        PubSub
-    }
+    Queue,
+    PubSub
 }

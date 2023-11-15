@@ -1,63 +1,58 @@
 using MongoDB.Driver;
 using System.Transactions;
 
-namespace Bellight.MongoDb.Transactions
+namespace Bellight.MongoDb.Transactions;
+
+public class MongoDbEnlistmentScope(
+    IClientSessionHandle sessionHandle, 
+    MongoDbEnlistmentScope.Unregister unregister) : IEnlistmentNotification
 {
-    public class MongoDbEnlistmentScope : IEnlistmentNotification
+    public delegate void Unregister();
+
+    private readonly Unregister _unregister = unregister;
+    private readonly IClientSessionHandle _sessionHandle = sessionHandle;
+
+    public void Commit(Enlistment enlistment)
     {
-        public delegate void Unregister();
-
-        private readonly Unregister _unregister;
-        private readonly IClientSessionHandle _sessionHandle;
-
-        public MongoDbEnlistmentScope(IClientSessionHandle sessionHandle, Unregister unregister)
+        try
         {
-            _sessionHandle = sessionHandle;
-            _unregister = unregister;
+            _sessionHandle.CommitTransaction();
+            enlistment.Done();
         }
-
-        public void Commit(Enlistment enlistment)
+        finally
         {
-            try
-            {
-                _sessionHandle.CommitTransaction();
-                enlistment.Done();
-            }
-            finally
-            {
-                _unregister();
-            }
+            _unregister();
         }
+    }
 
-        public void InDoubt(Enlistment enlistment)
+    public void InDoubt(Enlistment enlistment)
+    {
+        try
         {
-            try
-            {
-                _sessionHandle.AbortTransaction();
-                enlistment.Done();
-            }
-            finally
-            {
-                _unregister();
-            }
+            _sessionHandle.AbortTransaction();
+            enlistment.Done();
         }
-
-        public void Prepare(PreparingEnlistment preparingEnlistment)
+        finally
         {
-            preparingEnlistment.Prepared();
+            _unregister();
         }
+    }
 
-        public void Rollback(Enlistment enlistment)
+    public void Prepare(PreparingEnlistment preparingEnlistment)
+    {
+        preparingEnlistment.Prepared();
+    }
+
+    public void Rollback(Enlistment enlistment)
+    {
+        try
         {
-            try
-            {
-                _sessionHandle.AbortTransaction();
-                enlistment.Done();
-            }
-            finally
-            {
-                _unregister();
-            }
+            _sessionHandle.AbortTransaction();
+            enlistment.Done();
+        }
+        finally
+        {
+            _unregister();
         }
     }
 }

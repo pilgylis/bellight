@@ -3,14 +3,9 @@ using System.Text.Json;
 
 namespace Bellight.Core.Misc;
 
-public class BellightJsonSerializer : ISerializer
+public class BellightJsonSerializer(ILogger<BellightJsonSerializer> logger) : ISerializer
 {
-    private readonly ILogger<BellightJsonSerializer> logger;
-
-    public BellightJsonSerializer(ILogger<BellightJsonSerializer> logger)
-    {
-        this.logger = logger;
-    }
+    private readonly ILogger<BellightJsonSerializer> logger = logger;
 
     public JsonSerializerOptions Settings { get; set; } = DefaultJsonSerializerSettings;
 

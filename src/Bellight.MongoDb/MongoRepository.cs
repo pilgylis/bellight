@@ -7,17 +7,12 @@ using System.Reflection;
 namespace Bellight.MongoDb;
 
 #pragma warning disable CS8602, CS8604, RSC1202 // Dereference of a possibly null reference.
-public class MongoRepository<T, Tid> : IMongoRepository<T, Tid> where T : class, IEntity<Tid>
+public class MongoRepository<T, Tid>(ICollectionFactory collectionFactory) : IMongoRepository<T, Tid> where T : class, IEntity<Tid>
 {
     public IMongoCollection<T> Collection => CollectionFactory.GetCollection<T>(GetObjectType());
 
-    protected ICollectionFactory CollectionFactory { get; }
+    protected ICollectionFactory CollectionFactory { get; } = collectionFactory;
     private string? _objectType;
-
-    public MongoRepository(ICollectionFactory collectionFactory)
-    {
-        CollectionFactory = collectionFactory;
-    }
 
     public FilterDefinitionBuilder<T> Filter => Builders<T>.Filter;
     public UpdateDefinitionBuilder<T> Update => Builders<T>.Update;

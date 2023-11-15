@@ -1,15 +1,9 @@
 namespace Bellight.Core.Defaults;
 
-public class KeyedServiceFactory : IKeyedServiceFactory
+public class KeyedServiceFactory(IDictionary<string, Type> keyedTypeDictionary, IServiceProvider serviceProvider) : IKeyedServiceFactory
 {
-    private readonly IDictionary<string, Type> _keyedTypeDictionary;
-    private readonly IServiceProvider _serviceProvider;
-
-    public KeyedServiceFactory(IDictionary<string, Type> keyedTypeDictionary, IServiceProvider serviceProvider)
-    {
-        _keyedTypeDictionary = keyedTypeDictionary;
-        _serviceProvider = serviceProvider;
-    }
+    private readonly IDictionary<string, Type> _keyedTypeDictionary = keyedTypeDictionary;
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
 
     public T Resolve<T>(string name)
     {

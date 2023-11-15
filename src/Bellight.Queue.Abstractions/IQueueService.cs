@@ -2,11 +2,10 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Bellight.Queue.Abstractions
+namespace Bellight.Queue.Abstractions;
+
+public interface IQueueService : ISingletonDependency
 {
-    public interface IQueueService : ISingletonDependency
-    {
-        Task EnqueueAsync<T>(string topic, T message) where T : class;
-        IObservable<T> GetObservableTopic<T>(string topic, QueueHandler handler = null) where T : class;
-    }
+    Task EnqueueAsync<T>(string topic, T message) where T : class;
+    IObservable<T> GetObservableTopic<T>(string topic, QueueHandler handler = null) where T : class;
 }
