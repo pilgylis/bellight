@@ -1,8 +1,8 @@
 namespace Bellight.Core.Defaults;
 
-public class KeyedServiceFactory(IDictionary<string, Type> keyedTypeDictionary, IServiceProvider serviceProvider) : IKeyedServiceFactory
+public class KeyedServiceFactory(IDictionary<string, (Type, ServiceLifetime)> keyedTypeDictionary, IServiceProvider serviceProvider) : IKeyedServiceFactory
 {
-    private readonly IDictionary<string, Type> _keyedTypeDictionary = keyedTypeDictionary;
+    private readonly IDictionary<string, (Type, ServiceLifetime)> _keyedTypeDictionary = keyedTypeDictionary;
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
     public T Resolve<T>(string name)
@@ -12,7 +12,7 @@ public class KeyedServiceFactory(IDictionary<string, Type> keyedTypeDictionary, 
             return default!;
         }
 
-        var type = _keyedTypeDictionary[name];
+        var (type, lifetime) = _keyedTypeDictionary[name];
         return (T)_serviceProvider.GetService(type)!;
     }
 }
