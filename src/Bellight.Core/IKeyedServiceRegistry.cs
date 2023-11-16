@@ -2,11 +2,11 @@
 
 public interface IKeyedServiceRegistry
 {
-    void Add(string key, Type type);
+    void Add(string key, Type type, ServiceLifetime lifetime);
 
     bool ContainsKey(string key);
 
     void Clear();
 
-    IDictionary<string, Type> GetDictionary();
+    IDictionary<string, (Type, ServiceLifetime)> GetDictionary();
 }

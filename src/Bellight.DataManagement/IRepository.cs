@@ -12,19 +12,19 @@ public interface IRepository<T, Tid> where T : class, IEntity<Tid>
 
     Task UpdateAsync(
         Tid id,
-        Func<EntityUpdateDefinition<T>, EntityUpdateDefinition<T>> updateFunc,
+        IEntityUpdateDefinition<T> update,
         CancellationToken cancellationToken = default);
 
     Task<long> UpdateManyAsync(
         Expression<Func<T, bool>> filter,
-        Func<EntityUpdateDefinition<T>, EntityUpdateDefinition<T>> updateFunc,
+        IEntityUpdateDefinition<T> update,
         CancellationToken cancellationToken = default);
 
     Task ReplaceAsync(Tid id, T item, CancellationToken cancellationToken = default);
 
     Task DeleteAsync(Tid id, bool softDelete = true, CancellationToken cancellationToken = default);
 
-    Task<long> DeleteAsync(
+    Task<long> DeleteManyAsync(
         Expression<Func<T, bool>> filter,
         bool softDelete = true,
         CancellationToken cancellationToken = default);
@@ -32,11 +32,17 @@ public interface IRepository<T, Tid> where T : class, IEntity<Tid>
     Task<long> DeleteManyAsync(IEnumerable<Tid> ids, bool softDelete, CancellationToken token = default);
 
     Task<T?> GetByIdAsync(Tid id, CancellationToken cancellationToken = default);
+    Task<IEnumerable<T>> FindAsync(
+        Expression<Func<T, bool>> filter,
+        IEntitySortDefinition<T>? sortOrders = null,
+        int pageIndex = 0,
+        int pageSize = 20,
+        CancellationToken cancellationToken = default);
 
     Task<IEnumerable<P>> FindAsync<P>(
         Expression<Func<T, bool>> filter,
         Expression<Func<T, P>> projection,
-        IEnumerable<KeyValuePair<string, bool>>? sortOrders = null,
+        IEntitySortDefinition<T>? sortOrders = null,
         int pageIndex = 0,
         int pageSize = 20,
         CancellationToken cancellationToken = default);
@@ -44,4 +50,12 @@ public interface IRepository<T, Tid> where T : class, IEntity<Tid>
     Task<long> CountAsync(Expression<Func<T, bool>> filter, CancellationToken cancellationToken = default);
 
     Task<bool> Exists(Expression<Func<T, bool>> filter, CancellationToken cancellationToken = default);
+
+    IEntityUpdateDefinition<T> UpdateDefinition {
+        get;
+    }
+
+    IEntitySortDefinition<T> SortDefinition {
+        get;
+    }
 }

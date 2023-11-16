@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace Bellight.DataManagement;
+﻿namespace Bellight.DataManagement;
 
 [Serializable]
 public class BellightDataException : Exception

@@ -14,4 +14,5 @@ public class KeyedServiceAttribute : Attribute
     }
 
     public string Name { get; set; }
+    public ServiceLifetime Lifetime { get; set; } = ServiceLifetime.Transient;
 }

@@ -20,6 +20,10 @@ public class MongoRepository<T, Tid>(ICollectionFactory collectionFactory) : IMo
     public SortDefinitionBuilder<T> Sort => Builders<T>.Sort;
     public ProjectionDefinitionBuilder<T> Project => Builders<T>.Projection;
 
+    public IEntityUpdateDefinition<T> UpdateDefinition => new MongoDbEntityUpdateDefinition<T>();
+
+    public IEntitySortDefinition<T> SortDefinition => new MongoDbEntitySortDefinition<T>();
+
     public IQueryable<T> ToQueryable()
     {
         return Collection.AsQueryable();
@@ -62,6 +66,47 @@ public class MongoRepository<T, Tid>(ICollectionFactory collectionFactory) : IMo
             .Limit(pageSize)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
+    }    
+
+    public async Task<IEnumerable<T>> FindAsync(
+        Expression<Func<T, bool>> filter, 
+        IEntitySortDefinition<T>? sort = null, 
+        int pageIndex = 0, 
+        int pageSize = 20, 
+        CancellationToken cancellationToken = default)
+    {
+        var find = Collection.Find(Filter.And(FilterBase(), filter));
+
+        if (sort is not null && sort is MongoDbEntitySortDefinition<T> mongoDbSort) {
+            find = find.Sort(mongoDbSort.GetSort());
+        }
+
+        return await find.Skip(pageIndex * pageSize)
+            .Limit(pageSize)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+    }
+    
+
+    public async Task<IEnumerable<P>> FindAsync<P>(
+        Expression<Func<T, bool>> filter, 
+        Expression<Func<T, P>> projection, 
+        IEntitySortDefinition<T>? sort = null, 
+        int pageIndex = 0, 
+        int pageSize = 20, 
+        CancellationToken cancellationToken = default)
+    {
+        var find = Collection.Find(Filter.And(FilterBase(), filter));
+
+        if (sort is not null && sort is MongoDbEntitySortDefinition<T> mongoDbSort) {
+            find = find.Sort(mongoDbSort.GetSort());
+        }
+
+        return await find.Project(projection)
+            .Skip(pageIndex * pageSize)
+            .Limit(pageSize)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<P>> FindAsync<P>(
@@ -89,7 +134,7 @@ public class MongoRepository<T, Tid>(ICollectionFactory collectionFactory) : IMo
     public async Task<IEnumerable<P>> FindAsync<P>(
         Expression<Func<T, bool>> filter,
         Expression<Func<T, P>> projection,
-        IEnumerable<KeyValuePair<string, bool>>? sortOrders = null,
+        SortDefinition<T>? sort = null,
         int pageIndex = 0,
         int pageSize = 20,
         CancellationToken cancellationToken = default)
@@ -98,10 +143,9 @@ public class MongoRepository<T, Tid>(ICollectionFactory collectionFactory) : IMo
             .And(filter)
             .And(i => !i.IsDeleted);
         var find = Collection.Find(predicate);
-        var sort = CreateSortDefinition(sortOrders);
-        if (sort != null)
-        {
-            find = find.Sort(sort);
+        
+        if (sort is not null && sort is MongoDbEntitySortDefinition<T> mongoDbSort) {
+            find = find.Sort(mongoDbSort.GetSort());
         }
 
         return await find.Project(projection)
@@ -161,27 +205,6 @@ public class MongoRepository<T, Tid>(ICollectionFactory collectionFactory) : IMo
         return count > 0;
     }
 
-    public virtual SortDefinition<T> CreateSortDefinition(IEnumerable<KeyValuePair<string, bool>>? sortOrders)
-    {
-        var builder = Builders<T>.Sort;
-        if (sortOrders == null)
-        {
-            return builder.Combine();
-        }
-
-        var definitions = new List<SortDefinition<T>>();
-        foreach (var pair in sortOrders)
-        {
-            var key = pair.Key;
-            if (string.IsNullOrEmpty(key)) { continue; }
-            key = key[..1].ToUpperInvariant() + key[1..];
-            var definition = pair.Value ? builder.Ascending(key) : builder.Descending(key);
-            definitions.Add(definition);
-        }
-
-        return builder.Combine(definitions);
-    }
-
     public virtual async Task AddAsync(T item, CancellationToken cancellationToken = default)
     {
         if (item is MongoTrackedEntity<Tid>)
@@ -211,13 +234,14 @@ public class MongoRepository<T, Tid>(ICollectionFactory collectionFactory) : IMo
 
     public Task UpdateAsync(
         Tid id,
-        Func<EntityUpdateDefinition<T>, EntityUpdateDefinition<T>> updateFunc,
+        IEntityUpdateDefinition<T> update,
         CancellationToken cancellationToken = default)
     {
-        var updateDefinition = new MongoDbEntityUpdateDefinition<T>();
-        updateFunc.Invoke(updateDefinition);
+        if (update is not MongoDbEntityUpdateDefinition<T> mongoDbUpdate) {
+            throw new BellightDataException("Incorrect implementation of IEntityUpdateDefinition<T>.");
+        }
 
-        return UpdateAsync(id, updateDefinition.GetUpdate(), cancellationToken);
+        return UpdateAsync(id, mongoDbUpdate.GetUpdate(), cancellationToken);
     }
 
     public virtual Task UpdateAsync(
@@ -254,7 +278,7 @@ public class MongoRepository<T, Tid>(ICollectionFactory collectionFactory) : IMo
         UpdateDefinition<T> update,
         CancellationToken cancellationToken = default)
     {
-        var task = Collection.UpdateOneAsync(Filter.And(FilterBase(), filter), update, cancellationToken: cancellationToken);
+        var task = Collection.UpdateManyAsync(Filter.And(FilterBase(), filter), update, cancellationToken: cancellationToken);
 
         var updateResult = await task.ConfigureAwait(false);
         return updateResult.ModifiedCount;
@@ -283,17 +307,12 @@ public class MongoRepository<T, Tid>(ICollectionFactory collectionFactory) : IMo
 
     public Task<long> UpdateManyAsync(
         Expression<Func<T, bool>> filter,
-        Func<EntityUpdateDefinition<T>, EntityUpdateDefinition<T>> updateFunc,
+        IEntityUpdateDefinition<T> update,
         CancellationToken cancellationToken = default)
     {
-
-        var updateDefinition = new MongoDbEntityUpdateDefinition<T>();
-        updateFunc.Invoke(updateDefinition);
-        var update = updateDefinition.GetUpdate();
-
-        if (update is null)
+        if (update is not MongoDbEntityUpdateDefinition<T>)
         {
-            throw new BellightDataException("updateFunc must have an update.");
+            throw new BellightDataException("Incorrect implementation of IEntityUpdateDefinition<T>.");
         }
 
         return UpdateManyAsync(filter, update, cancellationToken);
@@ -369,7 +388,7 @@ public class MongoRepository<T, Tid>(ICollectionFactory collectionFactory) : IMo
         return Collection.DeleteOneAsync(filter, cancellationToken);
     }
 
-    public async Task<long> DeleteAsync(
+    public async Task<long> DeleteManyAsync(
         Expression<Func<T, bool>> filter,
         bool softDelete = true,
         CancellationToken cancellationToken = default)

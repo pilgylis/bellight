@@ -42,6 +42,4 @@ public interface IMongoRepository<T, Tid> : IRepository<T, Tid> where T : class,
     Task<long> CountAsync(FilterDefinition<T> filter, CancellationToken cancellationToken = default);
 
     Task<bool> Exists(FilterDefinition<T> filter, CancellationToken cancellationToken = default);
-
-    SortDefinition<T> CreateSortDefinition(IEnumerable<KeyValuePair<string, bool>>? sortOrders);
 }

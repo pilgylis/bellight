@@ -4,11 +4,11 @@ using System.Linq.Expressions;
 
 namespace Bellight.MongoDb;
 
-internal class MongoDbEntityUpdateDefinition<TObject> : EntityUpdateDefinition<TObject> where TObject : IEntity
+internal class MongoDbEntityUpdateDefinition<TObject> : IEntityUpdateDefinition<TObject> where TObject : IEntity
 {
     private UpdateDefinition<TObject>? update;
 
-    public override EntityUpdateDefinition<TObject> Set<TField>(Expression<Func<TObject, TField>> field, TField fieldValue)
+    public IEntityUpdateDefinition<TObject> Set<TField>(Expression<Func<TObject, TField>> field, TField fieldValue)
     {
         if (update is null)
         {
@@ -23,7 +23,7 @@ internal class MongoDbEntityUpdateDefinition<TObject> : EntityUpdateDefinition<T
         return this;
     }
 
-    public UpdateDefinition<TObject>? GetUpdate()
+    internal UpdateDefinition<TObject>? GetUpdate()
     {
         return update;
     }

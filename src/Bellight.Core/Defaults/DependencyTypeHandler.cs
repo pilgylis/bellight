@@ -21,7 +21,7 @@ public class DependencyTypeHandler : ITypeHandler
     private readonly IList<Tuple<Type, Type>> _singletonMaps = new List<Tuple<Type, Type>>();
     private readonly IList<Tuple<Type, Type>> _scopedMaps = new List<Tuple<Type, Type>>();
     private readonly IList<Tuple<Type, Type>> _transientMaps = new List<Tuple<Type, Type>>();
-    private readonly IList<Tuple<string, Type, Type>> _keyedMaps = new List<Tuple<string, Type, Type>>();
+    private readonly IList<Tuple<string, Type, Type, ServiceLifetime>> _keyedMaps = new List<Tuple<string, Type, Type, ServiceLifetime>>();
 
     public DependencyTypeHandler(IServiceCollection services, IKeyedServiceRegistry keyedServiceRegistry)
     {
@@ -39,7 +39,7 @@ public class DependencyTypeHandler : ITypeHandler
 
         foreach (var interfaceType in type
             .GetInterfaces()
-            .Where(itf => _dependencyType.IsAssignableFrom(itf)))
+            .Where(_dependencyType.IsAssignableFrom))
         {
             if (_singletonType.IsAssignableFrom(interfaceType))
             {
@@ -54,24 +54,35 @@ public class DependencyTypeHandler : ITypeHandler
             }
             else if (_keyedType.IsAssignableFrom(interfaceType))
             {
-                var key = GetKey(type);
+                var (key, lifetime) = GetKey(type);
                 if (string.IsNullOrEmpty(key))
                 {
                     continue;
                 }
 
-                _services.AddTransient(type);
-                _transientTypes.Add(type);
-
                 if (interfaceType != _keyedType)
                 {
-                    _services.AddTransient(interfaceType, type);
+                    switch (lifetime) {
+                        case ServiceLifetime.Scoped:
+                            _services.AddScoped(interfaceType, type);
+                            _services.AddKeyedScoped(interfaceType, key, type);
+                            break;
+                        case ServiceLifetime.Singleton:
+                            _services.AddSingleton(interfaceType, type);
+                            _services.AddKeyedSingleton(interfaceType, key, type);
+                            break;
+                        default:
+                        case ServiceLifetime.Transient:
+                            _services.AddTransient(interfaceType, type);
+                            _services.AddKeyedTransient(interfaceType, key, type);
+                            break;
+                    }
                 }
 
                 if (!_keyedServiceRegistry.ContainsKey(key))
                 {
-                    _keyedServiceRegistry.Add(key, type);
-                    _keyedMaps.Add(new Tuple<string, Type, Type>(key, interfaceType, type));
+                    _keyedServiceRegistry.Add(key, type, lifetime);
+                    _keyedMaps.Add(new Tuple<string, Type, Type, ServiceLifetime>(key, interfaceType, type, lifetime));
                 }
             }
             else if (_scopedDependencyType.IsAssignableFrom(interfaceType))
@@ -127,13 +138,11 @@ public class DependencyTypeHandler : ITypeHandler
                     var colonIndex = line.IndexOf(':');
                     if (colonIndex < 0)
                     {
-                        var type = Type.GetType(line);
-                        _services.AddTransient(type!);
                         continue;
                     }
 
                     var parts = line.Split(':');
-                    if (parts.Length != 3)
+                    if (parts.Length != 4)
                     {
                         throw new BellightStartupException($"Error parsing keyed dependency: {line}");
                     }
@@ -141,12 +150,27 @@ public class DependencyTypeHandler : ITypeHandler
                     var key = parts[0].Trim();
                     var interfaceTypeName = parts[1].Trim();
                     var implementationTypeName = parts[2].Trim();
+                    var lifetime = (ServiceLifetime)Enum.Parse(typeof(ServiceLifetime), parts[3].Trim());
 
-                    var interfaceType = Type.GetType(interfaceTypeName);
-                    var implementationType = Type.GetType(implementationTypeName);
+                    var interfaceType = Type.GetType(interfaceTypeName)!;
+                    var implementationType = Type.GetType(implementationTypeName)!;
 
-                    _keyedServiceRegistry.Add(key, implementationType!);
-                    _services.AddTransient(interfaceType!, implementationType!);
+                    _keyedServiceRegistry.Add(key, implementationType!, lifetime);
+                    switch (lifetime) {
+                        case ServiceLifetime.Scoped:
+                            _services.AddScoped(interfaceType, implementationType);
+                            _services.AddKeyedScoped(interfaceType, key, implementationType);
+                            break;
+                        case ServiceLifetime.Singleton:
+                            _services.AddSingleton(interfaceType, implementationType);
+                            _services.AddKeyedSingleton(interfaceType, key, implementationType);
+                            break;
+                        default:
+                        case ServiceLifetime.Transient:
+                            _services.AddTransient(interfaceType, implementationType);
+                            _services.AddKeyedTransient(interfaceType, key, implementationType);
+                            break;
+                    }
                 }
 
                 continue;
@@ -191,10 +215,11 @@ public class DependencyTypeHandler : ITypeHandler
             // keyed
             new() {
                 Name = "KeyedTypes",
-                Lines = _keyedMaps.Select(tuple => string.Format("{0}: {1}: {2}",
+                Lines = _keyedMaps.Select(tuple => string.Format("{0}: {1}: {2}: {3}",
                     tuple.Item1,
                     tuple.Item2.AssemblyQualifiedName,
-                    tuple.Item3.AssemblyQualifiedName))
+                    tuple.Item3.AssemblyQualifiedName,
+                    tuple.Item4.ToString()))
             }
         };
 
@@ -220,14 +245,16 @@ public class DependencyTypeHandler : ITypeHandler
 
     #endregion Save Cache
 
-    private static string GetKey(Type type)
+    private static (string, ServiceLifetime) GetKey(Type type)
     {
         var keyAttribute = type.GetCustomAttribute<KeyedServiceAttribute>();
         if (keyAttribute == null)
         {
-            return type.FullName!;
+            return (type.FullName!, ServiceLifetime.Transient);
         }
 
-        return !string.IsNullOrEmpty(keyAttribute?.Name) ? keyAttribute.Name : type.FullName!;
+        var typeName = !string.IsNullOrEmpty(keyAttribute?.Name) ? keyAttribute.Name : type.FullName!;
+        var lifetime = keyAttribute?.Lifetime ?? ServiceLifetime.Transient;
+        return (typeName, lifetime);
     }
 }

@@ -2,16 +2,16 @@
 
 public class DefaultKeyedServiceRegistry : IKeyedServiceRegistry
 {
-    private readonly IDictionary<string, Type> _dictionary = new Dictionary<string, Type>();
+    private readonly IDictionary<string, (Type, ServiceLifetime)> _dictionary = new Dictionary<string, (Type, ServiceLifetime)>();
 
-    public void Add(string key, Type type)
+    public void Add(string key, Type type, ServiceLifetime serviceLifetime)
     {
         if (_dictionary.ContainsKey(key))
         {
             return;
         }
 
-        _dictionary.Add(key, type);
+        _dictionary.Add(key, (type, serviceLifetime));
     }
 
     public void Clear()
@@ -24,7 +24,7 @@ public class DefaultKeyedServiceRegistry : IKeyedServiceRegistry
         return _dictionary.ContainsKey(key);
     }
 
-    public IDictionary<string, Type> GetDictionary()
+    public IDictionary<string, (Type, ServiceLifetime)> GetDictionary()
     {
         return _dictionary;
     }
