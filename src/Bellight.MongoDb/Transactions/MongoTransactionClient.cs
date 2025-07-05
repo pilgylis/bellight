@@ -7,19 +7,45 @@ namespace Bellight.MongoDb.Transactions;
 
 public class MongoTransactionClient(IMongoClient client) : IMongoClient
 {
-    private readonly IMongoClient _client = client;
+    public ClientBulkWriteResult BulkWrite(IReadOnlyList<BulkWriteModel> models, ClientBulkWriteOptions? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        return TryGetSession(out var session) ? 
+            client.BulkWrite(session, models, options, cancellationToken) 
+            : client.BulkWrite(models, options, cancellationToken);
+    }
+
+    public ClientBulkWriteResult BulkWrite(IClientSessionHandle session, IReadOnlyList<BulkWriteModel> models,
+        ClientBulkWriteOptions? options = null, CancellationToken cancellationToken = default)
+    {
+        return client.BulkWrite(models, options, cancellationToken);
+    }
+
+    public Task<ClientBulkWriteResult> BulkWriteAsync(IReadOnlyList<BulkWriteModel> models, ClientBulkWriteOptions? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        return TryGetSession(out var session) ? 
+            client.BulkWriteAsync(session, models, options, cancellationToken) 
+            : client.BulkWriteAsync(models, options, cancellationToken);
+    }
+
+    public Task<ClientBulkWriteResult> BulkWriteAsync(IClientSessionHandle session, IReadOnlyList<BulkWriteModel> models, ClientBulkWriteOptions? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        return client.BulkWriteAsync(models, options, cancellationToken);
+    }
 
     public void DropDatabase(
         string name,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
+        if (TryGetSession(out var session))
         {
-            _client.DropDatabase(session, name, cancellationToken);
+            client.DropDatabase(session, name, cancellationToken);
             return;
         }
 
-        _client.DropDatabase(name, cancellationToken);
+        client.DropDatabase(name, cancellationToken);
     }
 
     public void DropDatabase(
@@ -27,19 +53,19 @@ public class MongoTransactionClient(IMongoClient client) : IMongoClient
         string name,
         CancellationToken cancellationToken = default)
     {
-        _client.DropDatabase(session, name, cancellationToken);
+        client.DropDatabase(session, name, cancellationToken);
     }
 
     public Task DropDatabaseAsync(
         string name,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
+        if (TryGetSession(out var session))
         {
-            return _client.DropDatabaseAsync(session, name, cancellationToken);
+            return client.DropDatabaseAsync(session, name, cancellationToken);
         }
 
-        return _client.DropDatabaseAsync(name, cancellationToken);
+        return client.DropDatabaseAsync(name, cancellationToken);
     }
 
     public Task DropDatabaseAsync(
@@ -47,36 +73,33 @@ public class MongoTransactionClient(IMongoClient client) : IMongoClient
         string name,
         CancellationToken cancellationToken = default)
     {
-        return _client.DropDatabaseAsync(session, name, cancellationToken);
+        return client.DropDatabaseAsync(session, name, cancellationToken);
     }
 
     public IMongoDatabase GetDatabase(string name, MongoDatabaseSettings? settings = null)
     {
-        return _client.GetDatabase(name, settings).AsTransactionDatabase();
+        return client.GetDatabase(name, settings).AsTransactionDatabase();
     }
 
     public IAsyncCursor<string> ListDatabaseNames(CancellationToken cancellationToken = default)
     {
-        return _client.ListDatabaseNames(cancellationToken);
+        return client.ListDatabaseNames(cancellationToken);
     }
 
     public IAsyncCursor<string> ListDatabaseNames(
         ListDatabaseNamesOptions options,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return _client.ListDatabaseNames(session, options, cancellationToken);
-        }
-
-        return _client.ListDatabaseNames(options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            client.ListDatabaseNames(session, options, cancellationToken) 
+            : client.ListDatabaseNames(options, cancellationToken);
     }
 
     public IAsyncCursor<string> ListDatabaseNames(
         IClientSessionHandle session,
         CancellationToken cancellationToken = default)
     {
-        return _client.ListDatabaseNames(session, cancellationToken);
+        return client.ListDatabaseNames(session, cancellationToken);
     }
 
     public IAsyncCursor<string> ListDatabaseNames(
@@ -84,37 +107,31 @@ public class MongoTransactionClient(IMongoClient client) : IMongoClient
         ListDatabaseNamesOptions options,
         CancellationToken cancellationToken = default)
     {
-        return _client.ListDatabaseNames(session, options, cancellationToken);
+        return client.ListDatabaseNames(session, options, cancellationToken);
     }
 
     public Task<IAsyncCursor<string>> ListDatabaseNamesAsync(
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return _client.ListDatabaseNamesAsync(session, cancellationToken);
-        }
-
-        return _client.ListDatabaseNamesAsync(cancellationToken);
+        return TryGetSession(out var session) ? 
+            client.ListDatabaseNamesAsync(session, cancellationToken) 
+            : client.ListDatabaseNamesAsync(cancellationToken);
     }
 
     public Task<IAsyncCursor<string>> ListDatabaseNamesAsync(
         ListDatabaseNamesOptions options,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return _client.ListDatabaseNamesAsync(session, cancellationToken);
-        }
-
-        return _client.ListDatabaseNamesAsync(options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            client.ListDatabaseNamesAsync(session, cancellationToken) 
+            : client.ListDatabaseNamesAsync(options, cancellationToken);
     }
 
     public Task<IAsyncCursor<string>> ListDatabaseNamesAsync(
         IClientSessionHandle session,
         CancellationToken cancellationToken = default)
     {
-        return _client.ListDatabaseNamesAsync(session, cancellationToken);
+        return client.ListDatabaseNamesAsync(session, cancellationToken);
     }
 
     public Task<IAsyncCursor<string>> ListDatabaseNamesAsync(
@@ -122,37 +139,31 @@ public class MongoTransactionClient(IMongoClient client) : IMongoClient
         ListDatabaseNamesOptions options,
         CancellationToken cancellationToken = default)
     {
-        return _client.ListDatabaseNamesAsync(session, options, cancellationToken);
+        return client.ListDatabaseNamesAsync(session, options, cancellationToken);
     }
 
     public IAsyncCursor<BsonDocument> ListDatabases(
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return _client.ListDatabases(session, cancellationToken);
-        }
-
-        return _client.ListDatabases(cancellationToken);
+        return TryGetSession(out var session) ? 
+            client.ListDatabases(session, cancellationToken) 
+            : client.ListDatabases(cancellationToken);
     }
 
     public IAsyncCursor<BsonDocument> ListDatabases(
         ListDatabasesOptions options,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return _client.ListDatabases(session, options, cancellationToken);
-        }
-
-        return _client.ListDatabases(options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            client.ListDatabases(session, options, cancellationToken) 
+            : client.ListDatabases(options, cancellationToken);
     }
 
     public IAsyncCursor<BsonDocument> ListDatabases(
         IClientSessionHandle session,
         CancellationToken cancellationToken = default)
     {
-        return _client.ListDatabases(session, cancellationToken);
+        return client.ListDatabases(session, cancellationToken);
     }
 
     public IAsyncCursor<BsonDocument> ListDatabases(
@@ -160,37 +171,31 @@ public class MongoTransactionClient(IMongoClient client) : IMongoClient
         ListDatabasesOptions options,
         CancellationToken cancellationToken = default)
     {
-        return _client.ListDatabases(session, options, cancellationToken);
+        return client.ListDatabases(session, options, cancellationToken);
     }
 
     public Task<IAsyncCursor<BsonDocument>> ListDatabasesAsync(
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return _client.ListDatabasesAsync(session, cancellationToken);
-        }
-
-        return _client.ListDatabasesAsync(cancellationToken);
+        return TryGetSession(out var session) ? 
+            client.ListDatabasesAsync(session, cancellationToken) 
+            : client.ListDatabasesAsync(cancellationToken);
     }
 
     public Task<IAsyncCursor<BsonDocument>> ListDatabasesAsync(
         ListDatabasesOptions options,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return _client.ListDatabasesAsync(session, options, cancellationToken);
-        }
-
-        return _client.ListDatabasesAsync(options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            client.ListDatabasesAsync(session, options, cancellationToken) 
+            : client.ListDatabasesAsync(options, cancellationToken);
     }
 
     public Task<IAsyncCursor<BsonDocument>> ListDatabasesAsync(
         IClientSessionHandle session,
         CancellationToken cancellationToken = default)
     {
-        return _client.ListDatabasesAsync(session, cancellationToken);
+        return client.ListDatabasesAsync(session, cancellationToken);
     }
 
     public Task<IAsyncCursor<BsonDocument>> ListDatabasesAsync(
@@ -198,21 +203,21 @@ public class MongoTransactionClient(IMongoClient client) : IMongoClient
         ListDatabasesOptions options,
         CancellationToken cancellationToken = default)
     {
-        return _client.ListDatabasesAsync(session, options, cancellationToken);
+        return client.ListDatabasesAsync(session, options, cancellationToken);
     }
 
     public IClientSessionHandle StartSession(
         ClientSessionOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _client.StartSession(options, cancellationToken);
+        return client.StartSession(options, cancellationToken);
     }
 
     public Task<IClientSessionHandle> StartSessionAsync(
         ClientSessionOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _client.StartSessionAsync(options, cancellationToken);
+        return client.StartSessionAsync(options, cancellationToken);
     }
 
     public IChangeStreamCursor<TResult> Watch<TResult>(
@@ -220,12 +225,9 @@ public class MongoTransactionClient(IMongoClient client) : IMongoClient
         ChangeStreamOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return _client.Watch(session, pipeline, options, cancellationToken);
-        }
-
-        return _client.Watch(pipeline, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            client.Watch(session, pipeline, options, cancellationToken) 
+            : client.Watch(pipeline, options, cancellationToken);
     }
 
     public IChangeStreamCursor<TResult> Watch<TResult>(
@@ -234,7 +236,7 @@ public class MongoTransactionClient(IMongoClient client) : IMongoClient
         ChangeStreamOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _client.Watch(session, pipeline, options, cancellationToken);
+        return client.Watch(session, pipeline, options, cancellationToken);
     }
 
     public Task<IChangeStreamCursor<TResult>> WatchAsync<TResult>(
@@ -242,12 +244,9 @@ public class MongoTransactionClient(IMongoClient client) : IMongoClient
         ChangeStreamOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return _client.WatchAsync(session, pipeline, options, cancellationToken);
-        }
-
-        return _client.WatchAsync(pipeline, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            client.WatchAsync(session, pipeline, options, cancellationToken) 
+            : client.WatchAsync(pipeline, options, cancellationToken);
     }
 
     public Task<IChangeStreamCursor<TResult>> WatchAsync<TResult>(
@@ -256,29 +255,34 @@ public class MongoTransactionClient(IMongoClient client) : IMongoClient
         ChangeStreamOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _client.WatchAsync(session, pipeline, options, cancellationToken);
+        return client.WatchAsync(session, pipeline, options, cancellationToken);
     }
 
     public IMongoClient WithReadConcern(ReadConcern readConcern)
     {
-        return _client.WithReadConcern(readConcern).AsTransactionClient();
+        return client.WithReadConcern(readConcern).AsTransactionClient();
     }
 
     public IMongoClient WithReadPreference(ReadPreference readPreference)
     {
-        return _client.WithReadPreference(readPreference).AsTransactionClient();
+        return client.WithReadPreference(readPreference).AsTransactionClient();
     }
 
     public IMongoClient WithWriteConcern(WriteConcern writeConcern)
     {
-        return _client.WithWriteConcern(writeConcern).AsTransactionClient();
+        return client.WithWriteConcern(writeConcern).AsTransactionClient();
     }
 
-    public ICluster Cluster => _client.Cluster;
+    public ICluster Cluster => client.Cluster;
 
-    public MongoClientSettings Settings => _client.Settings;
+    public MongoClientSettings Settings => client.Settings;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool TryGetSession(out IClientSessionHandle sessionHandle) =>
-        TransactionStore.TryGetSession(_client, out sessionHandle);
+        TransactionStore.TryGetSession(client, out sessionHandle);
+
+    public void Dispose()
+    {
+        client.Dispose();
+    }
 }

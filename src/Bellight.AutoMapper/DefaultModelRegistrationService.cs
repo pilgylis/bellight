@@ -2,8 +2,8 @@
 
 public class DefaultModelRegistrationService : IModelRegistrationService
 {
-    private readonly IList<Tuple<Type, Type>> _mappings = new List<Tuple<Type, Type>>();
-    private readonly IList<Type> _mappingProfiles = new List<Type>();
+    private readonly List<Tuple<Type, Type>> _mappings = [];
+    private readonly List<Type> _mappingProfiles = [];
 
     public void AddMapping(Type sourceType, Type destinationType)
     {

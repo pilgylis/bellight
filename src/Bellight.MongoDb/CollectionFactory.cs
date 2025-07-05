@@ -11,7 +11,6 @@ namespace Bellight.MongoDb;
 public class CollectionFactory(IOptions<MongoDbSettings> optionsAccessor, IServiceProvider serviceProvider) : ICollectionFactory
 {
     private readonly MongoDbSettings _settings = optionsAccessor.Value;
-    private readonly IServiceProvider serviceProvider = serviceProvider;
     private IMongoDatabase? _database;
 
     private ILogger<CollectionFactory>? logger;

@@ -4,13 +4,11 @@ namespace Bellight.Core.Defaults;
 
 public class DefaultAssemblyHandler(IEnumerable<ITypeHandler> typeHandlers) : IAssemblyHandler
 {
-    private readonly IEnumerable<ITypeHandler> _typeHandlers = typeHandlers;
-
     public void Process(Assembly assembly)
     {
         foreach (var type in assembly.GetExportedTypes().Where(TypeCondition))
         {
-            foreach (var typeHandler in _typeHandlers)
+            foreach (var typeHandler in typeHandlers)
             {
                 typeHandler.Process(type);
             }

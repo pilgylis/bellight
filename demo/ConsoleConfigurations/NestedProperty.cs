@@ -1,10 +1,9 @@
 ﻿using Bellight.Configurations;
 
-namespace ConsoleConfigurations
+namespace ConsoleConfigurations;
+
+public class NestedProperty : IAppSettingSection
 {
-    public class NestedProperty : IAppSettingSection
-    {
-        public string NestedA { get; set; }
-        public string NestedB { get; set; }
-    }
+    public string NestedA { get; set; }
+    public string NestedB { get; set; }
 }

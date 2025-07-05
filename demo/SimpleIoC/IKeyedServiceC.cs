@@ -1,9 +1,8 @@
 ﻿using Bellight.Core;
 
-namespace SimpleIoC
+namespace SimpleIoC;
+
+public interface IKeyedServiceC : IKeyedDependency
 {
-    public interface IKeyedServiceC : IKeyedDependency
-    {
-        void DoSomethingInKeyed();
-    }
+    void DoSomethingInKeyed();
 }

@@ -5,33 +5,32 @@ using UtilitiesTests.Models;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace UtilitiesTests
+namespace UtilitiesTests;
+
+public class SerializationTests : IClassFixture<CountryFixture>
 {
-    public class SerializationTests : IClassFixture<CountryFixture>
+    private readonly IEnumerable<Country> countries;
+    private readonly ITestOutputHelper testOutputHelper;
+
+    public SerializationTests(CountryFixture countryFixture, ITestOutputHelper testOutputHelper)
     {
-        private readonly IEnumerable<Country> countries;
-        private readonly ITestOutputHelper testOutputHelper;
+        countries = countryFixture.Countries;
+        this.testOutputHelper = testOutputHelper;
+    }
 
-        public SerializationTests(CountryFixture countryFixture, ITestOutputHelper testOutputHelper)
-        {
-            countries = countryFixture.Countries;
-            this.testOutputHelper = testOutputHelper;
-        }
+    [Fact]
+    public void JsonHasContentTest()
+    {
+        Assert.NotNull(countries);
+        Assert.NotEmpty(countries);
+    }
 
-        [Fact]
-        public void JsonHasContentTest()
-        {
-            Assert.NotNull(countries);
-            Assert.NotEmpty(countries);
-        }
-
-        [Fact]
-        public void SimpleJsonSerializationTest()
-        {
-            var json = countries.ToJson();
-            Assert.NotNull(json);
-            testOutputHelper.WriteLine(json);
-            Assert.NotEmpty(json);
-        }
+    [Fact]
+    public void SimpleJsonSerializationTest()
+    {
+        var json = countries.ToJson();
+        Assert.NotNull(json);
+        testOutputHelper.WriteLine(json);
+        Assert.NotEmpty(json);
     }
 }

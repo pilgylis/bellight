@@ -4,27 +4,26 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
 
-namespace ConsoleConfigurations
+namespace ConsoleConfigurations;
+
+internal class Program
 {
-    internal class Program
+    private static void Main(string[] args)
     {
-        private static void Main(string[] args)
+        var services = new ServiceCollection();
+
+        services.AddBellightCore(options => options.AddBellightConfigurations());
+
+        var serviceProvider = services.BuildServiceProvider();
+
+        var configuration = serviceProvider.GetService<IConfiguration>();
+
+        foreach (var pair in configuration.AsEnumerable())
         {
-            var services = new ServiceCollection();
-
-            services.AddBellightCore(options => options.AddBellightConfigurations());
-
-            var serviceProvider = services.BuildServiceProvider();
-
-            var configuration = serviceProvider.GetService<IConfiguration>();
-
-            foreach (var pair in configuration.AsEnumerable())
-            {
-                Console.WriteLine("{0}: {1}", pair.Key, pair.Value);
-            }
-
-            var testOptions = serviceProvider.GetService<IOptions<NestedProperty>>();
-            Console.WriteLine(testOptions.Value.NestedA);
+            Console.WriteLine("{0}: {1}", pair.Key, pair.Value);
         }
+
+        var testOptions = serviceProvider.GetService<IOptions<NestedProperty>>();
+        Console.WriteLine(testOptions.Value.NestedA);
     }
 }

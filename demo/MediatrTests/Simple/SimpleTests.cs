@@ -8,8 +8,6 @@ namespace MediatrTests.Simple;
 
 public class SimpleTests(ServiceProviderFixture fixture) : IClassFixture<ServiceProviderFixture>
 {
-    private readonly ServiceProviderFixture fixture = fixture;
-
     [Fact]
     public async Task PingPongTest()
     {

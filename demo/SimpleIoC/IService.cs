@@ -1,9 +1,8 @@
 ﻿using Bellight.Core;
 
-namespace SimpleIoC
+namespace SimpleIoC;
+
+public interface IService : ITransientDependency
 {
-    public interface IService : ITransientDependency
-    {
-        void DoSomething();
-    }
+    void DoSomething();
 }

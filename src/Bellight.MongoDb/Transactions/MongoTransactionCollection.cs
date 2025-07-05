@@ -10,19 +10,14 @@ namespace Bellight.MongoDb.Transactions;
 
 public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMongoCollection<T>
 {
-    private readonly IMongoCollection<T> _collection = collection;
-
     public IAsyncCursor<TResult> Aggregate<TResult>(
         PipelineDefinition<T, TResult> pipeline,
         AggregateOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return Aggregate(session, pipeline, options, cancellationToken);
-        }
-
-        return _collection.Aggregate(pipeline, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.Aggregate(session, pipeline, options, cancellationToken) 
+            : collection.Aggregate(pipeline, options, cancellationToken);
     }
 
     public IAsyncCursor<TResult> Aggregate<TResult>(
@@ -31,7 +26,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         AggregateOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.Aggregate(session, pipeline, options, cancellationToken);
+        return collection.Aggregate(session, pipeline, options, cancellationToken);
     }
 
     public Task<IAsyncCursor<TResult>> AggregateAsync<TResult>(
@@ -39,12 +34,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         AggregateOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return AggregateAsync(session, pipeline, options, cancellationToken);
-        }
-
-        return _collection.AggregateAsync(pipeline, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.AggregateAsync(session, pipeline, options, cancellationToken) 
+            : collection.AggregateAsync(pipeline, options, cancellationToken);
     }
 
     public Task<IAsyncCursor<TResult>> AggregateAsync<TResult>(
@@ -53,7 +45,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         AggregateOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.AggregateAsync(session, pipeline, options, cancellationToken);
+        return collection.AggregateAsync(session, pipeline, options, cancellationToken);
     }
 
     public void AggregateToCollection<TResult>(
@@ -61,13 +53,13 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         AggregateOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
+        if (TryGetSession(out var session))
         {
-            AggregateToCollection(session, pipeline, options, cancellationToken);
+            collection.AggregateToCollection(session, pipeline, options, cancellationToken);
             return;
         }
 
-        _collection.AggregateToCollection(pipeline, options, cancellationToken);
+        collection.AggregateToCollection(pipeline, options, cancellationToken);
     }
 
     public void AggregateToCollection<TResult>(
@@ -76,7 +68,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         AggregateOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        _collection.AggregateToCollection(session, pipeline, options, cancellationToken);
+        collection.AggregateToCollection(session, pipeline, options, cancellationToken);
     }
 
     public Task AggregateToCollectionAsync<TResult>(
@@ -84,12 +76,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         AggregateOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return AggregateToCollectionAsync(session, pipeline, options, cancellationToken);
-        }
-
-        return _collection.AggregateToCollectionAsync(pipeline, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.AggregateToCollectionAsync(session, pipeline, options, cancellationToken) 
+            : collection.AggregateToCollectionAsync(pipeline, options, cancellationToken);
     }
 
     public Task AggregateToCollectionAsync<TResult>(
@@ -98,7 +87,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         AggregateOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.AggregateToCollectionAsync(session,
+        return collection.AggregateToCollectionAsync(session,
             pipeline,
             options,
             cancellationToken);
@@ -109,12 +98,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         BulkWriteOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return BulkWrite(session, requests, options, cancellationToken);
-        }
-
-        return _collection.BulkWrite(requests, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.BulkWrite(session, requests, options, cancellationToken) 
+            : collection.BulkWrite(requests, options, cancellationToken);
     }
 
     public BulkWriteResult<T> BulkWrite(
@@ -123,7 +109,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         BulkWriteOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.BulkWrite(session, requests, options, cancellationToken);
+        return collection.BulkWrite(session, requests, options, cancellationToken);
     }
 
     public Task<BulkWriteResult<T>> BulkWriteAsync(
@@ -131,12 +117,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         BulkWriteOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return BulkWriteAsync(session, requests, options, cancellationToken);
-        }
-
-        return _collection.BulkWriteAsync(requests, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.BulkWriteAsync(session, requests, options, cancellationToken) 
+            : collection.BulkWriteAsync(requests, options, cancellationToken);
     }
 
     public Task<BulkWriteResult<T>> BulkWriteAsync(
@@ -145,7 +128,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         BulkWriteOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.BulkWriteAsync(session, requests, options, cancellationToken);
+        return collection.BulkWriteAsync(session, requests, options, cancellationToken);
     }
 
     public long Count(
@@ -153,12 +136,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         CountOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return Count(session, filter, options, cancellationToken);
-        }
-
-        return _collection.Count(filter, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.Count(session, filter, options, cancellationToken) 
+            : collection.Count(filter, options, cancellationToken);
     }
 
     public long Count(
@@ -167,7 +147,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         CountOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.Count(session, filter, options, cancellationToken);
+        return collection.Count(session, filter, options, cancellationToken);
     }
 
     public Task<long> CountAsync(
@@ -175,12 +155,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         CountOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return CountAsync(session, filter, options, cancellationToken);
-        }
-
-        return _collection.CountAsync(filter, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.CountAsync(session, filter, options, cancellationToken) 
+            : collection.CountAsync(filter, options, cancellationToken);
     }
 
     public Task<long> CountAsync(
@@ -189,7 +166,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         CountOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.CountAsync(session, filter, options, cancellationToken);
+        return collection.CountAsync(session, filter, options, cancellationToken);
     }
 
     public long CountDocuments(
@@ -197,12 +174,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         CountOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return CountDocuments(session, filter, options, cancellationToken);
-        }
-
-        return _collection.CountDocuments(filter, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.CountDocuments(session, filter, options, cancellationToken) 
+            : collection.CountDocuments(filter, options, cancellationToken);
     }
 
     public long CountDocuments(
@@ -211,7 +185,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         CountOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.CountDocuments(session, filter, options, cancellationToken);
+        return collection.CountDocuments(session, filter, options, cancellationToken);
     }
 
     public Task<long> CountDocumentsAsync(
@@ -219,12 +193,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         CountOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return CountDocumentsAsync(session, filter, options, cancellationToken);
-        }
-
-        return _collection.CountDocumentsAsync(filter, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.CountDocumentsAsync(session, filter, options, cancellationToken) 
+            : collection.CountDocumentsAsync(filter, options, cancellationToken);
     }
 
     public Task<long> CountDocumentsAsync(
@@ -233,19 +204,16 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         CountOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.CountDocumentsAsync(session, filter, options, cancellationToken);
+        return collection.CountDocumentsAsync(session, filter, options, cancellationToken);
     }
 
     public DeleteResult DeleteMany(
         FilterDefinition<T> filter,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return DeleteMany(session, filter, cancellationToken: cancellationToken);
-        }
-
-        return _collection.DeleteMany(filter, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.DeleteMany(session, filter, cancellationToken: cancellationToken) 
+            : collection.DeleteMany(filter, cancellationToken);
     }
 
     public DeleteResult DeleteMany(
@@ -253,12 +221,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         DeleteOptions options,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return DeleteMany(session, filter, options, cancellationToken);
-        }
-
-        return _collection.DeleteMany(filter, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.DeleteMany(session, filter, options, cancellationToken) 
+            : collection.DeleteMany(filter, options, cancellationToken);
     }
 
     public DeleteResult DeleteMany(
@@ -267,19 +232,16 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         DeleteOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.DeleteMany(session, filter, options, cancellationToken);
+        return collection.DeleteMany(session, filter, options, cancellationToken);
     }
 
     public Task<DeleteResult> DeleteManyAsync(
         FilterDefinition<T> filter,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return DeleteManyAsync(session, filter, cancellationToken: cancellationToken);
-        }
-
-        return _collection.DeleteManyAsync(filter, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.DeleteManyAsync(session, filter, cancellationToken: cancellationToken) 
+            : collection.DeleteManyAsync(filter, cancellationToken);
     }
 
     public Task<DeleteResult> DeleteManyAsync(
@@ -287,12 +249,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         DeleteOptions options,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return DeleteManyAsync(session, filter, options, cancellationToken);
-        }
-
-        return _collection.DeleteManyAsync(filter, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.DeleteManyAsync(session, filter, options, cancellationToken) 
+            : collection.DeleteManyAsync(filter, options, cancellationToken);
     }
 
     public Task<DeleteResult> DeleteManyAsync(
@@ -301,19 +260,16 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         DeleteOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.DeleteManyAsync(session, filter, options, cancellationToken);
+        return collection.DeleteManyAsync(session, filter, options, cancellationToken);
     }
 
     public DeleteResult DeleteOne(
         FilterDefinition<T> filter,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return DeleteOne(session, filter, cancellationToken: cancellationToken);
-        }
-
-        return _collection.DeleteOne(filter, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.DeleteOne(session, filter, cancellationToken: cancellationToken) 
+            : collection.DeleteOne(filter, cancellationToken);
     }
 
     public DeleteResult DeleteOne(
@@ -321,12 +277,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         DeleteOptions options,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return DeleteOne(session, filter, options, cancellationToken);
-        }
-
-        return _collection.DeleteOne(filter, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.DeleteOne(session, filter, options, cancellationToken) 
+            : collection.DeleteOne(filter, options, cancellationToken);
     }
 
     public DeleteResult DeleteOne(
@@ -335,19 +288,16 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         DeleteOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.DeleteOne(session, filter, options, cancellationToken);
+        return collection.DeleteOne(session, filter, options, cancellationToken);
     }
 
     public Task<DeleteResult> DeleteOneAsync(
         FilterDefinition<T> filter,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return DeleteOneAsync(session, filter, cancellationToken: cancellationToken);
-        }
-
-        return _collection.DeleteOneAsync(filter, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.DeleteOneAsync(session, filter, cancellationToken: cancellationToken) 
+            : collection.DeleteOneAsync(filter, cancellationToken);
     }
 
     public Task<DeleteResult> DeleteOneAsync(
@@ -355,12 +305,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         DeleteOptions options,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return DeleteOneAsync(session, filter, options, cancellationToken);
-        }
-
-        return _collection.DeleteOneAsync(filter, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.DeleteOneAsync(session, filter, options, cancellationToken) 
+            : collection.DeleteOneAsync(filter, options, cancellationToken);
     }
 
     public Task<DeleteResult> DeleteOneAsync(
@@ -369,7 +316,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         DeleteOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.DeleteOneAsync(session, filter, options, cancellationToken);
+        return collection.DeleteOneAsync(session, filter, options, cancellationToken);
     }
 
     public IAsyncCursor<TField> Distinct<TField>(
@@ -378,12 +325,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         DistinctOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return Distinct(session, field, filter, options, cancellationToken);
-        }
-
-        return _collection.Distinct(field, filter, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.Distinct(session, field, filter, options, cancellationToken) 
+            : collection.Distinct(field, filter, options, cancellationToken);
     }
 
     public IAsyncCursor<TField> Distinct<TField>(
@@ -393,7 +337,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         DistinctOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.Distinct(session, field, filter, options, cancellationToken);
+        return collection.Distinct(session, field, filter, options, cancellationToken);
     }
 
     public Task<IAsyncCursor<TField>> DistinctAsync<TField>(
@@ -402,12 +346,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         DistinctOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return DistinctAsync(session, field, filter, options, cancellationToken);
-        }
-
-        return _collection.DistinctAsync(field, filter, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.DistinctAsync(session, field, filter, options, cancellationToken) 
+            : collection.DistinctAsync(field, filter, options, cancellationToken);
     }
 
     public Task<IAsyncCursor<TField>> DistinctAsync<TField>(
@@ -417,21 +358,49 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         DistinctOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.DistinctAsync(session, field, filter, options, cancellationToken);
+        return collection.DistinctAsync(session, field, filter, options, cancellationToken);
+    }
+
+    public IAsyncCursor<TItem> DistinctMany<TItem>(FieldDefinition<T, IEnumerable<TItem>> field, FilterDefinition<T> filter, DistinctOptions? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        return TryGetSession(out var session) ? 
+            collection.DistinctMany(session, field, filter, options, cancellationToken) 
+            : collection.DistinctMany(field, filter, options, cancellationToken);
+    }
+
+    public IAsyncCursor<TItem> DistinctMany<TItem>(IClientSessionHandle session, FieldDefinition<T, IEnumerable<TItem>> field, FilterDefinition<T> filter,
+        DistinctOptions? options = null, CancellationToken cancellationToken = default)
+    {
+        return collection.DistinctMany(session, field, filter, options, cancellationToken);
+    }
+
+    public Task<IAsyncCursor<TItem>> DistinctManyAsync<TItem>(FieldDefinition<T, IEnumerable<TItem>> field, FilterDefinition<T> filter, DistinctOptions? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        return TryGetSession(out var session) ? 
+            collection.DistinctManyAsync(session, field, filter, options, cancellationToken) 
+            : collection.DistinctManyAsync(field, filter, options, cancellationToken);
+    }
+
+    public Task<IAsyncCursor<TItem>> DistinctManyAsync<TItem>(IClientSessionHandle session, FieldDefinition<T, IEnumerable<TItem>> field, FilterDefinition<T> filter,
+        DistinctOptions? options = null, CancellationToken cancellationToken = default)
+    {
+        return collection.DistinctManyAsync(session, field, filter, options, cancellationToken);
     }
 
     public long EstimatedDocumentCount(
         EstimatedDocumentCountOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.EstimatedDocumentCount(options, cancellationToken);
+        return collection.EstimatedDocumentCount(options, cancellationToken);
     }
 
     public Task<long> EstimatedDocumentCountAsync(
         EstimatedDocumentCountOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.EstimatedDocumentCountAsync(options, cancellationToken);
+        return collection.EstimatedDocumentCountAsync(options, cancellationToken);
     }
 
     public IAsyncCursor<TProjection> FindSync<TProjection>(
@@ -439,12 +408,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         FindOptions<T, TProjection>? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return FindSync(session, filter, options, cancellationToken);
-        }
-
-        return _collection.FindSync(filter, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.FindSync(session, filter, options, cancellationToken) 
+            : collection.FindSync(filter, options, cancellationToken);
     }
 
     public IAsyncCursor<TProjection> FindSync<TProjection>(
@@ -453,7 +419,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         FindOptions<T, TProjection>? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.FindSync(session, filter, options, cancellationToken);
+        return collection.FindSync(session, filter, options, cancellationToken);
     }
 
     public Task<IAsyncCursor<TProjection>> FindAsync<TProjection>(
@@ -461,12 +427,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         FindOptions<T, TProjection>? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return FindAsync(session, filter, options, cancellationToken);
-        }
-
-        return _collection.FindAsync(filter, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.FindAsync(session, filter, options, cancellationToken) 
+            : collection.FindAsync(filter, options, cancellationToken);
     }
 
     public Task<IAsyncCursor<TProjection>> FindAsync<TProjection>(
@@ -475,7 +438,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         FindOptions<T, TProjection>? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.FindAsync(session, filter, options, cancellationToken);
+        return collection.FindAsync(session, filter, options, cancellationToken);
     }
 
     public TProjection FindOneAndDelete<TProjection>(
@@ -483,12 +446,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         FindOneAndDeleteOptions<T, TProjection>? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return FindOneAndDelete(session, filter, options, cancellationToken);
-        }
-
-        return _collection.FindOneAndDelete(filter, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.FindOneAndDelete(session, filter, options, cancellationToken) 
+            : collection.FindOneAndDelete(filter, options, cancellationToken);
     }
 
     public TProjection FindOneAndDelete<TProjection>(
@@ -497,7 +457,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         FindOneAndDeleteOptions<T, TProjection>? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.FindOneAndDelete(session, filter, options, cancellationToken);
+        return collection.FindOneAndDelete(session, filter, options, cancellationToken);
     }
 
     public Task<TProjection> FindOneAndDeleteAsync<TProjection>(
@@ -505,12 +465,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         FindOneAndDeleteOptions<T, TProjection>? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return FindOneAndDeleteAsync(session, filter, options, cancellationToken);
-        }
-
-        return _collection.FindOneAndDeleteAsync(filter, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.FindOneAndDeleteAsync(session, filter, options, cancellationToken) 
+            : collection.FindOneAndDeleteAsync(filter, options, cancellationToken);
     }
 
     public Task<TProjection> FindOneAndDeleteAsync<TProjection>(
@@ -519,7 +476,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         FindOneAndDeleteOptions<T, TProjection>? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.FindOneAndDeleteAsync(session, filter, options, cancellationToken);
+        return collection.FindOneAndDeleteAsync(session, filter, options, cancellationToken);
     }
 
     public TProjection FindOneAndReplace<TProjection>(
@@ -528,12 +485,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         FindOneAndReplaceOptions<T, TProjection>? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return FindOneAndReplace(session, filter, replacement, options, cancellationToken);
-        }
-
-        return _collection.FindOneAndReplace(filter, replacement, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.FindOneAndReplace(session, filter, replacement, options, cancellationToken) 
+            : collection.FindOneAndReplace(filter, replacement, options, cancellationToken);
     }
 
     public TProjection FindOneAndReplace<TProjection>(
@@ -543,7 +497,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         FindOneAndReplaceOptions<T, TProjection>? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.FindOneAndReplace(session,
+        return collection.FindOneAndReplace(session,
             filter,
             replacement,
             options,
@@ -556,16 +510,16 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         FindOneAndReplaceOptions<T, TProjection>? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
+        if (TryGetSession(out var session))
         {
-            return FindOneAndReplaceAsync(session,
+            return collection.FindOneAndReplaceAsync(session,
                 filter,
                 replacement,
                 options,
                 cancellationToken);
         }
 
-        return _collection.FindOneAndReplaceAsync(filter,
+        return collection.FindOneAndReplaceAsync(filter,
             replacement,
             options,
             cancellationToken);
@@ -578,7 +532,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         FindOneAndReplaceOptions<T, TProjection>? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.FindOneAndReplaceAsync(session,
+        return collection.FindOneAndReplaceAsync(session,
             filter,
             replacement,
             options,
@@ -591,12 +545,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         FindOneAndUpdateOptions<T, TProjection>? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return FindOneAndUpdate(session, filter, update, options, cancellationToken);
-        }
-
-        return _collection.FindOneAndUpdate(filter, update, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.FindOneAndUpdate(session, filter, update, options, cancellationToken) 
+            : collection.FindOneAndUpdate(filter, update, options, cancellationToken);
     }
 
     public TProjection FindOneAndUpdate<TProjection>(
@@ -606,7 +557,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         FindOneAndUpdateOptions<T, TProjection>? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.FindOneAndUpdate(session,
+        return collection.FindOneAndUpdate(session,
             filter,
             update,
             options,
@@ -619,12 +570,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         FindOneAndUpdateOptions<T, TProjection>? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return FindOneAndUpdateAsync(session, filter, update, options, cancellationToken);
-        }
-
-        return _collection.FindOneAndUpdateAsync(filter, update, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.FindOneAndUpdateAsync(session, filter, update, options, cancellationToken) : 
+            collection.FindOneAndUpdateAsync(filter, update, options, cancellationToken);
     }
 
     public Task<TProjection> FindOneAndUpdateAsync<TProjection>(
@@ -634,7 +582,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         FindOneAndUpdateOptions<T, TProjection>? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.FindOneAndUpdateAsync(session,
+        return collection.FindOneAndUpdateAsync(session,
             filter,
             update,
             options,
@@ -646,13 +594,13 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         InsertOneOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
+        if (TryGetSession(out var session))
         {
-            InsertOne(session, document, options, cancellationToken);
+            collection.InsertOne(session, document, options, cancellationToken);
             return;
         }
 
-        _collection.InsertOne(document, options, cancellationToken);
+        collection.InsertOne(document, options, cancellationToken);
     }
 
     public void InsertOne(
@@ -661,17 +609,14 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         InsertOneOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        _collection.InsertOne(session, document, options, cancellationToken);
+        collection.InsertOne(session, document, options, cancellationToken);
     }
 
-    public Task InsertOneAsync(T document, CancellationToken _cancellationToken)
+    public Task InsertOneAsync(T document, CancellationToken cancellationToken)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return InsertOneAsync(session, document, cancellationToken: _cancellationToken);
-        }
-
-        return _collection.InsertOneAsync(document, _cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.InsertOneAsync(session, document, cancellationToken: cancellationToken) 
+            : collection.InsertOneAsync(document, cancellationToken);
     }
 
     public Task InsertOneAsync(
@@ -679,12 +624,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         InsertOneOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return InsertOneAsync(session, document, options, cancellationToken);
-        }
-
-        return _collection.InsertOneAsync(document, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.InsertOneAsync(session, document, options, cancellationToken) 
+            : collection.InsertOneAsync(document, options, cancellationToken);
     }
 
     public Task InsertOneAsync(
@@ -693,7 +635,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         InsertOneOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.InsertOneAsync(session, document, options, cancellationToken);
+        return collection.InsertOneAsync(session, document, options, cancellationToken);
     }
 
     public void InsertMany(
@@ -701,15 +643,13 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         InsertManyOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
+        if (TryGetSession(out var session))
         {
-            // ReSharper disable once PossibleMultipleEnumeration
-            InsertMany(session, documents, options, cancellationToken);
+            collection.InsertMany(session, documents, options, cancellationToken);
             return;
         }
 
-        // ReSharper disable once PossibleMultipleEnumeration
-        _collection.InsertMany(documents, options, cancellationToken);
+        collection.InsertMany(documents, options, cancellationToken);
     }
 
     public void InsertMany(
@@ -718,7 +658,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         InsertManyOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        _collection.InsertMany(session, documents, options, cancellationToken);
+        collection.InsertMany(session, documents, options, cancellationToken);
     }
 
     public Task InsertManyAsync(
@@ -726,12 +666,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         InsertManyOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return InsertManyAsync(session, documents, options, cancellationToken);
-        }
-
-        return _collection.InsertManyAsync(documents, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.InsertManyAsync(session, documents, options, cancellationToken) 
+            : collection.InsertManyAsync(documents, options, cancellationToken);
     }
 
     public Task InsertManyAsync(
@@ -740,7 +677,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         InsertManyOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.InsertManyAsync(session, documents, options, cancellationToken);
+        return collection.InsertManyAsync(session, documents, options, cancellationToken);
     }
 
     public IAsyncCursor<TResult> MapReduce<TResult>(
@@ -749,12 +686,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         MapReduceOptions<T, TResult>? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return MapReduce(session, map, reduce, options, cancellationToken);
-        }
-
-        return _collection.MapReduce(map, reduce, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.MapReduce(session, map, reduce, options, cancellationToken) 
+            : collection.MapReduce(map, reduce, options, cancellationToken);
     }
 
     public IAsyncCursor<TResult> MapReduce<TResult>(
@@ -764,7 +698,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         MapReduceOptions<T, TResult>? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.MapReduce(session, map, reduce, options, cancellationToken);
+        return collection.MapReduce(session, map, reduce, options, cancellationToken);
     }
 
     public Task<IAsyncCursor<TResult>> MapReduceAsync<TResult>(
@@ -773,12 +707,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         MapReduceOptions<T, TResult>? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return MapReduceAsync(session, map, reduce, options, cancellationToken);
-        }
-
-        return _collection.MapReduceAsync(map, reduce, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.MapReduceAsync(session, map, reduce, options, cancellationToken) 
+            : collection.MapReduceAsync(map, reduce, options, cancellationToken);
     }
 
     public Task<IAsyncCursor<TResult>> MapReduceAsync<TResult>(
@@ -788,13 +719,13 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         MapReduceOptions<T, TResult>? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.MapReduceAsync(session, map, reduce, options, cancellationToken);
+        return collection.MapReduceAsync(session, map, reduce, options, cancellationToken);
     }
 
     public IFilteredMongoCollection<TDerivedDocument> OfType<TDerivedDocument>()
         where TDerivedDocument : T
     {
-        return _collection.OfType<TDerivedDocument>().AsTransactionCollection();
+        return collection.OfType<TDerivedDocument>().AsTransactionCollection();
     }
 
     public ReplaceOneResult ReplaceOne(
@@ -803,12 +734,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         ReplaceOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return ReplaceOne(session, filter, replacement, options, cancellationToken);
-        }
-
-        return _collection.ReplaceOne(filter, replacement, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.ReplaceOne(session, filter, replacement, options, cancellationToken) 
+            : collection.ReplaceOne(filter, replacement, options, cancellationToken);
     }
 
     public ReplaceOneResult ReplaceOne(
@@ -817,12 +745,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         UpdateOptions options,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return ReplaceOne(session, filter, replacement, options, cancellationToken);
-        }
-
-        return _collection.ReplaceOne(filter, replacement, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.ReplaceOne(session, filter, replacement, options, cancellationToken) 
+            : collection.ReplaceOne(filter, replacement, options, cancellationToken);
     }
 
     public ReplaceOneResult ReplaceOne(
@@ -832,7 +757,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         ReplaceOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.ReplaceOne(session, filter, replacement, options, cancellationToken);
+        return collection.ReplaceOne(session, filter, replacement, options, cancellationToken);
     }
 
     public ReplaceOneResult ReplaceOne(
@@ -842,7 +767,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         UpdateOptions options,
         CancellationToken cancellationToken = default)
     {
-        return _collection.ReplaceOne(session, filter, replacement, options, cancellationToken);
+        return collection.ReplaceOne(session, filter, replacement, options, cancellationToken);
     }
 
     public Task<ReplaceOneResult> ReplaceOneAsync(
@@ -851,12 +776,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         ReplaceOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return ReplaceOneAsync(session, filter, replacement, options, cancellationToken);
-        }
-
-        return _collection.ReplaceOneAsync(filter, replacement, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.ReplaceOneAsync(session, filter, replacement, options, cancellationToken) 
+            : collection.ReplaceOneAsync(filter, replacement, options, cancellationToken);
     }
 
     public Task<ReplaceOneResult> ReplaceOneAsync(
@@ -865,12 +787,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         UpdateOptions options,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return ReplaceOneAsync(session, filter, replacement, options, cancellationToken);
-        }
-
-        return _collection.ReplaceOneAsync(filter, replacement, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.ReplaceOneAsync(session, filter, replacement, options, cancellationToken) 
+            : collection.ReplaceOneAsync(filter, replacement, options, cancellationToken);
     }
 
     public Task<ReplaceOneResult> ReplaceOneAsync(
@@ -880,7 +799,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         ReplaceOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.ReplaceOneAsync(session,
+        return collection.ReplaceOneAsync(session,
             filter,
             replacement,
             options,
@@ -894,7 +813,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         UpdateOptions options,
         CancellationToken cancellationToken = default)
     {
-        return _collection.ReplaceOneAsync(session,
+        return collection.ReplaceOneAsync(session,
             filter,
             replacement,
             options,
@@ -907,12 +826,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         UpdateOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return UpdateMany(session, filter, update, options, cancellationToken);
-        }
-
-        return _collection.UpdateMany(filter, update, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.UpdateMany(session, filter, update, options, cancellationToken) 
+            : collection.UpdateMany(filter, update, options, cancellationToken);
     }
 
     public UpdateResult UpdateMany(
@@ -922,7 +838,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         UpdateOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.UpdateMany(session, filter, update, options, cancellationToken);
+        return collection.UpdateMany(session, filter, update, options, cancellationToken);
     }
 
     public Task<UpdateResult> UpdateManyAsync(
@@ -931,12 +847,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         UpdateOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return UpdateManyAsync(session, filter, update, options, cancellationToken);
-        }
-
-        return _collection.UpdateManyAsync(filter, update, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.UpdateManyAsync(session, filter, update, options, cancellationToken) 
+            : collection.UpdateManyAsync(filter, update, options, cancellationToken);
     }
 
     public Task<UpdateResult> UpdateManyAsync(
@@ -946,7 +859,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         UpdateOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.UpdateManyAsync(session, filter, update, options, cancellationToken);
+        return collection.UpdateManyAsync(session, filter, update, options, cancellationToken);
     }
 
     public UpdateResult UpdateOne(
@@ -955,12 +868,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         UpdateOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return UpdateOne(session, filter, update, options, cancellationToken);
-        }
-
-        return _collection.UpdateOne(filter, update, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.UpdateOne(session, filter, update, options, cancellationToken) 
+            : collection.UpdateOne(filter, update, options, cancellationToken);
     }
 
     public UpdateResult UpdateOne(
@@ -970,7 +880,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         UpdateOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.UpdateOne(session, filter, update, options, cancellationToken);
+        return collection.UpdateOne(session, filter, update, options, cancellationToken);
     }
 
     public Task<UpdateResult> UpdateOneAsync(
@@ -979,12 +889,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         UpdateOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return UpdateOneAsync(session, filter, update, options, cancellationToken);
-        }
-
-        return _collection.UpdateOneAsync(filter, update, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.UpdateOneAsync(session, filter, update, options, cancellationToken) 
+            : collection.UpdateOneAsync(filter, update, options, cancellationToken);
     }
 
     public Task<UpdateResult> UpdateOneAsync(
@@ -994,7 +901,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         UpdateOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.UpdateOneAsync(session, filter, update, options, cancellationToken);
+        return collection.UpdateOneAsync(session, filter, update, options, cancellationToken);
     }
 
     public IChangeStreamCursor<TResult> Watch<TResult>(
@@ -1002,12 +909,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         ChangeStreamOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return Watch(session, pipeline, options, cancellationToken);
-        }
-
-        return _collection.Watch(pipeline, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.Watch(session, pipeline, options, cancellationToken) 
+            : collection.Watch(pipeline, options, cancellationToken);
     }
 
     public IChangeStreamCursor<TResult> Watch<TResult>(
@@ -1016,7 +920,7 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         ChangeStreamOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.Watch(session, pipeline, options, cancellationToken);
+        return collection.Watch(session, pipeline, options, cancellationToken);
     }
 
     public Task<IChangeStreamCursor<TResult>> WatchAsync<TResult>(
@@ -1024,12 +928,9 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         ChangeStreamOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        if (TryGetSession(out IClientSessionHandle? session))
-        {
-            return WatchAsync(session, pipeline, options, cancellationToken);
-        }
-
-        return _collection.WatchAsync(pipeline, options, cancellationToken);
+        return TryGetSession(out var session) ? 
+            collection.WatchAsync(session, pipeline, options, cancellationToken) 
+            : collection.WatchAsync(pipeline, options, cancellationToken);
     }
 
     public Task<IChangeStreamCursor<TResult>> WatchAsync<TResult>(
@@ -1038,37 +939,37 @@ public class MongoTransactionCollection<T>(IMongoCollection<T> collection) : IMo
         ChangeStreamOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return _collection.WatchAsync(session, pipeline, options, cancellationToken);
+        return collection.WatchAsync(session, pipeline, options, cancellationToken);
     }
 
     public IMongoCollection<T> WithReadConcern(ReadConcern readConcern)
     {
-        return _collection.WithReadConcern(readConcern).AsTransactionCollection();
+        return collection.WithReadConcern(readConcern).AsTransactionCollection();
     }
 
     public IMongoCollection<T> WithReadPreference(ReadPreference readPreference)
     {
-        return _collection.WithReadPreference(readPreference).AsTransactionCollection();
+        return collection.WithReadPreference(readPreference).AsTransactionCollection();
     }
 
     public IMongoCollection<T> WithWriteConcern(WriteConcern writeConcern)
     {
-        return _collection.WithWriteConcern(writeConcern).AsTransactionCollection();
+        return collection.WithWriteConcern(writeConcern).AsTransactionCollection();
     }
 
-    public CollectionNamespace CollectionNamespace => _collection.CollectionNamespace;
+    public CollectionNamespace CollectionNamespace => collection.CollectionNamespace;
 
-    public IMongoDatabase Database => _collection.Database;
+    public IMongoDatabase Database => collection.Database;
 
-    public IBsonSerializer<T> DocumentSerializer => _collection.DocumentSerializer;
+    public IBsonSerializer<T> DocumentSerializer => collection.DocumentSerializer;
 
-    public IMongoIndexManager<T> Indexes => _collection.Indexes;
+    public IMongoIndexManager<T> Indexes => collection.Indexes;
 
-    public MongoCollectionSettings Settings => _collection.Settings;
+    public MongoCollectionSettings Settings => collection.Settings;
 
-    public IMongoSearchIndexManager SearchIndexes => _collection.SearchIndexes;
+    public IMongoSearchIndexManager SearchIndexes => collection.SearchIndexes;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool TryGetSession(out IClientSessionHandle sessionHandle) =>
-        TransactionStore.TryGetSession(_collection.Database.Client, out sessionHandle);
+        TransactionStore.TryGetSession(collection.Database.Client, out sessionHandle);
 }

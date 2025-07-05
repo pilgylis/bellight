@@ -46,7 +46,7 @@ public class MongoDbFixture
     {
         // import customer
         var customerRepository = Services.GetRequiredService<IMongoRepository<Customer, string>>();
-        await customerRepository.DeleteAsync(c => true).ConfigureAwait(false);
+        await customerRepository.DeleteManyAsync(c => true).ConfigureAwait(false);
 
         #region Customer Data
 
@@ -90,7 +90,7 @@ public class MongoDbFixture
     private async Task AddProducts()
     {
         var productRepository = Services.GetRequiredService<IMongoRepository<Product, string>>();
-        await productRepository.DeleteAsync(p => true).ConfigureAwait(false);
+        await productRepository.DeleteManyAsync(p => true).ConfigureAwait(false);
 
         #region Product Data
 
@@ -1134,7 +1134,7 @@ public class MongoDbFixture
         var productRepository = Services.GetRequiredService<IMongoRepository<Product, string>>();
         var orderRepository = Services.GetRequiredService<IMongoRepository<Order, string>>();
 
-        await orderRepository.DeleteAsync(o => true).ConfigureAwait(false); ;
+        await orderRepository.DeleteManyAsync(o => true).ConfigureAwait(false); ;
 
         var customerIds = await customerRepository.FindAsync(c => true, c => c.Id).ConfigureAwait(false);
         var products = (await productRepository.FindAsync(p => true, p => new { p.Id, p.Price }).ConfigureAwait(false)).ToList();

@@ -9,8 +9,6 @@ public class DefaultAssemblyScanner(
     IAssemblyHandler assemblyHandler,
     IEnumerable<ITypeHandler> typeHandlers) : IAssemblyScanner
 {
-    private readonly IAssemblyLoader _assemblyLoader = assemblyLoader;
-    private readonly IAssemblyHandler _assemblyHandler = assemblyHandler;
 
     public DependencyCacheModel Scan()
     {
@@ -20,28 +18,29 @@ public class DefaultAssemblyScanner(
 
         var thisAssemblyName = thisAssembly.GetName().Name;
 
-        var loadedAssemblies = _assemblyLoader.Load()
+        var loadedAssemblies = assemblyLoader.Load()
             .Where(a => assemblyPredicate(a, thisAssemblyName!));
 
-        if (loadedAssemblies?.Any() == true)
+        var enumerable = loadedAssemblies as Assembly[] ?? loadedAssemblies.ToArray();
+        if (enumerable.Length > 0)
         {
-            assemblies.AddRange(loadedAssemblies);
+            assemblies.AddRange(enumerable);
         }
 
-        if (_options.AdditionalAssemblies?.Any() == true)
+        if (options.AdditionalAssemblies?.Any() == true)
         {
-            assemblies.AddRange(_options.AdditionalAssemblies);
+            assemblies.AddRange(options.AdditionalAssemblies);
         }
 
         foreach (var assembly in assemblies)
         {
-            _assemblyHandler.Process(assembly);
+            assemblyHandler.Process(assembly);
         }
 
         return new DependencyCacheModel
         {
             Assemblies = assemblies.Select(a => a.FullName)!,
-            TypeHandlers = _typeHandlers.Select(h => new TypeHandlerCacheModel
+            TypeHandlers = typeHandlers.Select(h => new TypeHandlerCacheModel
             {
                 Name = h.GetType().AssemblyQualifiedName,
                 Sections = h.SaveCache()
@@ -51,7 +50,4 @@ public class DefaultAssemblyScanner(
 
     private readonly Func<Assembly, string, bool> assemblyPredicate = (a, b)
         => a.GetReferencedAssemblies().Any(asb => string.CompareOrdinal(asb.Name, b) == 0);
-
-    private readonly BellightCoreOptions _options = options;
-    private readonly IEnumerable<ITypeHandler> _typeHandlers = typeHandlers;
 }

@@ -1,0 +1,42 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <GenericNetVersion>9.0.6</GenericNetVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="$(GenericNetVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(GenericNetVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="$(GenericNetVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="$(GenericNetVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Logging" Version="$(GenericNetVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="$(GenericNetVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="$(GenericNetVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="$(GenericNetVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(GenericNetVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(GenericNetVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.6" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(GenericNetVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.CommandLine" Version="$(GenericNetVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="$(GenericNetVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.UserSecrets" Version="$(GenericNetVersion)" />
+    <PackageVersion Include="AutoMapper" Version="14.0.0" />
+    <PackageVersion Include="MediatR" Version="12.1.1" />
+    <PackageVersion Include="AMQPNetLite.Core" Version="2.4.11" />
+    <PackageVersion Include="LinqKit" Version="1.3.8" />
+    <PackageVersion Include="MongoDB.Driver" Version="3.4.0" />
+    <PackageVersion Include="Serilog.Extensions.Logging" Version="9.0.2" />
+    <PackageVersion Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="9.0.1" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageVersion>
+    <PackageVersion Include="coverlet.collector" Version="6.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageVersion>
+    <PackageVersion Include="Moq" Version="4.20.72" />
+  </ItemGroup>
+</Project>

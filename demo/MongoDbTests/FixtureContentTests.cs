@@ -1,27 +1,20 @@
 using Bellight.MongoDb;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MongoDbTests
+namespace MongoDbTests;
+
+public class FixtureContentTests(MongoDbFixture fixture) : IClassFixture<MongoDbFixture>
 {
-    public class FixtureContentTests : IClassFixture<MongoDbFixture>
+
+    [Fact]
+    public async Task DataExists()
     {
-        private readonly MongoDbFixture fixture;
+        var customerRepository = fixture.Services.GetRequiredService<IMongoRepository<Customer, string>>();
+        var productRepository = fixture.Services.GetRequiredService<IMongoRepository<Product, string>>();
+        var orderRepository = fixture.Services.GetRequiredService<IMongoRepository<Order, string>>();
 
-        public FixtureContentTests(MongoDbFixture fixture)
-        {
-            this.fixture = fixture;
-        }
+        var orderCount = await orderRepository.CountAsync(o => true);
 
-        [Fact]
-        public async Task DataExists()
-        {
-            var customerRepository = fixture.Services.GetRequiredService<IMongoRepository<Customer, string>>();
-            var productRepository = fixture.Services.GetRequiredService<IMongoRepository<Product, string>>();
-            var orderRepository = fixture.Services.GetRequiredService<IMongoRepository<Order, string>>();
-
-            var orderCount = await orderRepository.CountAsync(o => true);
-
-            Assert.True(orderCount > 0);
-        }
+        Assert.True(orderCount > 0);
     }
 }

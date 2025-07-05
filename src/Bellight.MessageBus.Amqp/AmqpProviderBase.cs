@@ -8,26 +8,22 @@ public abstract class AmqpProviderBase(
     IOptionsMonitor<AmqpOptions> options,
     MessageBusType messageBusType)
 {
-    private readonly MessageBusType _messageBusType = messageBusType;
-    private readonly IAmqpConnectionFactory connectionFactory = connectionFactory;
-    private readonly IOptionsMonitor<AmqpOptions> _options = options;
-
     public IPublisher GetPublisher(string topic)
     {
-        return new AmqpPublisher(connectionFactory, NormalizeTopic(topic), _messageBusType);
+        return new AmqpPublisher(connectionFactory, NormalizeTopic(topic), messageBusType);
     }
 
     public ISubscription Subscribe(string topic, Action<string> messageReceivedAction)
     {
-        var options = _options.CurrentValue;
+        var optionsValue = options.CurrentValue;
         var subscriberOptions = new SubscriberOptions
         {
             Topic = NormalizeTopic(topic),
-            MessageBusType = _messageBusType,
-            PollingInterval = options.PollingIntervalMilliseconds,
-            WaitDuration = options.WaitDurationMilliseconds,
-            IsAzureMessageBus = options.IsAzureMessageBus,
-            SubscriberName = options.SubscriberName
+            MessageBusType = messageBusType,
+            PollingInterval = optionsValue.PollingIntervalMilliseconds,
+            WaitDuration = optionsValue.WaitDurationMilliseconds,
+            IsAzureMessageBus = optionsValue.IsAzureMessageBus,
+            SubscriberName = optionsValue.SubscriberName
         };
 
         var subscriber = new AmqpSubscriber(connectionFactory, subscriberOptions);
@@ -35,6 +31,6 @@ public abstract class AmqpProviderBase(
         return subscriber.Subscribe(messageReceivedAction);
     }
 
-    private string NormalizeTopic(string topic) => string.IsNullOrEmpty(_options.CurrentValue.InstanceName) ?
-        topic : $"{_options.CurrentValue.InstanceName}.{topic}";
+    private string NormalizeTopic(string topic) => string.IsNullOrEmpty(options.CurrentValue.InstanceName) ?
+        topic : $"{options.CurrentValue.InstanceName}.{topic}";
 }

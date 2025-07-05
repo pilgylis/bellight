@@ -20,6 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. SolutionItems", "1. Solu
 		build.ps1 = build.ps1
 		build.sh = build.sh
 		LICENSE.txt = LICENSE.txt
+		Directory.Packages.props = Directory.Packages.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bellight.Configurations", "src\Bellight.Configurations\Bellight.Configurations.csproj", "{D7636966-AB97-4D5C-A72E-16B507623D86}"

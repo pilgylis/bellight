@@ -10,9 +10,6 @@ public class AmqpPublisher(
     string topic, 
     MessageBusType messageBusType) : AmqpLinkWrapper<SenderLink>(connectionFactory), IPublisher
 {
-    private readonly string _topic = topic;
-    private readonly MessageBusType _messageBusType = messageBusType;
-
     public void Send(string message)
     {
         GetLink().Send(new Message(message));
@@ -25,16 +22,17 @@ public class AmqpPublisher(
 
     protected override SenderLink InitialiseLink(Session session)
     {
-        var messageBusTypeText = _messageBusType == MessageBusType.Queue ? "queue" : "topic";
+        var messageBusTypeText = messageBusType == MessageBusType.Queue ? "queue" : "topic";
         var target = new Target
         {
-            Address = _topic,
-            Capabilities = new Symbol[] {
+            Address = topic,
+            Capabilities =
+            [
                 new Symbol(messageBusTypeText)
-            }
+            ]
         };
 
-        var linkName = $"{messageBusTypeText}.{_topic}";
+        var linkName = $"{messageBusTypeText}.{topic}";
 
         return new SenderLink(session, linkName, target, null);
     }

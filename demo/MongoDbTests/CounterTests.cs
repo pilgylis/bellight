@@ -1,6 +1,7 @@
 ﻿using Bellight.MongoDb;
 using Microsoft.Extensions.DependencyInjection;
 using System.Transactions;
+using MongoDB.Driver;
 
 namespace MongoDbTests;
 
@@ -15,7 +16,7 @@ public class CounterTests(MongoDbFixture fixture) : IClassFixture<MongoDbFixture
     {
         using var scope = fixture.Services.CreateScope();
         var counterRepository = scope.ServiceProvider.GetRequiredService<IMongoRepository<Counter, string>>();
-        await counterRepository.DeleteAsync(c => true, softDelete: false);
+        await counterRepository.DeleteManyAsync(c => true, softDelete: false);
         var counter = (await counterRepository.FindAsync(
             c => true, 
             pageIndex: 0, 
@@ -48,7 +49,7 @@ public class CounterTests(MongoDbFixture fixture) : IClassFixture<MongoDbFixture
     {
         using var scope = fixture.Services.CreateScope();
         var counterRepository = scope.ServiceProvider.GetRequiredService<IMongoRepository<Counter, string>>();
-        await counterRepository.DeleteAsync(c => true, softDelete: false);
+        await counterRepository.DeleteManyAsync(c => true, softDelete: false);
         var counter = (await counterRepository.FindAsync(
             c => true, 
             pageIndex: 0, 

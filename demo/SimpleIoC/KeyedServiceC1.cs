@@ -1,14 +1,13 @@
 ﻿using Bellight.Core;
 using System;
 
-namespace SimpleIoC
+namespace SimpleIoC;
+
+[KeyedService("C1")]
+public class KeyedServiceC1 : IKeyedServiceC
 {
-    [KeyedService("C1")]
-    public class KeyedServiceC1 : IKeyedServiceC
+    public void DoSomethingInKeyed()
     {
-        public void DoSomethingInKeyed()
-        {
-            Console.WriteLine("IKeyedServiceC - KeyedServiceC1 - DoSomethingInKeyed()");
-        }
+        Console.WriteLine("IKeyedServiceC - KeyedServiceC1 - DoSomethingInKeyed()");
     }
 }

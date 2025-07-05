@@ -1,12 +1,11 @@
 ﻿using System;
 
-namespace SimpleIoC
+namespace SimpleIoC;
+
+public class ServiceB : IService
 {
-    public class ServiceB : IService
+    public void DoSomething()
     {
-        public void DoSomething()
-        {
-            Console.WriteLine("ServiceB - DoSomething()");
-        }
+        Console.WriteLine("ServiceB - DoSomething()");
     }
 }

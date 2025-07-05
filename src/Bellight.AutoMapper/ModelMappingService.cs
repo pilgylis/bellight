@@ -37,19 +37,18 @@ public class ModelMappingService : IModelMappingService
             cfg.CreateMap<DateTime, string>().ConvertUsing<DateTimeToStringConverter>();
             cfg.CreateMap<DateTimeOffset, string>().ConvertUsing<DateTimeOffsetToStringConverter>();
 
-            if (configAction != null)
+            configAction.Invoke(cfg);
+
+            var types = profiles as Type[] ?? profiles.ToArray();
+            if (types.Length > 0)
             {
-                configAction.Invoke(cfg);
+                types.ForEach(cfg.AddProfile);
             }
 
-            if (profiles?.Any() == true)
+            var enumerable = mappings.ToList();
+            if (enumerable.Count > 0)
             {
-                profiles.ForEach(cfg.AddProfile);
-            }
-
-            if (mappings?.Any() == true)
-            {
-                foreach (var tuple in mappings)
+                foreach (var tuple in enumerable)
                 {
                     cfg.CreateMap(tuple.Item1, tuple.Item2).IgnoreAllNonExisting(tuple.Item1, tuple.Item2);
                     cfg.CreateMap(tuple.Item2, tuple.Item1).IgnoreAllNonExisting(tuple.Item2, tuple.Item1);

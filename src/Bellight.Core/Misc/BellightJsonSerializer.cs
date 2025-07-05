@@ -5,8 +5,6 @@ namespace Bellight.Core.Misc;
 
 public class BellightJsonSerializer(ILogger<BellightJsonSerializer> logger) : ISerializer
 {
-    private readonly ILogger<BellightJsonSerializer> logger = logger;
-
     public JsonSerializerOptions Settings { get; set; } = DefaultJsonSerializerSettings;
 
     public string SerializeObject(object value)
@@ -50,18 +48,13 @@ public class BellightJsonSerializer(ILogger<BellightJsonSerializer> logger) : IS
         return Try(() => DeserializeObject(value, typeName));
     }
 
-    public static JsonSerializerOptions DefaultJsonSerializerSettings
-    {
-        get
+    public static JsonSerializerOptions DefaultJsonSerializerSettings =>
+        new()
         {
-            return new JsonSerializerOptions
-            {
-                WriteIndented = false,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
-            };
-        }
-    }
+            WriteIndented = false,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+        };
 
     private T Try<T>(Func<T> func)
     {

@@ -6,11 +6,10 @@ using Bellight.MessageBus.Abstractions;
 
 namespace Bellight.MessageBus.Amqp;
 
-public class AmqpSubscriber(IAmqpConnectionFactory connectionFactory, SubscriberOptions options) : AmqpLinkWrapper<ReceiverLink>(connectionFactory), ISubscriber
+public class AmqpSubscriber(IAmqpConnectionFactory connectionFactory, SubscriberOptions options) 
+    : AmqpLinkWrapper<ReceiverLink>(connectionFactory), ISubscriber
 {
     private const string _linkName = "receiver-link";
-
-    private readonly SubscriberOptions _options = options;
 
     public ISubscription Subscribe(Action<string> messageReceivedAction)
     {
@@ -22,7 +21,7 @@ public class AmqpSubscriber(IAmqpConnectionFactory connectionFactory, Subscriber
             {
                 SafeExecute.SyncCatch(
                     () => PollMessage(messageReceivedAction, cancellationToken),
-                    () => Thread.Sleep(_options.WaitDuration));
+                    () => Thread.Sleep(options.WaitDuration));
             }
         }, tokenSource.Token));
         return new DefaultSubscription(() => tokenSource.Cancel());
@@ -30,17 +29,17 @@ public class AmqpSubscriber(IAmqpConnectionFactory connectionFactory, Subscriber
 
     protected override ReceiverLink InitialiseLink(Session session)
     {
-        if ("true".Equals(_options.IsAzureMessageBus, StringComparison.InvariantCultureIgnoreCase)
-            && _options.MessageBusType == MessageBusType.PubSub)
+        if ("true".Equals(options.IsAzureMessageBus, StringComparison.InvariantCultureIgnoreCase)
+            && options.MessageBusType == MessageBusType.PubSub)
         {
-            return new ReceiverLink(session, _linkName, $"{_options.Topic}/Subscriptions/{_options.SubscriberName}");
+            return new ReceiverLink(session, _linkName, $"{options.Topic}/Subscriptions/{options.SubscriberName}");
         }
 
         var source = new Source
         {
-            Address = _options.Topic,
+            Address = options.Topic,
             Capabilities = [
-                new Symbol(_options.MessageBusType == MessageBusType.Queue ? "queue" : "topic")
+                new Symbol(options.MessageBusType == MessageBusType.Queue ? "queue" : "topic")
             ]
         };
 
@@ -54,16 +53,16 @@ public class AmqpSubscriber(IAmqpConnectionFactory connectionFactory, Subscriber
             SafeExecute.AsyncCatch(async () =>
             {
                 var link = GetLink();
-                var message = await link.ReceiveAsync(TimeSpan.FromMilliseconds(_options.PollingInterval));
+                var message = await link.ReceiveAsync(TimeSpan.FromMilliseconds(options.PollingInterval));
                 if (message == null)
                 {
-                    await Task.Delay(_options.WaitDuration);
+                    await Task.Delay(options.WaitDuration, cancellationToken);
                     return;
                 }
 
                 link.Accept(message);
                 messageReceivedAction.Invoke((string)message.Body);
-            }, () => Thread.Sleep(_options.WaitDuration)).Wait(cancellationToken);
+            }, () => Thread.Sleep(options.WaitDuration)).Wait(cancellationToken);
         }
     }
 }

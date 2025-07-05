@@ -5,7 +5,6 @@ namespace Bellight.MessageBus.Amqp;
 
 public class AmqpConnectionFactory(IOptionsMonitor<AmqpOptions> options) : IAmqpConnectionFactory
 {
-    private readonly IOptionsMonitor<AmqpOptions> options = options;
     private Connection? connection;
     private readonly Dictionary<string, Session> sessions = new();
 
@@ -21,10 +20,10 @@ public class AmqpConnectionFactory(IOptionsMonitor<AmqpOptions> options) : IAmqp
 
     public Session GetSession(string name = "default")
     {
-        if (sessions.TryGetValue(name, out Session? value))
+        if (sessions.TryGetValue(name, out var value))
         {
             var session = value;
-            if (session is not null && !session.IsClosed)
+            if (!session.IsClosed)
             {
                 return session;
             }
