@@ -33,7 +33,7 @@ public class MessageBusFactory(IServiceProvider serviceProvider, ILogger<Message
 
         var provider = GetProvider(messageBusType);
         var messageBusTypeText = messageBusType == MessageBusType.Queue ? "Queue" : "Pub/Sub";
-        logger.LogInformation("MessageBus - Publisher provider created: {messageBusTypeText} - {name}", messageBusTypeText, provider?.GetType().Name);
+        logger.LogInformation("MessageBus - Publisher provider created: {MessageBusType} - {ProviderTypeName}", messageBusTypeText, provider?.GetType().Name);
         var publisher = provider!.GetPublisher(topic) ?? throw new MessageBusException($"Could not create publisher for {topic} - {messageBusType}");
         publisherDictionary.TryAdd(key, publisher);
 
@@ -45,7 +45,7 @@ public class MessageBusFactory(IServiceProvider serviceProvider, ILogger<Message
     {
         var provider = GetProvider(messageBusType);
         var messageBusTypeText = messageBusType == MessageBusType.Queue ? "Queue" : "Pub/Sub";
-        logger.LogInformation("MessageBus - Subscriber provider created: {messageBusTypeText} - {name}", messageBusTypeText, provider?.GetType().Name);
+        logger.LogInformation("MessageBus - Subscriber provider created: {MessageBusType} - {ProviderTypeName}", messageBusTypeText, provider?.GetType().Name);
         return provider!.Subscribe(topic, messageReceivedAction);
     }
 
@@ -58,7 +58,7 @@ public class MessageBusFactory(IServiceProvider serviceProvider, ILogger<Message
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "An error has occurred while trying to retrieve provider for Message Bus: {message}", ex.Message);
+            logger.LogError(ex, "An error has occurred while trying to retrieve provider for Message Bus: {ErrorMessage}", ex.Message);
             return GetProviderFromConfig(messageBusType);
         }
     }
@@ -90,7 +90,7 @@ public class MessageBusFactory(IServiceProvider serviceProvider, ILogger<Message
     private IMessageBusProvider? GetProviderFromDi(MessageBusType messageBusType)
     {
         return messageBusType == MessageBusType.Queue ?
-            (IMessageBusProvider?)_serviceProvider.GetService<IQueueProvider>()
+            _serviceProvider.GetService<IQueueProvider>()
             : _serviceProvider.GetService<IPubsubProvider>()!;
     }
 }

@@ -27,7 +27,7 @@ public class DefaultAssemblyLoader : IAssemblyLoader
             }
             catch (Exception ex)
             {
-                CoreLogging.Logger?.LogWarning(ex, "Error occurred: {errorMessage}", ex.Message);
+                CoreLogging.Logger?.LogWarning(ex, "Error occurred: {ErrorMessage}", ex.Message);
             }
         }
 
@@ -41,7 +41,6 @@ public class DefaultAssemblyLoader : IAssemblyLoader
 
         var entryLibrary = directDependencies.Find(d => d.Name.Equals(entryAssemblyName, StringComparison.OrdinalIgnoreCase));
 
-        //
         if (entryLibrary != null)
         {
             foreach (var entryDependency in entryLibrary

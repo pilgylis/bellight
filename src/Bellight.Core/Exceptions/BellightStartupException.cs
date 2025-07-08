@@ -1,6 +1,5 @@
 ﻿namespace Bellight.Core.Exceptions;
 
-[Serializable]
 public class BellightStartupException : Exception
 {
     public BellightStartupException()

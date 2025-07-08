@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace Bellight.MongoDb.Transactions;
 
-public class MongoTransactionClient(IMongoClient client) : IMongoClient
+public sealed class MongoTransactionClient(IMongoClient client) : IMongoClient
 {
     public ClientBulkWriteResult BulkWrite(IReadOnlyList<BulkWriteModel> models, ClientBulkWriteOptions? options = null,
         CancellationToken cancellationToken = default)

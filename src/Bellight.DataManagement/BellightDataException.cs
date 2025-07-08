@@ -1,6 +1,5 @@
 ﻿namespace Bellight.DataManagement;
 
-[Serializable]
 public class BellightDataException : Exception
 {
     public BellightDataException()

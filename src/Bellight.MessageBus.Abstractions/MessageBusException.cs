@@ -1,6 +1,5 @@
 ﻿namespace Bellight.MessageBus.Abstractions;
 
-[Serializable]
 public class MessageBusException : Exception
 {
     public MessageBusException()

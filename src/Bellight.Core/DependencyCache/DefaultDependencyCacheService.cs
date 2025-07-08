@@ -74,9 +74,9 @@ public class DefaultDependencyCacheService(
         {
             File.WriteAllText(filePath, serializedContent);
         }
-        catch
+        catch(Exception ex)
         {
-            CoreLogging.Logger?.LogWarning("Cannot write cache file: {FilePath}. As a consequence, next startup may suffer a performance issue.", filePath);
+            CoreLogging.Logger?.LogWarning(ex, "Cannot write cache file: {FilePath}. As a consequence, next startup may suffer a performance issue.", filePath);
         }
     }
 
@@ -91,9 +91,9 @@ public class DefaultDependencyCacheService(
         {
             return File.ReadAllText(fileName);
         }
-        catch
+        catch(Exception ex)
         {
-            CoreLogging.Logger?.LogWarning("Cannot open cache file: {FileName}", fileName);
+            CoreLogging.Logger?.LogWarning(ex, "Cannot open cache file: {FileName}", fileName);
             return string.Empty;
         }
     }

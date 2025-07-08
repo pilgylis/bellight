@@ -114,8 +114,8 @@ public class DependencyTypeHandler : ITypeHandler
 
     public void LoadCache(IEnumerable<TypeHandlerCacheSection> sections)
     {
-        Action<Type>? typeAction = null;
-        Action<Type, Type>? mapAction = null;
+        Action<Type>? typeAction;
+        Action<Type, Type>? mapAction;
         foreach (var section in sections)
         {
             if ("SingletonTypes".Equals(section.Name, StringComparison.InvariantCultureIgnoreCase))
@@ -130,9 +130,6 @@ public class DependencyTypeHandler : ITypeHandler
             }
             else if ("KeyedTypes".Equals(section.Name, StringComparison.InvariantCultureIgnoreCase))
             {
-                typeAction = type => _services.AddTransient(type);
-                mapAction = (interfaceType, implementationType) => _services.AddTransient(interfaceType, implementationType);
-
                 foreach (var line in section.Lines!)
                 {
                     var colonIndex = line.IndexOf(':');
@@ -165,8 +162,7 @@ public class DependencyTypeHandler : ITypeHandler
                             _services.AddSingleton(interfaceType, implementationType);
                             _services.AddKeyedSingleton(interfaceType, key, implementationType);
                             break;
-                        default:
-                        case ServiceLifetime.Transient:
+                        default: // including transient
                             _services.AddTransient(interfaceType, implementationType);
                             _services.AddKeyedTransient(interfaceType, key, implementationType);
                             break;

@@ -70,14 +70,14 @@ public class MongoRepository<T, Tid>(ICollectionFactory collectionFactory) : IMo
 
     public async Task<IEnumerable<T>> FindAsync(
         Expression<Func<T, bool>> filter, 
-        IEntitySortDefinition<T>? sort = null, 
+        IEntitySortDefinition<T>? sortOrders = null, 
         int pageIndex = 0, 
         int pageSize = 20, 
         CancellationToken cancellationToken = default)
     {
         var find = Collection.Find(Filter.And(FilterBase(), filter));
 
-        if (sort is not null && sort is MongoDbEntitySortDefinition<T> mongoDbSort) {
+        if (sortOrders is MongoDbEntitySortDefinition<T> mongoDbSort) {
             find = find.Sort(mongoDbSort.GetSort());
         }
 
@@ -91,14 +91,14 @@ public class MongoRepository<T, Tid>(ICollectionFactory collectionFactory) : IMo
     public async Task<IEnumerable<P>> FindAsync<P>(
         Expression<Func<T, bool>> filter, 
         Expression<Func<T, P>> projection, 
-        IEntitySortDefinition<T>? sort = null, 
+        IEntitySortDefinition<T>? sortOrders = null, 
         int pageIndex = 0, 
         int pageSize = 20, 
         CancellationToken cancellationToken = default)
     {
         var find = Collection.Find(Filter.And(FilterBase(), filter));
 
-        if (sort is not null && sort is MongoDbEntitySortDefinition<T> mongoDbSort) {
+        if (sortOrders is MongoDbEntitySortDefinition<T> mongoDbSort) {
             find = find.Sort(mongoDbSort.GetSort());
         }
 
@@ -134,7 +134,7 @@ public class MongoRepository<T, Tid>(ICollectionFactory collectionFactory) : IMo
     public async Task<IEnumerable<P>> FindAsync<P>(
         Expression<Func<T, bool>> filter,
         Expression<Func<T, P>> projection,
-        SortDefinition<T>? sort = null,
+        SortDefinition<T>? sortOrders = null,
         int pageIndex = 0,
         int pageSize = 20,
         CancellationToken cancellationToken = default)
@@ -144,7 +144,7 @@ public class MongoRepository<T, Tid>(ICollectionFactory collectionFactory) : IMo
             .And(i => !i.IsDeleted);
         var find = Collection.Find(predicate);
         
-        if (sort is not null && sort is MongoDbEntitySortDefinition<T> mongoDbSort) {
+        if (sortOrders is MongoDbEntitySortDefinition<T> mongoDbSort) {
             find = find.Sort(mongoDbSort.GetSort());
         }
 
@@ -207,9 +207,8 @@ public class MongoRepository<T, Tid>(ICollectionFactory collectionFactory) : IMo
 
     public virtual async Task AddAsync(T item, CancellationToken cancellationToken = default)
     {
-        if (item is MongoTrackedEntity<Tid>)
+        if (item is MongoTrackedEntity<Tid> mItem)
         {
-            var mItem = item as MongoTrackedEntity<Tid>;
             mItem.CreatedOnUtc = DateTime.UtcNow;
             mItem.UpdatedOnUtc = DateTime.UtcNow;
         }
@@ -221,9 +220,8 @@ public class MongoRepository<T, Tid>(ICollectionFactory collectionFactory) : IMo
     {
         items.ForEach(item =>
         {
-            if (item is MongoTrackedEntity<Tid>)
+            if (item is MongoTrackedEntity<Tid> mItem)
             {
-                var mItem = item as MongoTrackedEntity<Tid>;
                 mItem.CreatedOnUtc = DateTime.UtcNow;
                 mItem.UpdatedOnUtc = DateTime.UtcNow;
             }

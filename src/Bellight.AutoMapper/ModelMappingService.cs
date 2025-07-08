@@ -5,7 +5,7 @@ namespace Bellight.AutoMapper;
 
 public class ModelMappingService : IModelMappingService
 {
-    private IMapper _mapper;
+    private readonly IMapper _mapper;
     private readonly IModelRegistrationService _modelRegistrationService;
 
     public ModelMappingService(IModelRegistrationService modelRegistrationService, Action<IMapperConfigurationExpression> configAction)

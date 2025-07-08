@@ -6,7 +6,7 @@ namespace Bellight.MessageBus.Amqp;
 public class AmqpConnectionFactory(IOptionsMonitor<AmqpOptions> options) : IAmqpConnectionFactory
 {
     private Connection? connection;
-    private readonly Dictionary<string, Session> sessions = new();
+    private readonly Dictionary<string, Session> sessions = [];
 
     public Connection GetConnection()
     {
@@ -28,7 +28,9 @@ public class AmqpConnectionFactory(IOptionsMonitor<AmqpOptions> options) : IAmqp
                 return session;
             }
         }
-        var connection = GetConnection();
+
+        GetConnection();
+
         var newSession = new Session(connection);
         sessions.Add(name, newSession);
 

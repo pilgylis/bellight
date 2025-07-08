@@ -12,7 +12,7 @@ public class KeyedServiceFactory(IDictionary<string, (Type, ServiceLifetime)> ke
             return default!;
         }
 
-        var (type, lifetime) = _keyedTypeDictionary[name];
+        var (type, _) = _keyedTypeDictionary[name];
         return (T)_serviceProvider.GetService(type)!;
     }
 }

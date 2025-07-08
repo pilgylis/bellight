@@ -24,7 +24,7 @@ public class AmqpSubscriber(IAmqpConnectionFactory connectionFactory, Subscriber
                     () => Thread.Sleep(options.WaitDuration));
             }
         }, tokenSource.Token));
-        return new DefaultSubscription(() => tokenSource.Cancel());
+        return new DefaultSubscription(tokenSource);
     }
 
     protected override ReceiverLink InitialiseLink(Session session)

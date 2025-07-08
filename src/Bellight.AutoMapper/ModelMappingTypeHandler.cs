@@ -44,49 +44,47 @@ public class ModelMappingTypeHandler(IModelRegistrationService modelRegistration
                     var type = Type.GetType(line);
                     _modelRegistrationService.AddProfile(type!);
                 }
+                continue;
             }
-            else
+
+            foreach (var line in section.Lines!)
             {
-                foreach (var line in section.Lines!)
+                if (line.IndexOf(':') < 0)
                 {
-                    if (line.IndexOf(':') < 0)
-                    {
-                        continue;
-                    }
-
-                    var parts = line.Split(':');
-                    if (parts.Length != 2)
-                    {
-                        continue;
-                    }
-
-                    var sourceTypeName = parts[0].Trim();
-                    var destinationTypeName = parts[1].Trim();
-
-                    var sourceType = Type.GetType(sourceTypeName);
-                    var destinationType = Type.GetType(destinationTypeName);
-
-                    _modelRegistrationService.AddMapping(sourceType!, destinationType!);
+                    continue;
                 }
+
+                var parts = line.Split(':');
+                if (parts.Length != 2)
+                {
+                    continue;
+                }
+
+                var sourceTypeName = parts[0].Trim();
+                var destinationTypeName = parts[1].Trim();
+
+                var sourceType = Type.GetType(sourceTypeName);
+                var destinationType = Type.GetType(destinationTypeName);
+
+                _modelRegistrationService.AddMapping(sourceType!, destinationType!);
             }
         }
     }
 
     public IEnumerable<TypeHandlerCacheSection> SaveCache()
     {
-        var profiles = _modelRegistrationService.GetAllProfiles();
         var mappings = _modelRegistrationService.GetAllMappings();
-        return new List<TypeHandlerCacheSection> {
-            new TypeHandlerCacheSection
-            {
-                Name = MappingSectionName,
-                Lines = mappings.Select(tuple => string.Format("{0}: {1}", tuple.Item1.AssemblyQualifiedName, tuple.Item2.AssemblyQualifiedName))
-            },
-            new TypeHandlerCacheSection
-            {
-                Name = ProfileSectionName,
-                Lines = profiles.Select(profile => profile.AssemblyQualifiedName)!
-            }
+        yield return new TypeHandlerCacheSection
+        {
+            Name = MappingSectionName,
+            Lines = mappings.Select(tuple => string.Format("{0}: {1}", tuple.Item1.AssemblyQualifiedName, tuple.Item2.AssemblyQualifiedName))
+        };
+
+        var profiles = _modelRegistrationService.GetAllProfiles();
+        yield return new TypeHandlerCacheSection
+        {
+            Name = ProfileSectionName,
+            Lines = profiles.Select(profile => profile.AssemblyQualifiedName)!
         };
     }
 }

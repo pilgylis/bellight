@@ -1,12 +1,7 @@
 ﻿namespace Bellight.AutoMapper;
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public class MappedModelAttribute : Attribute
+public class MappedModelAttribute(Type targetType) : Attribute
 {
-    public Type TargetType { get; }
-
-    public MappedModelAttribute(Type targetType)
-    {
-        TargetType = targetType;
-    }
+    public Type TargetType { get; } = targetType;
 }

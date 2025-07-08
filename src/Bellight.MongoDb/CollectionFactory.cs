@@ -68,7 +68,7 @@ public class CollectionFactory(IOptions<MongoDbSettings> optionsAccessor, IServi
             clientSettings.ClusterConfigurator = cb =>
             {
                 cb.Subscribe<CommandStartedEvent>(e =>
-                    Logger?.LogInformation("Executing query: {commandName} - {command}",
+                    Logger?.LogInformation("Executing query: {CommandName} - {Command}",
                         e.CommandName,
                         e.Command));
             };

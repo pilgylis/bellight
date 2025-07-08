@@ -1,5 +1,6 @@
 ﻿using Bellight.Core;
 using Bellight.Core.DependencyCache;
+using Bellight.Core.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -15,7 +16,7 @@ public class AppSettingsTypeHandler(IServiceCollection builder, IConfiguration c
     private readonly MethodInfo _configureMethod = typeof(OptionsConfigurationServiceCollectionExtensions)
             .GetMethod("Configure", [typeof(IServiceCollection), typeof(IConfiguration)])!;
 
-    private readonly IList<KeyValuePair<string, Type>> _allTypes = new List<KeyValuePair<string, Type>>();
+    private readonly IList<KeyValuePair<string, Type>> _allTypes = [];
 
     public void LoadCache(IEnumerable<TypeHandlerCacheSection> sections)
     {
@@ -30,7 +31,7 @@ public class AppSettingsTypeHandler(IServiceCollection builder, IConfiguration c
             var colonIndex = line.IndexOf(':');
             if (colonIndex < 0 || colonIndex >= line.Length)
             {
-                throw new Exception($"Data corrupted: {line}");
+                throw new BellightStartupException($"Data corrupted: {line}");
             }
 
             var configurationSectionName = line.Substring(0, colonIndex).Trim();
@@ -72,12 +73,10 @@ public class AppSettingsTypeHandler(IServiceCollection builder, IConfiguration c
 
     public IEnumerable<TypeHandlerCacheSection> SaveCache()
     {
-        return new List<TypeHandlerCacheSection> {
-            new TypeHandlerCacheSection
-            {
-                Name = "Content",
-                Lines = _allTypes.Select(pair => string.Format("{0}: {1}", pair.Key, pair.Value.AssemblyQualifiedName))
-            }
+        yield return new TypeHandlerCacheSection
+        {
+            Name = "Content",
+            Lines = _allTypes.Select(pair => string.Format("{0}: {1}", pair.Key, pair.Value.AssemblyQualifiedName))
         };
     }
 }

@@ -44,13 +44,10 @@ public class MediatRTypeHandler(IServiceCollection services) : ITypeHandler
 
         if (type.IsOpenGeneric())
         {
-            foreach (var multiOpenInterface in multiOpenInterfaces)
+            foreach (var multiOpenInterface in multiOpenInterfaces.Where(multiOpenInterface => type.FindInterfacesThatClose(multiOpenInterface).Any()))
             {
-                if (type.FindInterfacesThatClose(multiOpenInterface).Any())
-                {
-                    typeMap.Add(new Tuple<Type, Type>(multiOpenInterface, type));
-                    services.AddTransient(multiOpenInterface, type);
-                }
+                typeMap.Add(new Tuple<Type, Type>(multiOpenInterface, type));
+                services.AddTransient(multiOpenInterface, type);
             }
 
             return;
@@ -76,9 +73,9 @@ public class MediatRTypeHandler(IServiceCollection services) : ITypeHandler
                     {
                         services.TryAddTransient(interfaceType, type.MakeGenericType(interfaceType.GenericTypeArguments));
                     }
-#pragma warning disable RCS1075 // Avoid empty catch clause that catches System.Exception.
-                    catch (Exception)
-#pragma warning restore RCS1075 // Avoid empty catch clause that catches System.Exception.
+#pragma warning disable S2486 // Avoid empty catch clause that catches System.Exception.
+                    catch
+#pragma warning restore S2486 // Avoid empty catch clause that catches System.Exception.
                     { }
                 }
             }
@@ -120,9 +117,9 @@ public class MediatRTypeHandler(IServiceCollection services) : ITypeHandler
                 {
                     services.TryAddTransient(interfaceType!, implementationType.MakeGenericType(interfaceType.GenericTypeArguments));
                 }
-#pragma warning disable RCS1075 // Avoid empty catch clause that catches System.Exception.
-                catch (Exception)
-#pragma warning restore RCS1075 // Avoid empty catch clause that catches System.Exception.
+#pragma warning disable S2486 // Avoid empty catch clause that catches System.Exception.
+                catch
+#pragma warning restore S2486 // Avoid empty catch clause that catches System.Exception.
                 { }
             }
         }

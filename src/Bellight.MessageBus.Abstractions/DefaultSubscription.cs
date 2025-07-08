@@ -1,12 +1,11 @@
 ﻿namespace Bellight.MessageBus.Abstractions;
 
-public class DefaultSubscription(Action disposeAction) : ISubscription
+public sealed class DefaultSubscription(CancellationTokenSource tokenSource) : ISubscription
 {
-    private readonly Action _disposeAction = disposeAction ?? throw new ArgumentNullException(nameof(disposeAction));
-
-    public virtual void Dispose()
+    public void Dispose()
     {
         GC.SuppressFinalize(this);
-        _disposeAction.Invoke();
+        tokenSource?.Cancel();
+        tokenSource?.Dispose();
     }
 }

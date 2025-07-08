@@ -4,14 +4,14 @@ public class DefaultKeyedServiceRegistry : IKeyedServiceRegistry
 {
     private readonly IDictionary<string, (Type, ServiceLifetime)> _dictionary = new Dictionary<string, (Type, ServiceLifetime)>();
 
-    public void Add(string key, Type type, ServiceLifetime serviceLifetime)
+    public void Add(string key, Type type, ServiceLifetime lifetime)
     {
         if (_dictionary.ContainsKey(key))
         {
             return;
         }
 
-        _dictionary.Add(key, (type, serviceLifetime));
+        _dictionary.Add(key, (type, lifetime));
     }
 
     public void Clear()

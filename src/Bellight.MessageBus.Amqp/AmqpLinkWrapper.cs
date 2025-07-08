@@ -2,7 +2,7 @@
 
 namespace Bellight.MessageBus.Amqp;
 
-public abstract class AmqpLinkWrapper<T>(IAmqpConnectionFactory connectionFactory) : IDisposable where T : ILink
+public abstract class AmqpLinkWrapper<T>(IAmqpConnectionFactory connectionFactory) : IDisposable where T : class, ILink
 {
     private T? _link;
 
@@ -20,12 +20,12 @@ public abstract class AmqpLinkWrapper<T>(IAmqpConnectionFactory connectionFactor
         return _link;
     }
 
-    public virtual void Dispose()
+    public void Dispose()
     {
-        GC.SuppressFinalize(this);
         if (_link?.IsClosed == false)
         {
             _link.Close();
         }
+        GC.SuppressFinalize(this);
     }
 }

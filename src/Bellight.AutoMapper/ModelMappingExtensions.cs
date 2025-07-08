@@ -9,13 +9,12 @@ public static class ModelMappingExtensions
         (this IMappingExpression expression, Type sourceType, Type destinationType)
     {
         const BindingFlags flags = BindingFlags.Public | BindingFlags.Instance;
-        foreach (PropertyInfo property in destinationType.GetProperties(flags))
+        foreach (var property in destinationType.GetProperties(flags)
+            .Where(property => sourceType.GetProperty(property.Name, flags) == null))
         {
-            if (sourceType.GetProperty(property.Name, flags) == null)
-            {
-                expression.ForMember(property.Name, opt => opt.Ignore());
-            }
+            expression.ForMember(property.Name, opt => opt.Ignore());
         }
+
         return expression;
     }
 }
