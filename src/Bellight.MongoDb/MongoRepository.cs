@@ -7,22 +7,14 @@ using System.Reflection;
 namespace Bellight.MongoDb;
 
 #pragma warning disable CS8602, CS8604, RSC1202 // Dereference of a possibly null reference.
-public class MongoRepository<T, Tid>(ICollectionFactory collectionFactory) : IMongoRepository<T, Tid> where T : class, IEntity<Tid>
+public class MongoRepository<T, TKey>(ICollectionFactory collectionFactory) : IRepository<T, TKey>
+    where T : class, IEntity<TKey>
+    where TKey: IEquatable<TKey>
 {
     public IMongoCollection<T> Collection => CollectionFactory.GetCollection<T>(GetObjectType());
 
     protected ICollectionFactory CollectionFactory { get; } = collectionFactory;
     private string? _objectType;
-
-    public FilterDefinitionBuilder<T> Filter => Builders<T>.Filter;
-    public UpdateDefinitionBuilder<T> Update => Builders<T>.Update;
-
-    public SortDefinitionBuilder<T> Sort => Builders<T>.Sort;
-    public ProjectionDefinitionBuilder<T> Project => Builders<T>.Projection;
-
-    public IEntityUpdateDefinition<T> UpdateDefinition => new MongoDbEntityUpdateDefinition<T>();
-
-    public IEntitySortDefinition<T> SortDefinition => new MongoDbEntitySortDefinition<T>();
 
     public IQueryable<T> ToQueryable()
     {
@@ -31,110 +23,121 @@ public class MongoRepository<T, Tid>(ICollectionFactory collectionFactory) : IMo
 
     public FilterDefinition<T> FilterBase()
     {
-        return Filter.Ne(m => m.IsDeleted, true);
+        return Builders<T>.Filter.Ne(m => m.IsDeleted, true);
     }
 
-    public void SetObjectType(string objectType)
+    public async Task AddAsync(T item, CancellationToken cancellationToken = default)
     {
-        _objectType = objectType;
+        if (item is MongoTrackedEntity<TKey> mItem)
+        {
+            mItem.CreatedOnUtc = DateTime.UtcNow;
+            mItem.UpdatedOnUtc = DateTime.UtcNow;
+        }
+
+        await Collection.InsertOneAsync(item, null, cancellationToken);
     }
 
-    public virtual async Task<T?> GetByIdAsync(Tid id, CancellationToken cancellationToken = default)
+    public async Task AddManyAsync(IEnumerable<T> items, CancellationToken cancellationToken = default)
     {
+        items.ForEach(item =>
+        {
+            if (item is MongoTrackedEntity<TKey> mItem)
+            {
+                mItem.CreatedOnUtc = DateTime.UtcNow;
+                mItem.UpdatedOnUtc = DateTime.UtcNow;
+            }
+        });
 
-        var filter = Filter.And(FilterBase(), Filter.Eq(m => m.Id, id));
+        await Collection.InsertManyAsync(items, null, cancellationToken).ConfigureAwait(false);
+    }
+
+    public Task UpdateAsync(
+        TKey id,
+        Func<IEntityUpdateDefinition<T, TKey>, IEntityUpdateDefinition<T, TKey>> update,
+        CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<long> UpdateManyAsync(
+        Expression<Func<T, bool>> filter,
+        Func<IEntityUpdateDefinition<T, TKey>, IEntityUpdateDefinition<T, TKey>> update,
+        CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task DeleteAsync(TKey id, bool softDelete = true, CancellationToken cancellationToken = default)
+    {
+        if (softDelete)
+        {
+            var update = Builders<T>.Update.Set(u => u.IsDeleted, true);
+
+            if (typeof(MongoTrackedEntity<TKey>).IsAssignableFrom(typeof(T)))
+            {
+                update = update.Set(u => (u as MongoTrackedEntity<TKey>).UpdatedOnUtc, DateTime.UtcNow);
+            }
+
+            return Collection.UpdateOneAsync(Builders<T>.Filter.Eq(m => m.Id, id), update, null, cancellationToken);
+        }
+
+        var filter = Builders<T>.Filter.And(FilterBase(), Builders<T>.Filter.Eq(m => m.Id, id));
+
+        return Collection.DeleteOneAsync(filter, cancellationToken);
+    }
+
+    public async Task<long> DeleteManyAsync(Expression<Func<T, bool>> filter, bool softDelete = true, CancellationToken cancellationToken = default)
+    {
+        if (!softDelete)
+        {
+            var deleteResult = await Collection.DeleteManyAsync(filter, cancellationToken).ConfigureAwait(false);
+            return deleteResult.DeletedCount;
+        }
+
+        var update = Builders<T>.Update.Set(u => u.IsDeleted, true);
+
+        if (typeof(MongoTrackedEntity<TKey>).IsAssignableFrom(typeof(T)))
+        {
+            update = update.Set(u => (u as MongoTrackedEntity<TKey>).UpdatedOnUtc, DateTime.UtcNow);
+        }
+
+        var deleteTask = Collection.UpdateManyAsync(filter, update, null, cancellationToken);
+
+        return (await deleteTask.ConfigureAwait(false)).ModifiedCount;
+    }
+
+    public async Task<long> DeleteManyAsync(IEnumerable<TKey> ids, bool softDelete, CancellationToken token = default)
+    {
+        var filter = Builders<T>.Filter.And(FilterBase(), Builders<T>.Filter.In(m => m.Id, ids));
+        if (!softDelete)
+        {
+            var deleteManyResult = await Collection.DeleteManyAsync(filter, token).ConfigureAwait(false);
+            return deleteManyResult.DeletedCount;
+        }
+
+        var update = Builders<T>.Update.Set(u => u.IsDeleted, true);
+
+        if (typeof(MongoTrackedEntity<TKey>).IsAssignableFrom(typeof(T)))
+        {
+            update = update.Set(u => (u as MongoTrackedEntity<TKey>).UpdatedOnUtc, DateTime.UtcNow);
+        }
+
+        var updateTask = Collection.UpdateManyAsync(filter, update, null, token);
+
+        return (await updateTask.ConfigureAwait(false)).ModifiedCount;
+    }
+
+    public async Task<T?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
+    {
+        var filter = Builders<T>.Filter.And(FilterBase(), Builders<T>.Filter.Eq(m => m.Id, id));
 
         return await Collection.Find(filter)
             .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<T>> FindAsync(
-        FilterDefinition<T> filter,
-        SortDefinition<T>? sort = null,
-        int pageIndex = 0,
-        int pageSize = 20,
-        CancellationToken cancellationToken = default)
-    {
-        var find = Collection.Find(Filter.And(FilterBase(), filter));
-        if (sort != null)
-        {
-            find = find.Sort(sort);
-        }
-
-        return await find
-            .Skip(pageIndex * pageSize)
-            .Limit(pageSize)
-            .ToListAsync(cancellationToken)
-            .ConfigureAwait(false);
-    }    
-
-    public async Task<IEnumerable<T>> FindAsync(
-        Expression<Func<T, bool>> filter, 
-        IEntitySortDefinition<T>? sortOrders = null, 
-        int pageIndex = 0, 
-        int pageSize = 20, 
-        CancellationToken cancellationToken = default)
-    {
-        var find = Collection.Find(Filter.And(FilterBase(), filter));
-
-        if (sortOrders is MongoDbEntitySortDefinition<T> mongoDbSort) {
-            find = find.Sort(mongoDbSort.GetSort());
-        }
-
-        return await find.Skip(pageIndex * pageSize)
-            .Limit(pageSize)
-            .ToListAsync(cancellationToken)
-            .ConfigureAwait(false);
-    }
-    
-
-    public async Task<IEnumerable<P>> FindAsync<P>(
-        Expression<Func<T, bool>> filter, 
-        Expression<Func<T, P>> projection, 
-        IEntitySortDefinition<T>? sortOrders = null, 
-        int pageIndex = 0, 
-        int pageSize = 20, 
-        CancellationToken cancellationToken = default)
-    {
-        var find = Collection.Find(Filter.And(FilterBase(), filter));
-
-        if (sortOrders is MongoDbEntitySortDefinition<T> mongoDbSort) {
-            find = find.Sort(mongoDbSort.GetSort());
-        }
-
-        return await find.Project(projection)
-            .Skip(pageIndex * pageSize)
-            .Limit(pageSize)
-            .ToListAsync(cancellationToken)
-            .ConfigureAwait(false);
-    }
-
-    public async Task<IEnumerable<P>> FindAsync<P>(
-        FilterDefinition<T> filter,
-        Expression<Func<T, P>> projection,
-        SortDefinition<T>? sort = null,
-        int pageIndex = 0,
-        int pageSize = 20,
-        CancellationToken cancellationToken = default)
-    {
-        var find = Collection.Find(Filter.And(FilterBase(), filter));
-
-        if (sort != null)
-        {
-            find = find.Sort(sort);
-        }
-
-        return await find.Project(projection)
-            .Skip(pageIndex * pageSize)
-            .Limit(pageSize)
-            .ToListAsync(cancellationToken)
-            .ConfigureAwait(false);
-    }
-
-    public async Task<IEnumerable<P>> FindAsync<P>(
         Expression<Func<T, bool>> filter,
-        Expression<Func<T, P>> projection,
-        SortDefinition<T>? sortOrders = null,
+        Expression<Func<IEntitySortDefinition<T, TKey>, IEntitySortDefinition<T, TKey>>>? sortOrders = null,
         int pageIndex = 0,
         int pageSize = 20,
         CancellationToken cancellationToken = default)
@@ -142,22 +145,27 @@ public class MongoRepository<T, Tid>(ICollectionFactory collectionFactory) : IMo
         var predicate = PredicateBuilder.New<T>(true)
             .And(filter)
             .And(i => !i.IsDeleted);
+
         var find = Collection.Find(predicate);
         
-        if (sortOrders is MongoDbEntitySortDefinition<T> mongoDbSort) {
-            find = find.Sort(mongoDbSort.GetSort());
+        if (sortOrders is not null)
+        {
+            var sortDefinition = new MongoDbEntitySortDefinition<T, TKey>();
+            sortOrders.Compile().Invoke(sortDefinition);
+            find = find.Sort(sortDefinition.GetSort());
         }
 
-        return await find.Project(projection)
+        return await find
             .Skip(pageIndex * pageSize)
             .Limit(pageSize)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
     }
 
-    public async Task<IEnumerable<T>> FindAsync(
+    public async Task<IEnumerable<P>> FindAsync<P>(
         Expression<Func<T, bool>> filter,
-        SortDefinition<T>? sort = null,
+        Expression<Func<T, P>> projection,
+        Expression<Func<IEntitySortDefinition<T, TKey>, IEntitySortDefinition<T, TKey>>>? sortOrders = null,
         int pageIndex = 0,
         int pageSize = 20,
         CancellationToken cancellationToken = default)
@@ -167,13 +175,15 @@ public class MongoRepository<T, Tid>(ICollectionFactory collectionFactory) : IMo
             .And(i => !i.IsDeleted);
 
         var find = Collection.Find(predicate);
-
-        if (sort != null)
+        
+        if (sortOrders is not null)
         {
-            find = find.Sort(sort);
+            var sortDefinition = new MongoDbEntitySortDefinition<T, TKey>();
+            sortOrders.Compile().Invoke(sortDefinition);
+            find = find.Sort(sortDefinition.GetSort());
         }
 
-        return await find
+        return await find.Project(projection)
             .Skip(pageIndex * pageSize)
             .Limit(pageSize)
             .ToListAsync(cancellationToken)
@@ -188,268 +198,25 @@ public class MongoRepository<T, Tid>(ICollectionFactory collectionFactory) : IMo
         return Collection.CountDocumentsAsync(predicate, null, cancellationToken);
     }
 
-    public Task<long> CountAsync(FilterDefinition<T> filter, CancellationToken cancellationToken = default)
-    {
-        return Collection.CountDocumentsAsync(Filter.And(FilterBase(), filter), null, cancellationToken);
-    }
-
     public async Task<bool> Exists(Expression<Func<T, bool>> filter, CancellationToken cancellationToken = default)
     {
-        var count = await CountAsync(Filter.And(FilterBase(), filter), cancellationToken).ConfigureAwait(false);
+        var predicate = PredicateBuilder.New<T>(true)
+            .And(filter)
+            .And(i => !i.IsDeleted);
+        var count = await CountAsync(predicate, cancellationToken).ConfigureAwait(false);
         return count > 0;
     }
 
-    public async Task<bool> Exists(FilterDefinition<T> filter, CancellationToken cancellationToken = default)
+
+    public Task ReplaceAsync(TKey id, T item, CancellationToken cancellationToken = default)
     {
-        var count = await CountAsync(Filter.And(FilterBase(), filter), cancellationToken).ConfigureAwait(false);
-        return count > 0;
-    }
-
-    public virtual async Task AddAsync(T item, CancellationToken cancellationToken = default)
-    {
-        if (item is MongoTrackedEntity<Tid> mItem)
-        {
-            mItem.CreatedOnUtc = DateTime.UtcNow;
-            mItem.UpdatedOnUtc = DateTime.UtcNow;
-        }
-
-        await Collection.InsertOneAsync(item, null, cancellationToken);
-    }
-
-    public virtual async Task AddManyAsync(IEnumerable<T> items, CancellationToken cancellationToken = default)
-    {
-        items.ForEach(item =>
-        {
-            if (item is MongoTrackedEntity<Tid> mItem)
-            {
-                mItem.CreatedOnUtc = DateTime.UtcNow;
-                mItem.UpdatedOnUtc = DateTime.UtcNow;
-            }
-        });
-
-        await Collection.InsertManyAsync(items, null, cancellationToken).ConfigureAwait(false);
-    }
-
-    public Task UpdateAsync(
-        Tid id,
-        IEntityUpdateDefinition<T> update,
-        CancellationToken cancellationToken = default)
-    {
-        if (update is not MongoDbEntityUpdateDefinition<T> mongoDbUpdate) {
-            throw new BellightDataException("Incorrect implementation of IEntityUpdateDefinition<T>.");
-        }
-
-        return UpdateAsync(id, mongoDbUpdate.GetUpdate(), cancellationToken);
-    }
-
-    public virtual Task UpdateAsync(
-        Tid id,
-        UpdateDefinition<T> update,
-        CancellationToken cancellationToken = default)
-    {
-        var filter = Filter.And(FilterBase(), Filter.Eq(m => m.Id, id));
-        return UpdateManyAsync(filter, update, cancellationToken);
-    }
-
-    public Task UpdateAsync(
-        Tid id,
-        Func<UpdateDefinition<T>, UpdateDefinition<T>> updateFunc,
-        CancellationToken cancellationToken = default)
-    {
-        var filter = Filter.And(FilterBase(), Filter.Eq(m => m.Id, id));
-
-        UpdateDefinition<T> update;
-        if (typeof(MongoTrackedEntity<Tid>).IsAssignableFrom(typeof(T)))
-        {
-            update = updateFunc.Invoke(Update.Set(m => (m as MongoTrackedEntity<Tid>).UpdatedOnUtc, DateTime.UtcNow));
-        }
-        else
-        {
-            update = updateFunc.Invoke(Update.Set(m => m.IsDeleted, false));
-        }
-
-        return Collection.UpdateOneAsync(filter, update, null, cancellationToken);
-    }
-
-    public async Task<long> UpdateManyAsync(
-        Expression<Func<T, bool>> filter,
-        UpdateDefinition<T> update,
-        CancellationToken cancellationToken = default)
-    {
-        var task = Collection.UpdateManyAsync(Filter.And(FilterBase(), filter), update, cancellationToken: cancellationToken);
-
-        var updateResult = await task.ConfigureAwait(false);
-        return updateResult.ModifiedCount;
-    }
-
-    public async Task<long> UpdateManyAsync(
-        Expression<Func<T, bool>> filter,
-        Func<UpdateDefinition<T>, UpdateDefinition<T>> updateFunc,
-        CancellationToken cancellationToken = default)
-    {
-        UpdateDefinition<T> update;
-        if (typeof(MongoTrackedEntity<Tid>).IsAssignableFrom(typeof(T)))
-        {
-            update = updateFunc.Invoke(Update.Set(m => (m as MongoTrackedEntity<Tid>).UpdatedOnUtc, DateTime.UtcNow));
-        }
-        else
-        {
-            update = updateFunc.Invoke(Update.Set(m => m.IsDeleted, false));
-        }
-
-        var task = Collection.UpdateOneAsync(Filter.And(FilterBase(), filter), update, null, cancellationToken);
-
-        var updateResult = await task.ConfigureAwait(false);
-        return updateResult.ModifiedCount;
-    }
-
-    public Task<long> UpdateManyAsync(
-        Expression<Func<T, bool>> filter,
-        IEntityUpdateDefinition<T> update,
-        CancellationToken cancellationToken = default)
-    {
-        if (update is not MongoDbEntityUpdateDefinition<T>)
-        {
-            throw new BellightDataException("Incorrect implementation of IEntityUpdateDefinition<T>.");
-        }
-
-        return UpdateManyAsync(filter, update, cancellationToken);
-    }
-
-    public virtual async Task<long> UpdateManyAsync(
-        FilterDefinition<T> filter,
-        UpdateDefinition<T> update,
-        CancellationToken cancellationToken = default)
-    {
-        UpdateDefinition<T> mUpdate;
-        if (typeof(MongoTrackedEntity<Tid>).IsAssignableFrom(typeof(T)))
-        {
-            mUpdate = Update.Combine(
-                Update.Set(
-                    m => (m as MongoTrackedEntity<Tid>).UpdatedOnUtc,
-                    DateTime.UtcNow
-                ),
-                update
-            );
-        }
-        else
-        {
-            mUpdate = update;
-        }
-
-        var updateResult = await Collection.UpdateManyAsync(
-                Filter.And(FilterBase(), filter),
-                mUpdate,
-                null,
-                cancellationToken).ConfigureAwait(false);
-
-        return updateResult.ModifiedCount;
-    }
-
-    public virtual async Task<long> UpdateManyAsync(
-        FilterDefinition<T> filter,
-        Func<UpdateDefinition<T>, UpdateDefinition<T>> updateFunc,
-        CancellationToken cancellationToken = default)
-    {
-        UpdateDefinition<T> mUpdate;
-        if (typeof(MongoTrackedEntity<Tid>).IsAssignableFrom(typeof(T)))
-        {
-            mUpdate = updateFunc.Invoke(Update.Set(m => (m as MongoTrackedEntity<Tid>).UpdatedOnUtc, DateTime.UtcNow));
-        }
-        else
-        {
-            mUpdate = updateFunc.Invoke(Update.Set(m => m.IsDeleted, false));
-        }
-
-        var updateResult = await Collection.UpdateManyAsync(filter, mUpdate, null, cancellationToken)
-            .ConfigureAwait(false);
-
-        return updateResult.ModifiedCount;
-    }
-
-    public virtual Task DeleteAsync(Tid id, bool softDelete = true, CancellationToken cancellationToken = default)
-    {
-        if (softDelete)
-        {
-            var update = Update.Set(u => u.IsDeleted, true);
-
-            if (typeof(MongoTrackedEntity<Tid>).IsAssignableFrom(typeof(T)))
-            {
-                update = update.Set(u => (u as MongoTrackedEntity<Tid>).UpdatedOnUtc, DateTime.UtcNow);
-            }
-
-            return UpdateAsync(id, update, cancellationToken);
-        }
-
-        var filter = Filter.And(FilterBase(), Filter.Eq(m => m.Id, id));
-
-        return Collection.DeleteOneAsync(filter, cancellationToken);
-    }
-
-    public async Task<long> DeleteManyAsync(
-        Expression<Func<T, bool>> filter,
-        bool softDelete = true,
-        CancellationToken cancellationToken = default)
-    {
-        if (!softDelete)
-        {
-            var deleteResult = await Collection.DeleteManyAsync(filter, cancellationToken).ConfigureAwait(false);
-            return deleteResult.DeletedCount;
-        }
-
-        var update = Update.Set(u => u.IsDeleted, true);
-
-        if (typeof(MongoTrackedEntity<Tid>).IsAssignableFrom(typeof(T)))
-        {
-            update = update.Set(u => (u as MongoTrackedEntity<Tid>).UpdatedOnUtc, DateTime.UtcNow);
-        }
-
-        var deleteTask = Collection.UpdateManyAsync(filter, update, null, cancellationToken);
-
-        return (await deleteTask.ConfigureAwait(false)).ModifiedCount;
-    }
-
-    public virtual async Task<long> DeleteManyAsync(IEnumerable<Tid> ids, bool softDelete,
-        CancellationToken token = default)
-    {
-        var filter = Filter.And(FilterBase(), Filter.In(m => m.Id, ids));
-        if (!softDelete)
-        {
-            var deleteManyResult = await Collection.DeleteManyAsync(filter, token).ConfigureAwait(false);
-            return deleteManyResult.DeletedCount;
-        }
-
-        var update = Update.Set(u => u.IsDeleted, true);
-
-        if (typeof(MongoTrackedEntity<Tid>).IsAssignableFrom(typeof(T)))
-        {
-            update = update.Set(u => (u as MongoTrackedEntity<Tid>).UpdatedOnUtc, DateTime.UtcNow);
-        }
-
-        var updateTask = Collection.UpdateManyAsync(filter, update, null, token);
-
-        return (await updateTask.ConfigureAwait(false)).ModifiedCount;
-    }
-
-    public virtual async Task<bool> CheckExistence(string field, object value,
-        CancellationToken token = default)
-    {
-        var filterDefinitions = new List<FilterDefinition<T>>
-            {
-                FilterBase(),
-                Filter.Eq(field, value)
-            };
-        var documentCount = await Collection.CountDocumentsAsync(
-            Filter.And(filterDefinitions),
-            null,
-            token).ConfigureAwait(false);
-        return documentCount > 0;
-    }
-
-    public Task ReplaceAsync(Tid id, T item, CancellationToken cancellationToken = default)
-    {
-        var filter = Filter.And(FilterBase(), Filter.Eq(m => m.Id, id));
+        var filter = Builders<T>.Filter.And(FilterBase(), Builders<T>.Filter.Eq(m => m.Id, id));
         return Collection.ReplaceOneAsync(filter, item, cancellationToken: cancellationToken);
+    }
+
+    public void SetObjectType(string objectType)
+    {
+        _objectType = objectType;
     }
 
     protected string? GetObjectType()

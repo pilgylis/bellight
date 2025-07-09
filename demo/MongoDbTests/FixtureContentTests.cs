@@ -1,3 +1,4 @@
+using Bellight.DataManagement;
 using Bellight.MongoDb;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,9 +10,9 @@ public class FixtureContentTests(MongoDbFixture fixture) : IClassFixture<MongoDb
     [Fact]
     public async Task DataExists()
     {
-        var customerRepository = fixture.Services.GetRequiredService<IMongoRepository<Customer, string>>();
-        var productRepository = fixture.Services.GetRequiredService<IMongoRepository<Product, string>>();
-        var orderRepository = fixture.Services.GetRequiredService<IMongoRepository<Order, string>>();
+        var customerRepository = fixture.Services.GetRequiredService<IRepository<Customer, string>>();
+        var productRepository = fixture.Services.GetRequiredService<IRepository<Product, string>>();
+        var orderRepository = fixture.Services.GetRequiredService<IRepository<Order, string>>();
 
         var orderCount = await orderRepository.CountAsync(o => true);
 

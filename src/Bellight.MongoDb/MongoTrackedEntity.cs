@@ -3,7 +3,8 @@
 namespace Bellight.MongoDb;
 
 [BsonIgnoreExtraElements]
-public abstract class MongoTrackedEntity<IdType> : MongoBaseEntity<IdType>
+public abstract class MongoTrackedEntity<TKey> : MongoBaseEntity<TKey>
+    where TKey: IEquatable<TKey>
 {
     [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
     public DateTime? CreatedOnUtc { get; set; }

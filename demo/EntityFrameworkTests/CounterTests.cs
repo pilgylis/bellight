@@ -1,18 +1,16 @@
-﻿using Bellight.MongoDb;
-using Microsoft.Extensions.DependencyInjection;
-using System.Transactions;
-using MongoDB.Driver;
+﻿using System.Transactions;
 using Bellight.DataManagement;
+using EntityFrameworkTests.Models;
 
-namespace MongoDbTests;
+namespace EntityFrameworkTests;
 
-public class CounterTests(MongoDbFixture fixture) : IClassFixture<MongoDbFixture>
+public class CounterTests(EntityFrameworkFixture fixture) : IClassFixture<EntityFrameworkFixture>
 {
     [Fact]
     public async Task TransactionAbortTest()
     {
-        using var scope = fixture.Services.CreateScope();
-        var counterRepository = scope.ServiceProvider.GetRequiredService<IRepository<Counter, string>>();
+        var serviceProvider = await fixture.GetServiceProviderAsync();
+        var counterRepository = serviceProvider.GetRequiredService<IRepository<Counter, int>>();
         await counterRepository.DeleteManyAsync(c => true, softDelete: false);
         var counter = (await counterRepository.FindAsync(
             c => true, 
@@ -44,8 +42,8 @@ public class CounterTests(MongoDbFixture fixture) : IClassFixture<MongoDbFixture
     [Fact]
     public async Task TransactionCommitTest()
     {
-        using var scope = fixture.Services.CreateScope();
-        var counterRepository = scope.ServiceProvider.GetRequiredService<IRepository<Counter, string>>();
+        var serviceProvider = await fixture.GetServiceProviderAsync();
+        var counterRepository = serviceProvider.GetRequiredService<IRepository<Counter, int>>();
         await counterRepository.DeleteManyAsync(c => true, softDelete: false);
         var counter = (await counterRepository.FindAsync(
             c => true, 

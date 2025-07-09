@@ -4,10 +4,11 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Bellight.MongoDb;
 
-public abstract class MongoBaseEntity<IdType> : IEntity<IdType>
+public abstract class MongoBaseEntity<TKey> : IEntity<TKey>
+    where TKey: IEquatable<TKey>
 {
     [BsonRepresentation(BsonType.ObjectId)]
-    public IdType Id { get; set; } = default!;
+    public TKey Id { get; set; } = default!;
 
     public bool IsDeleted { get; set; }
 }

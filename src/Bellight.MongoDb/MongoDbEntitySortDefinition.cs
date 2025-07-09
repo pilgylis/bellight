@@ -4,10 +4,12 @@ using MongoDB.Driver;
 
 namespace Bellight.MongoDb;
 
-internal class MongoDbEntitySortDefinition<TObject> : IEntitySortDefinition<TObject> where TObject : IEntity
+internal class MongoDbEntitySortDefinition<TObject, TKey> : IEntitySortDefinition<TObject, TKey> 
+    where TObject : IEntity<TKey>
+    where TKey: IEquatable<TKey>
 {
     private SortDefinition<TObject>? sort;
-    public IEntitySortDefinition<TObject> Ascending(Expression<Func<TObject, object>> field)
+    public IEntitySortDefinition<TObject, TKey> Ascending(Expression<Func<TObject, object>> field)
     {
         if (sort is null)
         {
@@ -20,7 +22,7 @@ internal class MongoDbEntitySortDefinition<TObject> : IEntitySortDefinition<TObj
         return this;
     }
 
-    public IEntitySortDefinition<TObject> Descending(Expression<Func<TObject, object>> field)
+    public IEntitySortDefinition<TObject, TKey> Descending(Expression<Func<TObject, object>> field)
     {
         if (sort is null)
         {

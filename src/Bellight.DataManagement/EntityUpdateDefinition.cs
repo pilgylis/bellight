@@ -2,8 +2,11 @@
 
 namespace Bellight.DataManagement;
 
-public interface IEntityUpdateDefinition<TObject> where TObject : IEntity {
-    IEntityUpdateDefinition<TObject> Set<TField>(
+public interface IEntityUpdateDefinition<TObject, TKey> 
+  where TObject : IEntity<TKey>
+  where TKey: IEquatable<TKey>
+{
+    IEntityUpdateDefinition<TObject, TKey> Set<TField>(
         Expression<Func<TObject, TField>> field,
         TField fieldValue);
 }

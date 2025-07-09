@@ -9,7 +9,6 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<ICollectionFactory, CollectionFactory>();
         services.AddTransient(typeof(IRepository<,>), typeof(MongoRepository<,>));
-        services.AddTransient(typeof(IMongoRepository<,>), typeof(MongoRepository<,>));
 
         services.Configure(settingsConfigure);
         return services;

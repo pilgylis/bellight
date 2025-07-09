@@ -1,53 +1,122 @@
-﻿using Bellight.DataManagement;
-using Bellight.MongoDb;
-using Microsoft.Extensions.DependencyInjection;
 using System.Security.Cryptography;
+using EntityFrameworkTests.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace MongoDbTests;
+namespace EntityFrameworkTests;
 
-#pragma warning disable CS8601 // Converting null literal or possible null value to non-nullable type.
-#pragma warning disable CS8602 // Converting null literal or possible null value to non-nullable type.
-#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
-
-public class MongoDbFixture
+public class TestingDbContext(DbContextOptions<TestingDbContext> options) : DbContext(options)
 {
-    public IServiceProvider Services { get; }
+    public DbSet<Counter> Counters { get; set; }
+    public DbSet<Customer> Customers { get; set; }
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<Product> Products { get; set; }
 
-    public MongoDbFixture()
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        var services = new ServiceCollection();
-
-        services.AddMongoDb(options =>
+        modelBuilder.Entity<Counter>(entity =>
         {
-            options.ConnectionString = "mongodb://localhost:27017";
-            options.DatabaseName = "test";
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id)
+                .HasColumnName("id")
+                .HasColumnType("int")
+                .IsRequired();
+
+            entity.Property(e => e.Value)
+                .HasColumnName("value")
+                .HasColumnType("int");
+
+            entity.Property(e => e.IsDeleted)
+                .HasColumnName("isDeleted");
         });
 
-        Services = services.BuildServiceProvider();
+        modelBuilder.Entity<Customer>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id)
+                .HasColumnName("id")
+                .HasColumnType("int")
+                .IsRequired();
 
-        PrepareData().Wait();
+            entity.Property(e => e.Name)
+                .HasColumnName("name")
+                .HasColumnType("varchar(255)");
+
+            entity.Property(e => e.Email)
+                .HasColumnName("email")
+                .HasColumnType("varchar(255)");
+
+            entity.Property(e => e.IsDeleted)
+                .HasColumnName("isDeleted");
+        });
+
+        modelBuilder.Entity<Order>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id)
+                .HasColumnName("id")
+                .HasColumnType("int")
+                .IsRequired();
+
+            entity.Property(e => e.CustomerId)
+                .HasColumnName("customer_id")
+                .HasColumnType("int")
+                .IsRequired();
+
+            entity.OwnsMany(e => e.Products, ownedNavigationBuilder =>
+            {
+                ownedNavigationBuilder.ToJson();
+            });
+
+            entity.Property(e => e.DiscountAmount)
+                .HasColumnName("discount_amount")
+                .HasColumnType("money");
+
+            entity.Property(e => e.Total)
+                .HasColumnName("total")
+                .HasColumnType("money");
+
+            entity.Property(e => e.IsDeleted)
+                .HasColumnName("isDeleted");
+        });
+
+        modelBuilder.Entity<Product>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id)
+                .HasColumnName("id")
+                .HasColumnType("int")
+                .IsRequired();
+
+            entity.Property(e => e.Name)
+                .HasColumnName("name")
+                .HasColumnType("varchar(255)");
+
+            entity.Property(e => e.Price)
+                .HasColumnName("price")
+                .HasColumnType("money");
+
+            entity.Property(e => e.IsDeleted)
+                .HasColumnName("isDeleted");
+        });
     }
 
-    private async Task PrepareData()
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseAsyncSeeding(async (context, _, cancellationToken) =>
+        {
+            await AddCustomers(context);
+            await AddProducts(context);
+            await AddOrders(context);
+        });
+
+    private static async Task AddCustomers(DbContext context)
     {
-        var orderRepository = Services.GetRequiredService<IRepository<Order, string>>();
-        if (await orderRepository.Exists(o => true).ConfigureAwait(false))
+        // import customer
+        var customerSet = context.Set<Customer>();
+        var randomCustomer = await customerSet.FirstOrDefaultAsync();
+        if (randomCustomer is not null)
         {
             return;
         }
-
-        await AddCustomers().ConfigureAwait(false);
-
-        await AddProducts().ConfigureAwait(false);
-
-        await AddOrders().ConfigureAwait(false);
-    }
-
-    private async Task AddCustomers()
-    {
-        // import customer
-        var customerRepository = Services.GetRequiredService<IRepository<Customer, string>>();
-        await customerRepository.DeleteManyAsync(c => true).ConfigureAwait(false);
 
         #region Customer Data
 
@@ -84,14 +153,20 @@ public class MongoDbFixture
                 Email = parts[1].Trim().Replace(" ", ""),
             };
 
-            await customerRepository.AddAsync(customer).ConfigureAwait(false);
+            await customerSet.AddAsync(customer);
         }
+
+        await context.SaveChangesAsync();
     }
 
-    private async Task AddProducts()
+    private async Task AddProducts(DbContext context)
     {
-        var productRepository = Services.GetRequiredService<IRepository<Product, string>>();
-        await productRepository.DeleteManyAsync(p => true).ConfigureAwait(false);
+        var productSet = context.Set<Product>();
+        var randomProduct = await productSet.FirstOrDefaultAsync();
+        if (randomProduct is not null)
+        {
+            return;
+        }
 
         #region Product Data
 
@@ -1125,20 +1200,27 @@ public class MongoDbFixture
                 Price = price,
             };
 
-            await productRepository.AddAsync(product).ConfigureAwait(false); ;
+            await productSet.AddAsync(product);
         }
+
+        await context.SaveChangesAsync();
     }
 
-    private async Task AddOrders()
+    private async Task AddOrders(DbContext context)
     {
-        var customerRepository = Services.GetRequiredService<IRepository<Customer, string>>();
-        var productRepository = Services.GetRequiredService<IRepository<Product, string>>();
-        var orderRepository = Services.GetRequiredService<IRepository<Order, string>>();
+        var orderSet = context.Set<Order>();
 
-        await orderRepository.DeleteManyAsync(o => true).ConfigureAwait(false);
+        var randomOrder = await orderSet.FirstOrDefaultAsync();
+        if (randomOrder is not null)
+        {
+            return;
+        }
 
-        var customerIds = await customerRepository.FindAsync(c => true, c => c.Id).ConfigureAwait(false);
-        var products = (await productRepository.FindAsync(p => true, p => new { p.Id, p.Price }).ConfigureAwait(false)).ToList();
+        var customerSet = context.Set<Customer>();
+        var productSet = context.Set<Product>();
+
+        var customerIds = await customerSet.Select(c => c.Id).ToListAsync();
+        var products = await productSet.ToListAsync();
         var productCount = products.Count;
 
         foreach (var customerId in customerIds)
@@ -1159,7 +1241,7 @@ public class MongoDbFixture
                     {
                         var currentProductIndex = RandomNumberGenerator.GetInt32(0, productCount - 1);
                         product = products[currentProductIndex];
-                    } while (orderProducts.Exists(p => product.Id.Equals(p.ProductId, StringComparison.Ordinal)));
+                    } while (orderProducts.Exists(p => product.Id == p.ProductId));
 
                     var quantity = RandomNumberGenerator.GetInt32(1, 100);
                     orderProducts.Add(new OrderProduct
@@ -1180,12 +1262,10 @@ public class MongoDbFixture
                     DiscountAmount = 0
                 };
 
-                await orderRepository.AddAsync(order).ConfigureAwait(false);
+                await orderSet.AddAsync(order);
             }
         }
-    }
 
-#pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-#pragma warning restore CS8601 // Dereference of a possibly null reference.
+        await context.SaveChangesAsync();
+    }
 }

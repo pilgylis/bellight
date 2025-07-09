@@ -1,7 +1,8 @@
 <Project>
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    <GenericNetVersion>9.0.6</GenericNetVersion>
+    <GenericNetVersion>9.0.7</GenericNetVersion>
+    <AspireVersion>9.3.1</AspireVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="$(GenericNetVersion)" />
@@ -14,11 +15,19 @@
     <PackageVersion Include="Microsoft.Extensions.Options" Version="$(GenericNetVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(GenericNetVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(GenericNetVersion)" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.6" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.7" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(GenericNetVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.CommandLine" Version="$(GenericNetVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="$(GenericNetVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.UserSecrets" Version="$(GenericNetVersion)" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(GenericNetVersion)" />
+
+    <PackageVersion Include="Aspire.Hosting.AppHost" Version="9.3.1" />
+    <PackageVersion Include="Aspire.Hosting.Testing" Version="$(AspireVersion)" />
+    <PackageVersion Include="Aspire.Hosting.MongoDB" Version="$(AspireVersion)" />
+    <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="$(AspireVersion)" />
+
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageVersion Include="AutoMapper" Version="14.0.0" />
     <PackageVersion Include="MediatR" Version="12.5.0" />
     <PackageVersion Include="AMQPNetLite.Core" Version="2.4.11" />
@@ -26,7 +35,7 @@
     <PackageVersion Include="MongoDB.Driver" Version="3.4.0" />
     <PackageVersion Include="Serilog.Extensions.Logging" Version="9.0.2" />
     <PackageVersion Include="Serilog.Sinks.Console" Version="6.0.0" />
-    <PackageVersion Include="Swashbuckle.AspNetCore" Version="9.0.1" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="9.0.3" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.1">

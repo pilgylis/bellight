@@ -22,7 +22,7 @@ public class ServiceProviderFixture : IDisposable
             options.DependencyCacheOptions.PrettyPrint = true;
             options.DependencyCacheOptions.Enabled = false;
 
-            options.AddMediatR();
+            options.AddMediatR(cfg => { });
         });
 
         AssertOneWay = new Mock<IAssertService<OneWay>>();

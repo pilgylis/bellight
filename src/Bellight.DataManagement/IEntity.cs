@@ -1,11 +1,7 @@
 ﻿namespace Bellight.DataManagement;
 
-public interface IEntity
-{
-    bool IsDeleted { get; set; }
-}
-
-public interface IEntity<IdType> : IEntity
+public interface IEntity<IdType> where IdType: IEquatable<IdType>
 {
     IdType Id { get; set; }
+    bool IsDeleted { get; set; }
 }
