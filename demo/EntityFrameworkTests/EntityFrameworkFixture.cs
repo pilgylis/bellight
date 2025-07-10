@@ -2,15 +2,17 @@ using Aspire.Hosting;
 using Bellight.DataManagement;
 using Bellight.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Xunit.Abstractions;
 
 namespace EntityFrameworkTests;
 
-public class EntityFrameworkFixture : IDisposable
+public sealed class EntityFrameworkFixture : IDisposable
 {
     private IServiceProvider? _serviceProvider;
 
-    private string _connectionString;
+    private string? _connectionString;
     private DistributedApplication? _app;
+    private ITestOutputHelper? testOutputHelper;
 
     public EntityFrameworkFixture()
     {
@@ -35,6 +37,9 @@ public class EntityFrameworkFixture : IDisposable
         services.AddDbContext<TestingDbContext>(dbContextOptionsBuilder =>
         {
             dbContextOptionsBuilder.UseNpgsql(_connectionString);
+
+            dbContextOptionsBuilder.LogTo((message) => testOutputHelper?.WriteLine(message));
+            dbContextOptionsBuilder.EnableSensitiveDataLogging();
         });
 
         services.AddSingleton<DbContext>(p => p.GetRequiredService<TestingDbContext>());
@@ -49,8 +54,10 @@ public class EntityFrameworkFixture : IDisposable
         _serviceProvider = serviceProvider;
     }
 
-    public async Task<IServiceProvider> GetServiceProviderAsync()
+    public async Task<IServiceProvider> GetServiceProviderAsync(ITestOutputHelper? testOutputHelper = null)
     {
+        this.testOutputHelper = testOutputHelper;
+
         if (_serviceProvider is not null)
         {
             return _serviceProvider;

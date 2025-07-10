@@ -141,7 +141,7 @@ public class EntityFrameworkRepository<TObject, TKey>(DbContext context) : IRepo
     {
         var updateDefinition = new EntityUpdateDefinition<TObject, TKey>();
         update.Invoke(updateDefinition);
-        _ = await context.Set<TObject>().Where(m => m.Id.Equals(id))
+        _ = await context.Set<TObject>().Where(m => m.Id.Equals(id)).AsNoTracking()
             .ExecuteUpdateAsync(updateDefinition.SetPropertyExpression, cancellationToken);
     }
 
@@ -152,7 +152,7 @@ public class EntityFrameworkRepository<TObject, TKey>(DbContext context) : IRepo
     {
         var updateDefinition = new EntityUpdateDefinition<TObject, TKey>();
         update.Invoke(updateDefinition);
-        return await context.Set<TObject>().Where(filter)
+        return await context.Set<TObject>().Where(filter).AsNoTracking()
             .ExecuteUpdateAsync(updateDefinition.SetPropertyExpression, cancellationToken);
     }
 }
