@@ -51,20 +51,28 @@ public class MongoRepository<T, TKey>(ICollectionFactory collectionFactory) : IR
         await Collection.InsertManyAsync(items, null, cancellationToken).ConfigureAwait(false);
     }
 
-    public Task UpdateAsync(
+    public async Task UpdateAsync(
         TKey id,
         Func<IEntityUpdateDefinition<T, TKey>, IEntityUpdateDefinition<T, TKey>> update,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var updateDefinition = new MongoDbEntityUpdateDefinition<T, TKey>();
+        update(updateDefinition);
+
+        await Collection.UpdateOneAsync(Builders<T>.Filter.Eq(m => m.Id, id), updateDefinition.GetUpdate(), cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
-    public Task<long> UpdateManyAsync(
+    public async Task<long> UpdateManyAsync(
         Expression<Func<T, bool>> filter,
         Func<IEntityUpdateDefinition<T, TKey>, IEntityUpdateDefinition<T, TKey>> update,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var updateDefinition = new MongoDbEntityUpdateDefinition<T, TKey>();
+        update(updateDefinition);
+
+        var result = await Collection.UpdateManyAsync(filter, updateDefinition.GetUpdate(), cancellationToken: cancellationToken).ConfigureAwait(false);
+
+        return result.ModifiedCount;
     }
 
     public Task DeleteAsync(TKey id, bool softDelete = true, CancellationToken cancellationToken = default)

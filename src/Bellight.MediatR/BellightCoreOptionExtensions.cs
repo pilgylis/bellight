@@ -1,4 +1,5 @@
 ﻿using Bellight.Core;
+using MediatR.Registration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Bellight.MediatR;
@@ -12,10 +13,11 @@ public static class BellightCoreOptionExtensions
             startupContainerServices.AddTypeHandler<MediatRTypeHandler>();
         }).AddStartupContainerAction((_, services) =>
         {
-            services.AddMediatR(cfg =>
-            {
-                mediatRConfigure.Invoke(cfg);
-            });
+            var mediatRServiceConfiguration = new MediatRServiceConfiguration();
+            mediatRConfigure(mediatRServiceConfiguration);
+            ServiceRegistrar.SetGenericRequestHandlerRegistrationLimitations(mediatRServiceConfiguration);
+            ServiceRegistrar.AddMediatRClassesWithTimeout(services, mediatRServiceConfiguration);
+            ServiceRegistrar.AddRequiredServices(services, mediatRServiceConfiguration);
         });
     }
 }

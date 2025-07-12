@@ -7,4 +7,5 @@ public class MongoDbSettings
 
     public string? DatabaseName { get; set; }
     public string? LogQuery { get; set; }
+    public string? DirectConnection { get; set; } = "false";
 }
