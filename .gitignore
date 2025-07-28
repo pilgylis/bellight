@@ -12,3 +12,7 @@ artifacts
 /PrivateNotes.md
 /.ionide
 .idea
+
+
+#Ignore vscode AI rules
+.github\copilot-instructions.md

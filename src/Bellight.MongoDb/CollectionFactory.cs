@@ -74,6 +74,8 @@ public class CollectionFactory(IOptions<MongoDbSettings> optionsAccessor, IServi
             };
         }
 
+        clientSettings.DirectConnection = "true".Equals(_settings.DirectConnection, StringComparison.OrdinalIgnoreCase);
+
         var client = new MongoClient(clientSettings);
 
         return client.AsTransactionClient();
