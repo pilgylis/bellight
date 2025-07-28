@@ -13,7 +13,7 @@ public abstract class AmqpProviderBase(
         return new AmqpPublisher(connectionFactory, NormalizeTopic(topic), messageBusType);
     }
 
-    public ISubscription Subscribe(string topic, Action<string> messageReceivedAction)
+    public ISubscription Subscribe(string topic, Func<string, Task> messageReceivedAction)
     {
         var optionsValue = options.CurrentValue;
         var subscriberOptions = new SubscriberOptions

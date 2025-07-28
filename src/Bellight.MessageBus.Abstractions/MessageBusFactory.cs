@@ -41,7 +41,7 @@ public class MessageBusFactory(IServiceProvider serviceProvider, ILogger<Message
         return publisher;
     }
 
-    public ISubscription Subscribe(string topic, Action<string> messageReceivedAction, MessageBusType messageBusType = MessageBusType.Queue)
+    public ISubscription Subscribe(string topic, Func<string, Task> messageReceivedAction, MessageBusType messageBusType = MessageBusType.Queue)
     {
         var provider = GetProvider(messageBusType);
         var messageBusTypeText = messageBusType == MessageBusType.Queue ? "Queue" : "Pub/Sub";

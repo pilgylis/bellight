@@ -4,5 +4,5 @@ public interface IMessageBusProvider
 {
     IPublisher GetPublisher(string topic);
 
-    ISubscription Subscribe(string topic, Action<string> messageReceivedAction);
+    ISubscription Subscribe(string topic, Func<string, Task> messageReceivedAction);
 }

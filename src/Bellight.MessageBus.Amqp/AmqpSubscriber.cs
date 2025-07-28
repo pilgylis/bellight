@@ -11,7 +11,7 @@ public class AmqpSubscriber(IAmqpConnectionFactory connectionFactory, Subscriber
 {
     private const string _linkName = "receiver-link";
 
-    public ISubscription Subscribe(Action<string> messageReceivedAction)
+    public ISubscription Subscribe(Func<string, Task> messageReceivedAction)
     {
         var tokenSource = new CancellationTokenSource();
         SafeExecute.Sync(() => ThreadPool.QueueUserWorkItem(s =>
@@ -19,9 +19,10 @@ public class AmqpSubscriber(IAmqpConnectionFactory connectionFactory, Subscriber
             var cancellationToken = (CancellationToken)s!;
             while (!cancellationToken.IsCancellationRequested)
             {
-                SafeExecute.SyncCatch(
-                    () => PollMessage(messageReceivedAction, cancellationToken),
-                    () => Thread.Sleep(options.WaitDuration));
+                PollMessage(messageReceivedAction, cancellationToken)
+                    .ConfigureAwait(false)
+                    .GetAwaiter()
+                    .GetResult();
             }
         }, tokenSource.Token));
         return new DefaultSubscription(tokenSource);
@@ -46,23 +47,20 @@ public class AmqpSubscriber(IAmqpConnectionFactory connectionFactory, Subscriber
         return new ReceiverLink(session, _linkName, source, null);
     }
 
-    private void PollMessage(Action<string> messageReceivedAction, CancellationToken cancellationToken)
+    private async Task PollMessage(Func<string, Task> messageReceivedAction, CancellationToken cancellationToken)
     {
-        while (!cancellationToken.IsCancellationRequested)
+        await SafeExecute.AsyncCatch(async () =>
         {
-            SafeExecute.AsyncCatch(async () =>
+            var link = GetLink();
+            var message = await link.ReceiveAsync(TimeSpan.FromMilliseconds(options.PollingInterval));
+            if (message == null)
             {
-                var link = GetLink();
-                var message = await link.ReceiveAsync(TimeSpan.FromMilliseconds(options.PollingInterval));
-                if (message == null)
-                {
-                    await Task.Delay(options.WaitDuration, cancellationToken);
-                    return;
-                }
+                await Task.Delay(options.WaitDuration, cancellationToken);
+                return;
+            }
 
-                link.Accept(message);
-                messageReceivedAction.Invoke((string)message.Body);
-            }, () => Thread.Sleep(options.WaitDuration)).Wait(cancellationToken);
-        }
+            link.Accept(message);
+            await messageReceivedAction.Invoke((string)message.Body).ConfigureAwait(false);
+        }, () => Task.Delay(options.WaitDuration, cancellationToken).Wait()).ConfigureAwait(false);
     }
 }

@@ -2,5 +2,5 @@
 
 public interface ISubscriber : IDisposable
 {
-    ISubscription Subscribe(Action<string> messageReceivedAction);
+    ISubscription Subscribe(Func<string, Task> messageReceivedAction);
 }
