@@ -27,7 +27,7 @@ internal class Program
 
         var serviceProvider = services.BuildServiceProvider();
 
-        var mapperService = serviceProvider.GetService<IModelMappingService>();
+        var mapperService = serviceProvider.GetRequiredService<IModelMappingService>();
 
         // forward
         var user1 = new User

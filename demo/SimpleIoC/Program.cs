@@ -19,7 +19,7 @@ internal class Program
 
         // resolve IService => only one is returned
         // cannot determine which one
-        var singleInstance = serviceProvider.GetService<IService>();
+        var singleInstance = serviceProvider.GetRequiredService<IService>();
         singleInstance.DoSomething();
 
         // resolve IEnumerable
@@ -29,7 +29,7 @@ internal class Program
             item.DoSomething();
         }
 
-        var keyedServiceFactory = serviceProvider.GetService<IKeyedServiceFactory>();
+        var keyedServiceFactory = serviceProvider.GetRequiredService<IKeyedServiceFactory>();
         var c1 = keyedServiceFactory.Resolve<IKeyedServiceC>("C1");
         c1.DoSomethingInKeyed();
 

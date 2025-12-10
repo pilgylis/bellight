@@ -16,14 +16,14 @@ internal class Program
 
         var serviceProvider = services.BuildServiceProvider();
 
-        var configuration = serviceProvider.GetService<IConfiguration>();
+        var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
         foreach (var pair in configuration.AsEnumerable())
         {
             Console.WriteLine("{0}: {1}", pair.Key, pair.Value);
         }
 
-        var testOptions = serviceProvider.GetService<IOptions<NestedProperty>>();
+        var testOptions = serviceProvider.GetRequiredService<IOptions<NestedProperty>>();
         Console.WriteLine(testOptions.Value.NestedA);
     }
 }

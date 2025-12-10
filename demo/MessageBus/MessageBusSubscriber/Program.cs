@@ -43,15 +43,16 @@ internal class Program
         var serviceProvider = services.BuildServiceProvider();
         serviceProvider.ConfigureCoreLogging();
 
-        var messageBusFactory = serviceProvider.GetService<IMessageBusFactory>();
+        var messageBusFactory = serviceProvider.GetRequiredService<IMessageBusFactory>();
 
         var subscription = messageBusFactory.Subscribe(topic, OnMessageReceived, messageBusType);
         Console.ReadLine();
         subscription.Dispose();
     }
 
-    private static void OnMessageReceived(string message)
+    private static Task OnMessageReceived(string message)
     {
         Console.WriteLine(message);
+        return Task.CompletedTask;
     }
 }

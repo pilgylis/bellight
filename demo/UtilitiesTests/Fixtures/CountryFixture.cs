@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Text.Json;
+﻿using System.Text.Json;
 using UtilitiesTests.Models;
 
 namespace UtilitiesTests.Fixtures;
@@ -15,6 +13,6 @@ public class CountryFixture
         Countries = JsonSerializer.Deserialize<IEnumerable<Country>>(json, new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        });
+        }) ?? [];
     }
 }

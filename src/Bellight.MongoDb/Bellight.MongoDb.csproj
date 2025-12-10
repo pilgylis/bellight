@@ -1,9 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
     <Company>Nguyen Viet Trung</Company>
     <Copyright>Nguyen Viet Trung</Copyright>
     <Description>MongoDB implementation of Generic Repository in Bellight.DataManagement</Description>

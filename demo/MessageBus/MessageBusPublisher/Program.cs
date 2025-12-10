@@ -49,7 +49,7 @@ internal static class Program
         for (var i = 0; i < 10; i++)
         {
             using var scope = serviceProvider.CreateScope();
-            var messageBusFactory = scope.ServiceProvider.GetService<IMessageBusFactory>();
+            var messageBusFactory = scope.ServiceProvider.GetRequiredService<IMessageBusFactory>();
             var publisher = messageBusFactory.GetPublisher(topic1, messageBusType);
             await publisher.SendAsync(message);
             Console.WriteLine("{0} message(s) sent!", i + 1);
@@ -60,7 +60,7 @@ internal static class Program
         for (var i = 0; i < 10; i++)
         {
             using var scope = serviceProvider.CreateScope();
-            var messageBusFactory = scope.ServiceProvider.GetService<IMessageBusFactory>();
+            var messageBusFactory = scope.ServiceProvider.GetRequiredService<IMessageBusFactory>();
             var publisher = messageBusFactory.GetPublisher(topic2, messageBusType);
             await publisher.SendAsync(message);
             Console.WriteLine("{0} message(s) sent!", i + 1);
@@ -70,7 +70,7 @@ internal static class Program
     private static void AcceptInput(IPublisher publisher)
     {
         var acceptInput = true;
-        Console.CancelKeyPress += (object s, ConsoleCancelEventArgs e) =>
+        Console.CancelKeyPress += (object? s, ConsoleCancelEventArgs e) =>
         {
             e.Cancel = true;
             acceptInput = false;
@@ -81,11 +81,16 @@ internal static class Program
         while (acceptInput)
         {
             var enter = "[Enter]";
-            CoreLogging.Logger?.LogInformation("Enter text and press {enter} to add message to queue:",
+            CoreLogging.Logger?.LogInformation("Enter text and press {Enter} to add message to queue:",
                 enter.ToLowerInvariant());
             var text = Console.ReadLine();
+            if (string.IsNullOrEmpty(text))
+            {
+                continue;
+            }
+
             publisher.Send(text);
-            CoreLogging.Logger?.LogInformation("Message {text} sent!", text);
+            CoreLogging.Logger?.LogInformation("Message {Text} sent!", text);
         }
     }
 }

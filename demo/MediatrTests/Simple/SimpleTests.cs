@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace MediatrTests.Simple;
@@ -11,7 +10,7 @@ public class SimpleTests(ServiceProviderFixture fixture) : IClassFixture<Service
     [Fact]
     public async Task PingPongTest()
     {
-        var mediator = fixture.ServiceProvider.GetService<IMediator>();
+        var mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
 
         var response = await mediator.Send(new Ping());
 
@@ -21,7 +20,7 @@ public class SimpleTests(ServiceProviderFixture fixture) : IClassFixture<Service
     [Fact]
     public async Task OneWayTest()
     {
-        var mediator = fixture.ServiceProvider.GetService<IMediator>();
+        var mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
 
         await mediator.Send(new OneWay());
 
@@ -31,7 +30,7 @@ public class SimpleTests(ServiceProviderFixture fixture) : IClassFixture<Service
     [Fact]
     public async Task NotificationTest()
     {
-        var mediator = fixture.ServiceProvider.GetService<IMediator>();
+        var mediator = fixture.ServiceProvider.GetRequiredService<IMediator>();
         await mediator.Publish(new NotificationMessage());
 
         fixture.AssertNotification.Verify(x => x.Process(It.IsAny<NotificationMessage>()), Times.Exactly(2));

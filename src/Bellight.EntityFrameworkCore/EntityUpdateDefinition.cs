@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Bellight.DataManagement;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 
 namespace Bellight.EntityFrameworkCore;
@@ -8,7 +9,7 @@ public class EntityUpdateDefinition<TObject, TKey> : IEntityUpdateDefinition<TOb
     where TObject : class, IEntity<TKey>
     where TKey: IEquatable<TKey>
 {
-    public Expression<Func<SetPropertyCalls<TObject>, SetPropertyCalls<TObject>>> SetPropertyExpression { get; private set; } = b => b;
+    public Action<UpdateSettersBuilder<TObject>> SetPropertyExpression { get; private set; } = new UpdateSettersBuilder<TObject>();
     public IEntityUpdateDefinition<TObject, TKey> Set<TField>(Expression<Func<TObject, TField>> field, TField fieldValue)
     {
         SetProperty(field, _ => fieldValue);
@@ -20,10 +21,11 @@ public class EntityUpdateDefinition<TObject, TKey> : IEntityUpdateDefinition<TOb
         Expression<Func<TObject, TProperty>> valueExpression
     )
     {
-        SetPropertyExpression = SetPropertyExpression.Update(
+        SetPropertyExpression = b => b.SetProperty<TProperty>(propertyExpression, valueExpression);
+        SetPropertyExpression = SetPropertyExpression.Update(propertyExpression, valueExpression);
             body: Expression.Call(
                 instance: SetPropertyExpression.Body,
-                methodName: nameof(SetPropertyCalls<TObject>.SetProperty),
+                methodName: nameof(SetPropertyCalls<TProperty>.SetProperty),
                 typeArguments: [typeof(TProperty)],
                 propertyExpression,
                 valueExpression

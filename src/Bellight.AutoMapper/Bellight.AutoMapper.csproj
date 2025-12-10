@@ -1,9 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
     <AssemblyTitle>Bellight.AutoMapper</AssemblyTitle>
     <Product>Bellight.AutoMapper</Product>
     <Company>Nguyen Viet Trung</Company>
@@ -18,7 +15,7 @@
     <PackageLanguage>en-US</PackageLanguage>
     <IncludeSymbols>true</IncludeSymbols>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>9.0.0</Version>
+    <Version>10.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
