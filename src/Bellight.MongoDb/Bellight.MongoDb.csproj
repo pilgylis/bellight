@@ -21,6 +21,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Options" />
     <PackageReference Include="MongoDB.Driver" />
+    <PackageReference Include="Snappier" />
   </ItemGroup>
 
   <ItemGroup>

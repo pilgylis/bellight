@@ -1,10 +1,12 @@
 ﻿using Bellight.MessageBus.Abstractions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Bellight.MessageBus.Amqp;
 
 public abstract class AmqpProviderBase(
     IAmqpConnectionFactory connectionFactory,
+    ILogger logger,
     IOptionsMonitor<AmqpOptions> options,
     MessageBusType messageBusType)
 {
@@ -26,7 +28,7 @@ public abstract class AmqpProviderBase(
             SubscriberName = optionsValue.SubscriberName
         };
 
-        var subscriber = new AmqpSubscriber(connectionFactory, subscriberOptions);
+        var subscriber = new AmqpSubscriber(connectionFactory, logger, subscriberOptions);
 
         return subscriber.Subscribe(messageReceivedAction);
     }

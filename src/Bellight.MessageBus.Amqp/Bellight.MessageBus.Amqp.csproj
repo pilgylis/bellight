@@ -33,7 +33,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\Bellight.Core\Bellight.Core.csproj" />
     <ProjectReference Include="..\Bellight.MessageBus.Abstractions\Bellight.MessageBus.Abstractions.csproj" />
   </ItemGroup>
 
