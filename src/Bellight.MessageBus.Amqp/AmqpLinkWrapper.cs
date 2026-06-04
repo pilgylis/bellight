@@ -2,7 +2,8 @@
 
 namespace Bellight.MessageBus.Amqp;
 
-public abstract class AmqpLinkWrapper<T>(IAmqpConnectionFactory connectionFactory) : IDisposable where T : class, ILink
+public abstract class AmqpLinkWrapper<T>(
+    IAmqpConnectionFactory connectionFactory) : IDisposable where T : class, ILink
 {
     private T? _link;
 

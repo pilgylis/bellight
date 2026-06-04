@@ -1,5 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+    <Company>Nguyen Viet Trung</Company>
+    <Copyright>Nguyen Viet Trung</Copyright>
+    <Description>EF Core implementation of Generic Repository in Bellight.DataManagement</Description>
+    <Authors>Nguyen Viet Trung</Authors>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageDescription>Bellight Data Management EF Core</PackageDescription>
+    <PackageProjectUrl>https://github.com/pilgylis/bellight</PackageProjectUrl>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageTags>bellight, data, management, EF Core</PackageTags>
+    <PackageLanguage>en-US</PackageLanguage>
+    <IncludeSymbols>true</IncludeSymbols>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE.txt" Pack="true" PackagePath="$(PackageLicenseFile)">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational"/>
     <ProjectReference Include="..\..\src\Bellight.DataManagement\Bellight.DataManagement.csproj" />

@@ -13,28 +13,21 @@
     <File Path="LICENSE.txt" />
   </Folder>
   <Folder Name="/2. src/">
-    <Project Path="src/Bellight.Configurations/Bellight.Configurations.csproj" />
-    <Project Path="src/Bellight.Core/Bellight.Core.csproj" />
     <Project Path="src/Bellight.DataManagement/Bellight.DataManagement.csproj" />
     <Project Path="src/Bellight.EntityFrameworkCore/Bellight.EntityFrameworkCore.csproj" />
-    <Project Path="src/Bellight.MediatR/Bellight.MediatR.csproj" />
     <Project Path="src/Bellight.MessageBus.Abstractions/Bellight.MessageBus.Abstractions.csproj" />
     <Project Path="src/Bellight.MessageBus.Amqp/Bellight.MessageBus.Amqp.csproj" />
     <Project Path="src/Bellight.MongoDb/Bellight.MongoDb.csproj" />
   </Folder>
   <Folder Name="/3. demo/">
     <Project Path="demo/AmqpAppHost/AmqpAppHost.csproj" />
-    <Project Path="demo/ConsoleConfigurations/ConsoleConfigurations.csproj" />
     <Project Path="demo/EntityFrameworkTests/EntityFrameworkTests.csproj" />
-    <Project Path="demo/MediatrTests/MediatrTests.csproj" />
     <Project Path="demo/MessageBus/MessageBusPublisher/MessageBusPublisher.csproj" />
     <Project Path="demo/MessageBus/MessageBusSubscriber/MessageBusSubscriber.csproj" />
     <Project Path="demo/MessageBusPublisherWeb/MessageBusPublisherWeb.csproj" />
     <Project Path="demo/MongoDbAppHost/MongoDbAppHost.csproj" />
     <Project Path="demo/MongoDbTests/MongoDbTests.csproj" />
     <Project Path="demo/PostGreAppHost/PostGreAppHost.csproj" />
-    <Project Path="demo/SimpleIoC/SimpleIoC.csproj" />
-    <Project Path="demo/UtilitiesTests/UtilitiesTests.csproj" />
   </Folder>
   <Folder Name="/4. tests/" />
   <Folder Name="/demo/" />

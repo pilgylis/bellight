@@ -1,5 +1,4 @@
-﻿using Bellight.Core.Exceptions;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -73,13 +72,13 @@ public class MessageBusFactory(IServiceProvider serviceProvider, ILogger<Message
         var messageBusTypeText = messageBusType == MessageBusType.Queue ? "Queue" : "Pub/Sub";
         if (configuration == null)
         {
-            throw new ProviderNotFoundException($"MessageBus - Provider for {messageBusTypeText} must present at {configurationKey}.");
+            throw new MessageBusProviderNotFoundException($"MessageBus - Provider for {messageBusTypeText} must present at {configurationKey}.");
         }
 
         var providerTypeName = configuration[configurationKey];
         if (string.IsNullOrEmpty(providerTypeName))
         {
-            throw new ProviderNotFoundException($"MessageBus - Provider for {messageBusTypeText} must present at {configurationKey}.");
+            throw new MessageBusProviderNotFoundException($"MessageBus - Provider for {messageBusTypeText} must present at {configurationKey}.");
         }
 
         var type = Type.GetType(providerTypeName);

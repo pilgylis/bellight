@@ -1,12 +1,12 @@
 ﻿using Amqp;
 using Amqp.Framing;
 using Amqp.Types;
-using Bellight.Core.Misc;
 using Bellight.MessageBus.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace Bellight.MessageBus.Amqp;
 
-public class AmqpSubscriber(IAmqpConnectionFactory connectionFactory, SubscriberOptions options) 
+public class AmqpSubscriber(IAmqpConnectionFactory connectionFactory, ILogger logger, SubscriberOptions options) 
     : AmqpLinkWrapper<ReceiverLink>(connectionFactory), ISubscriber
 {
     private const string _linkName = "receiver-link";
@@ -14,17 +14,23 @@ public class AmqpSubscriber(IAmqpConnectionFactory connectionFactory, Subscriber
     public ISubscription Subscribe(Func<string, Task> messageReceivedAction)
     {
         var tokenSource = new CancellationTokenSource();
-        SafeExecute.Sync(() => ThreadPool.QueueUserWorkItem(s =>
+
+        Task.Run(async () =>
         {
-            var cancellationToken = (CancellationToken)s!;
-            while (!cancellationToken.IsCancellationRequested)
+            while (!tokenSource.Token.IsCancellationRequested)
             {
-                PollMessage(messageReceivedAction, cancellationToken)
-                    .ConfigureAwait(false)
-                    .GetAwaiter()
-                    .GetResult();
+                try
+                {
+                    await PollMessage(messageReceivedAction, tokenSource.Token).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "An error occurred while polling messages: {ErrorMessage}", ex.Message);
+                    await Task.Delay(options.WaitDuration, tokenSource.Token).ConfigureAwait(false);
+                }
             }
-        }, tokenSource.Token));
+        });
+        
         return new DefaultSubscription(tokenSource);
     }
 
@@ -46,18 +52,16 @@ public class AmqpSubscriber(IAmqpConnectionFactory connectionFactory, Subscriber
 
     private async Task PollMessage(Func<string, Task> messageReceivedAction, CancellationToken cancellationToken)
     {
-        await SafeExecute.AsyncCatch(async () =>
+        logger.LogDebug("Polling for messages on topic '{Topic}'...", options.Topic);
+        var link = GetLink();
+        var message = await link.ReceiveAsync(TimeSpan.FromMilliseconds(options.PollingInterval));
+        if (message == null)
         {
-            var link = GetLink();
-            var message = await link.ReceiveAsync(TimeSpan.FromMilliseconds(options.PollingInterval));
-            if (message == null)
-            {
-                await Task.Delay(options.WaitDuration, cancellationToken);
-                return;
-            }
+            await Task.Delay(options.WaitDuration, cancellationToken);
+            return;
+        }
 
-            link.Accept(message);
-            await messageReceivedAction.Invoke((string)message.Body).ConfigureAwait(false);
-        }, () => Task.Delay(options.WaitDuration, cancellationToken).Wait()).ConfigureAwait(false);
+        link.Accept(message);
+        await messageReceivedAction.Invoke((string)message.Body).ConfigureAwait(false);
     }
 }

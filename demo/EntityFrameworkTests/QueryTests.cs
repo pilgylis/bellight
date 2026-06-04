@@ -14,7 +14,7 @@ public class QueryTests(EntityFrameworkFixture fixture, ITestOutputHelper testOu
         var orderRepository = serviceProvider.GetRequiredService<IRepository<Order, int>>();
         var customerRepository = serviceProvider.GetRequiredService<IRepository<Customer, int>>();
 
-        var firstCustomer = (await customerRepository.FindAsync(c => true, sortOrders: o => o.Ascending(c => c.Name), pageIndex: 0, pageSize: 1, cancellationToken: default))
+        var firstCustomer = (await customerRepository.FindAsync(c => true, sortOrders: o => o.Ascending(c => c.Name!), pageIndex: 0, pageSize: 1, cancellationToken: default))
             .FirstOrDefault()!;
 
         testOutputHelper.WriteLine("Customer: {0}", firstCustomer.ToJsonDocument().RootElement.GetRawText());
