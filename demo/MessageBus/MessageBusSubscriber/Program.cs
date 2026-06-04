@@ -1,58 +1,19 @@
-﻿using Bellight.Core.Misc;
-using Bellight.MessageBus.Abstractions;
+using Bellight.Core.Misc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Serilog;
-using System;
+using Microsoft.Extensions.Hosting;
 
-namespace MessageBusSubscriber;
+var builder = Host.CreateApplicationBuilder(args);
+builder.Logging.ConfigureStandardLogging();
 
-internal class Program
-{
-    private static void Main(string[] args)
+builder.Services.AddBellightMessageBus()
+    .AddAmqp(options =>
     {
-        var topic = "test1";
-        var messageBusType = MessageBusType.PubSub;
+        options.Endpoint = builder.Configuration.GetConnectionString("rabbitmq");
+        options.IsAzureMessageBus = "false";
+        options.SubscriberName = "sub1";
+    });
 
-        var subscriberName = "sub1";
+builder.Services.AddHostedService<SubscriberWorker>();
 
-        var typeText = messageBusType == MessageBusType.Queue ? "queue" : "topic";
-        Console.WriteLine($"Subscribing {typeText} '{topic}'");
-
-        // Settings for Azure Message Bus
-        // var policyName = WebUtility.UrlEncode(""); // enter policy name
-        // var key = WebUtility.UrlEncode(""); // enter key
-        // var namespaceUrl = "";
-
-        // var connectionString = $"amqps://{policyName}:{key}@{namespaceUrl}/";
-
-        var connectionString = "amqp://artemis:simetraehcapa@localhost:5672";
-
-        Console.WriteLine(connectionString);
-        var services = new ServiceCollection();
-        services.AddLogging(loggingBuilder =>
-            loggingBuilder.AddSerilog(dispose: true));
-
-        services.AddBellightMessageBus()
-            .AddAmqp(options =>
-            {
-                options.Endpoint = connectionString;
-                options.IsAzureMessageBus = "false";
-                options.SubscriberName = subscriberName;
-            });
-
-        var serviceProvider = services.BuildServiceProvider();
-        serviceProvider.ConfigureCoreLogging();
-
-        var messageBusFactory = serviceProvider.GetRequiredService<IMessageBusFactory>();
-
-        var subscription = messageBusFactory.Subscribe(topic, OnMessageReceived, messageBusType);
-        Console.ReadLine();
-        subscription.Dispose();
-    }
-
-    private static Task OnMessageReceived(string message)
-    {
-        Console.WriteLine(message);
-        return Task.CompletedTask;
-    }
-}
+await builder.Build().RunAsync();

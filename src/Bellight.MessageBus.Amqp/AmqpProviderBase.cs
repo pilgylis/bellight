@@ -32,5 +32,5 @@ public abstract class AmqpProviderBase(
     }
 
     private string NormalizeTopic(string topic) => string.IsNullOrEmpty(options.CurrentValue.InstanceName) ?
-        topic : $"{options.CurrentValue.InstanceName}.{topic}";
+        $"{topic}" : $"{options.CurrentValue.InstanceName}.{topic}";
 }

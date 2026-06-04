@@ -36,16 +36,13 @@ public class AmqpSubscriber(IAmqpConnectionFactory connectionFactory, Subscriber
             return new ReceiverLink(session, _linkName, $"{options.Topic}/Subscriptions/{options.SubscriberName}");
         }
 
-        var source = new Source
-        {
-            Address = options.Topic,
-            Capabilities = [
-                new Symbol(options.MessageBusType == MessageBusType.Queue ? "queue" : "topic")
-            ]
-        };
+        var address = options.MessageBusType == MessageBusType.Queue
+            ? $"/queues/{options.Topic}"
+            : $"/queues/{options.Topic}.{options.SubscriberName}";
 
-        return new ReceiverLink(session, _linkName, source, null);
+        return new ReceiverLink(session, _linkName, address);
     }
+
 
     private async Task PollMessage(Func<string, Task> messageReceivedAction, CancellationToken cancellationToken)
     {

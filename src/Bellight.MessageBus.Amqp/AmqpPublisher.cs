@@ -1,6 +1,4 @@
 ﻿using Amqp;
-using Amqp.Framing;
-using Amqp.Types;
 using Bellight.MessageBus.Abstractions;
 
 namespace Bellight.MessageBus.Amqp;
@@ -22,18 +20,10 @@ public class AmqpPublisher(
 
     protected override SenderLink InitialiseLink(Session session)
     {
-        var messageBusTypeText = messageBusType == MessageBusType.Queue ? "queue" : "topic";
-        var target = new Target
-        {
-            Address = topic,
-            Capabilities =
-            [
-                new Symbol(messageBusTypeText)
-            ]
-        };
+        var address = messageBusType == MessageBusType.Queue
+            ? $"/queues/{topic}"
+            : $"/exchanges/{topic}";
 
-        var linkName = $"{messageBusTypeText}.{topic}";
-
-        return new SenderLink(session, linkName, target, null);
+        return new SenderLink(session, address, address);
     }
 }
