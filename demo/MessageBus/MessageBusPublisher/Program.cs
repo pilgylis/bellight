@@ -1,10 +1,4 @@
-using Bellight.Core.Misc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-
 var builder = Host.CreateApplicationBuilder(args);
-builder.Logging.ConfigureStandardLogging();
 
 builder.Services.AddBellightMessageBus()
     .AddAmqp(options =>
