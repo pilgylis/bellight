@@ -1,6 +1,4 @@
 ﻿using Amqp;
-using Amqp.Framing;
-using Amqp.Types;
 using Bellight.MessageBus.Abstractions;
 using Microsoft.Extensions.Logging;
 
@@ -36,17 +34,7 @@ public class AmqpSubscriber(IAmqpConnectionFactory connectionFactory, ILogger lo
 
     protected override ReceiverLink InitialiseLink(Session session)
     {
-        if ("true".Equals(options.IsAzureMessageBus, StringComparison.InvariantCultureIgnoreCase)
-            && options.MessageBusType == MessageBusType.PubSub)
-        {
-            return new ReceiverLink(session, _linkName, $"{options.Topic}/Subscriptions/{options.SubscriberName}");
-        }
-
-        var address = options.MessageBusType == MessageBusType.Queue
-            ? $"/queues/{options.Topic}"
-            : $"/queues/{options.Topic}.{options.SubscriberName}";
-
-        return new ReceiverLink(session, _linkName, address);
+        return new ReceiverLink(session, _linkName, options.Address);
     }
 
 

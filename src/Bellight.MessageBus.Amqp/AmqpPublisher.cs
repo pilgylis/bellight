@@ -4,9 +4,8 @@ using Bellight.MessageBus.Abstractions;
 namespace Bellight.MessageBus.Amqp;
 
 public class AmqpPublisher(
-    IAmqpConnectionFactory connectionFactory, 
-    string topic, 
-    MessageBusType messageBusType) : AmqpLinkWrapper<SenderLink>(connectionFactory), IPublisher
+    IAmqpConnectionFactory connectionFactory,
+    PublisherOptions options) : AmqpLinkWrapper<SenderLink>(connectionFactory), IPublisher
 {
     public void Send(string message)
     {
@@ -20,10 +19,7 @@ public class AmqpPublisher(
 
     protected override SenderLink InitialiseLink(Session session)
     {
-        var address = messageBusType == MessageBusType.Queue
-            ? $"/queues/{topic}"
-            : $"/exchanges/{topic}";
-
+        var address = options.Address;
         return new SenderLink(session, address, address);
     }
 }
