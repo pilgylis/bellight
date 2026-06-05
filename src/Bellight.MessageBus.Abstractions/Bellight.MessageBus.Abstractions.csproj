@@ -5,18 +5,23 @@
     <Product>Bellight.MessageBus.Abstractions</Product>
     <Company>Nguyen Viet Trung</Company>
     <Copyright>Nguyen Viet Trung</Copyright>
-    <Description>A plug-in of Bellight.Core that provides abstractions for Message Queuing and Publish/Subscribe. An implementation such as Kafka or Amqp is required.</Description>
+    <Description>Provider-agnostic abstraction layer for message queuing and publish/subscribe messaging. Defines IMessageBusFactory, IPublisher, ISubscription, IQueueProvider, and IPubsubProvider. A concrete implementation package (e.g. Bellight.MessageBus.Amqp) is required at runtime.</Description>
     <Authors>Nguyen Viet Trung</Authors>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageDescription>Bellight MessageBus Abstractions</PackageDescription>
+    <PackageDescription>Provider-agnostic abstraction layer for message queuing and publish/subscribe messaging. Defines IMessageBusFactory, IPublisher, ISubscription, IQueueProvider, and IPubsubProvider. A concrete implementation package (e.g. Bellight.MessageBus.Amqp) is required at runtime.</PackageDescription>
     <PackageProjectUrl>https://github.com/pilgylis/bellight</PackageProjectUrl>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <PackageTags>messagebus, queue, pubsub, bellight, core, dependency</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>messaging;message-bus;queue;pubsub;abstractions;bellight</PackageTags>
     <PackageLanguage>en-US</PackageLanguage>
     <IncludeSymbols>true</IncludeSymbols>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>10.0.0</Version>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Include="..\..\LICENSE.txt" Link="LICENSE.txt">

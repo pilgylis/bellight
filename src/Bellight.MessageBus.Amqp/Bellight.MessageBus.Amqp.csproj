@@ -5,18 +5,23 @@
     <Product>Bellight.MessageBus.Amqp</Product>
     <Company>Nguyen Viet Trung</Company>
     <Copyright>Nguyen Viet Trung</Copyright>
-    <Description>An implementation of Bellight.MessageBus.Abstractions for AMQP, that uses AMQPNetLite.</Description>
+    <Description>AMQP implementation of Bellight.MessageBus.Abstractions using AMQPNetLite. Supports RabbitMQ and Azure Service Bus. Provides IQueueProvider and IPubsubProvider with polling-based message consumption and automatic link reconnection.</Description>
     <Authors>Nguyen Viet Trung</Authors>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageDescription>Bellight MessageBus Amqp</PackageDescription>
+    <PackageDescription>AMQP implementation of Bellight.MessageBus.Abstractions using AMQPNetLite. Supports RabbitMQ and Azure Service Bus. Provides IQueueProvider and IPubsubProvider with polling-based message consumption and automatic link reconnection.</PackageDescription>
     <PackageProjectUrl>https://github.com/pilgylis/bellight</PackageProjectUrl>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <PackageTags>AMQP, messagebus, queue, pubsub, bellight</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>amqp;rabbitmq;azure-service-bus;messaging;message-bus;queue;pubsub;bellight</PackageTags>
     <PackageLanguage>en-US</PackageLanguage>
     <IncludeSymbols>true</IncludeSymbols>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	  <Version>10.0.0</Version>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Include="..\..\LICENSE.txt" Link="LICENSE.txt">
