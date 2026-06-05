@@ -3,13 +3,13 @@
   <PropertyGroup>
     <Company>Nguyen Viet Trung</Company>
     <Copyright>Nguyen Viet Trung</Copyright>
-    <Description>EF Core implementation of Generic Repository in Bellight.DataManagement</Description>
+    <Description>Entity Framework Core implementation of IRepository&lt;T, TKey&gt; from Bellight.DataManagement. Supports soft-delete, fluent partial updates (ExecuteUpdateAsync), bulk operations, pagination, projection, multi-context DI registration, and any EF Core-compatible relational database.</Description>
     <Authors>Nguyen Viet Trung</Authors>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageDescription>Bellight Data Management EF Core</PackageDescription>
+    <PackageDescription>Entity Framework Core implementation of IRepository&lt;T, TKey&gt; from Bellight.DataManagement. Supports soft-delete, fluent partial updates (ExecuteUpdateAsync), bulk operations, pagination, projection, multi-context DI registration, and any EF Core-compatible relational database.</PackageDescription>
     <PackageProjectUrl>https://github.com/pilgylis/bellight</PackageProjectUrl>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <PackageTags>bellight, data, management, EF Core</PackageTags>
+    <PackageTags>bellight, repository, data, management, efcore, entity-framework, soft-delete, pagination, relational</PackageTags>
     <PackageLanguage>en-US</PackageLanguage>
     <IncludeSymbols>true</IncludeSymbols>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

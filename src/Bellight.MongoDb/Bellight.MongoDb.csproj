@@ -3,13 +3,13 @@
   <PropertyGroup>
     <Company>Nguyen Viet Trung</Company>
     <Copyright>Nguyen Viet Trung</Copyright>
-    <Description>MongoDB implementation of Generic Repository in Bellight.DataManagement</Description>
+    <Description>MongoDB implementation of IRepository&lt;T, TKey&gt; from Bellight.DataManagement. Supports soft-delete, fluent partial updates, full document replace, pagination, projection, native MongoDB driver access (IMongoRepository&lt;T&gt;), and System.Transactions-based multi-document transaction support.</Description>
     <Authors>Nguyen Viet Trung</Authors>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageDescription>Bellight Data Management</PackageDescription>
+    <PackageDescription>MongoDB implementation of IRepository&lt;T, TKey&gt; from Bellight.DataManagement. Supports soft-delete, fluent partial updates, full document replace, pagination, projection, native MongoDB driver access (IMongoRepository&lt;T&gt;), and System.Transactions-based multi-document transaction support.</PackageDescription>
     <PackageProjectUrl>https://github.com/pilgylis/bellight</PackageProjectUrl>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <PackageTags>bellight, data, management</PackageTags>
+    <PackageTags>bellight, repository, data, management, mongodb, soft-delete, pagination, transactions, nosql</PackageTags>
     <PackageLanguage>en-US</PackageLanguage>
     <IncludeSymbols>true</IncludeSymbols>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

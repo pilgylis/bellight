@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Company>Nguyen Viet Trung</Company>
     <Copyright>Nguyen Viet Trung</Copyright>
-    <Description>Data management abstraction</Description>
+    <Description>Generic async repository abstraction (IRepository&lt;T, TKey&gt;) with soft-delete, partial updates, fluent sorting, pagination, and projection support. Implementations available for MongoDB and Entity Framework Core.</Description>
     <Authors>Nguyen Viet Trung</Authors>
-    <PackageDescription>Bellight Data Management</PackageDescription>
+    <PackageDescription>Generic async repository abstraction (IRepository&lt;T, TKey&gt;) with soft-delete, partial updates, fluent sorting, pagination, and projection support. Implementations available for MongoDB (Bellight.MongoDb) and Entity Framework Core (Bellight.EntityFrameworkCore).</PackageDescription>
     <PackageProjectUrl>https://github.com/pilgylis/bellight</PackageProjectUrl>
-    <PackageTags>bellight, data, management</PackageTags>
+    <PackageTags>bellight, repository, data, management, soft-delete, pagination, mongodb, efcore</PackageTags>
     <PackageLanguage>en-US</PackageLanguage>
     <IncludeSymbols>true</IncludeSymbols>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
