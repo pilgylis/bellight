@@ -5,12 +5,14 @@ using Microsoft.Extensions.Options;
 namespace Bellight.MessageBus.Amqp;
 
 public class AmqpQueueProvider(
-    IAmqpConnectionFactory connectionFactory, 
+    IAmqpConnectionFactory connectionFactory,
     ILogger<AmqpQueueProvider> logger,
-    IOptionsMonitor<AmqpOptions> options) : AmqpProviderBase(
-        connectionFactory, 
+    IOptionsMonitor<AmqpOptions> options,
+    AmqpAddressBuilders addressBuilders) : AmqpProviderBase(
+        connectionFactory,
         logger,
-        options, 
+        options,
+        addressBuilders,
         MessageBusType.Queue), IQueueProvider
 {
 }

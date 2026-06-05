@@ -7,10 +7,12 @@ namespace Bellight.MessageBus.Amqp;
 public class AmqpPubsubProvider(
     IAmqpConnectionFactory connectionFactory,
     ILogger<AmqpPubsubProvider> logger,
-    IOptionsMonitor<AmqpOptions> options) : AmqpProviderBase(
-        connectionFactory, 
+    IOptionsMonitor<AmqpOptions> options,
+    AmqpAddressBuilders addressBuilders) : AmqpProviderBase(
+        connectionFactory,
         logger,
-        options, 
+        options,
+        addressBuilders,
         MessageBusType.PubSub), IPubsubProvider
 {
 }

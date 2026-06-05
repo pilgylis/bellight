@@ -1,4 +1,5 @@
-﻿using Amqp;
+﻿using System.Collections.Concurrent;
+using Amqp;
 using Microsoft.Extensions.Options;
 
 namespace Bellight.MessageBus.Amqp;
@@ -6,7 +7,7 @@ namespace Bellight.MessageBus.Amqp;
 public class AmqpConnectionFactory(IOptionsMonitor<AmqpOptions> options) : IAmqpConnectionFactory
 {
     private Connection? connection;
-    private readonly Dictionary<string, Session> sessions = [];
+    private readonly ConcurrentDictionary<string, Session> sessions = [];
 
     public Connection GetConnection()
     {
@@ -32,7 +33,7 @@ public class AmqpConnectionFactory(IOptionsMonitor<AmqpOptions> options) : IAmqp
         GetConnection();
 
         var newSession = new Session(connection);
-        sessions.Add(name, newSession);
+        sessions[name] = newSession;
 
         return newSession;
     }

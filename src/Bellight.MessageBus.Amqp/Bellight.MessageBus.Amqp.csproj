@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-	<PackageReference Include="AMQPNetLite.Core" />
+	  <PackageReference Include="AMQPNetLite.Core" />
     <PackageReference Include="Microsoft.Extensions.Configuration" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
   </ItemGroup>

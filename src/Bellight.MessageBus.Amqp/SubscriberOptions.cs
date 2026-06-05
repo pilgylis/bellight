@@ -10,4 +10,5 @@ public class SubscriberOptions
     public int PollingInterval { get; set; }
     public int WaitDuration { get; set; }
     public string? IsAzureMessageBus { get; set; }
+    public string? Address { get; set; }
 }
