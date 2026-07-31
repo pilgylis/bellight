@@ -29,6 +29,8 @@
     <Project Path="demo/MongoDbTests/MongoDbTests.csproj" />
     <Project Path="demo/PostGreAppHost/PostGreAppHost.csproj" />
   </Folder>
-  <Folder Name="/4. tests/" />
+  <Folder Name="/4. tests/">
+    <Project Path="demo/Bellight.MessageBus.Amqp.UnitTests/Bellight.MessageBus.Amqp.UnitTests.csproj" />
+  </Folder>
   <Folder Name="/demo/" />
 </Solution>

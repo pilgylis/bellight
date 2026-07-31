@@ -38,7 +38,10 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\Bellight.MessageBus.Abstractions\Bellight.MessageBus.Abstractions.csproj" />
+    <ProjectReference Include="..\Bellight.MessageBus.Abstractions\Bellight.MessageBus.Abstractions.csproj"
+                       Condition="'$(Configuration)' != 'Release'" />
+    <PackageReference Include="Bellight.MessageBus.Abstractions"
+                       Condition="'$(Configuration)' == 'Release'" />
   </ItemGroup>
 
 </Project>

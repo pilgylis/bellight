@@ -21,6 +21,33 @@ public abstract class AmqpLinkWrapper<T>(
         return _link;
     }
 
+    /// <summary>
+    /// Discards the current link and tears down the shared connection/session, so the
+    /// next <see cref="GetLink"/> call is forced to establish a fresh one. Call this when
+    /// a link operation fails without the link itself becoming <c>IsClosed</c> (e.g. a send
+    /// timeout against a transport that died silently) - otherwise <see cref="GetLink"/>
+    /// keeps handing back the same wedged link forever.
+    /// </summary>
+    protected void Invalidate()
+    {
+        var link = _link;
+        _link = null;
+
+        if (link?.IsClosed == false)
+        {
+            try
+            {
+                link.Close();
+            }
+            catch
+            {
+                // best-effort: the link is already being discarded either way
+            }
+        }
+
+        connectionFactory.Reset();
+    }
+
     public void Dispose()
     {
         if (_link?.IsClosed == false)

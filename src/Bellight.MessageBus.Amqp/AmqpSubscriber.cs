@@ -24,6 +24,7 @@ public class AmqpSubscriber(IAmqpConnectionFactory connectionFactory, ILogger lo
                 catch (Exception ex)
                 {
                     logger.LogError(ex, "An error occurred while polling messages: {ErrorMessage}", ex.Message);
+                    Invalidate();
                     await Task.Delay(options.WaitDuration, tokenSource.Token).ConfigureAwait(false);
                 }
             }

@@ -37,4 +37,35 @@ public class AmqpConnectionFactory(IOptionsMonitor<AmqpOptions> options) : IAmqp
 
         return newSession;
     }
+
+    public void Reset()
+    {
+        var current = connection;
+        connection = null;
+
+        foreach (var name in sessions.Keys.ToList())
+        {
+            if (sessions.TryRemove(name, out var session) && !session.IsClosed)
+            {
+                TryClose(session);
+            }
+        }
+
+        if (current?.IsClosed == false)
+        {
+            TryClose(current);
+        }
+    }
+
+    private static void TryClose(AmqpObject amqpObject)
+    {
+        try
+        {
+            amqpObject.Close();
+        }
+        catch
+        {
+            // best-effort: the object is already being discarded either way
+        }
+    }
 }

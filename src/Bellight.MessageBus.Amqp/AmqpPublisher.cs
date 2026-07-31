@@ -9,12 +9,28 @@ public class AmqpPublisher(
 {
     public void Send(string message)
     {
-        GetLink().Send(new Message(message));
+        try
+        {
+            GetLink().Send(new Message(message));
+        }
+        catch
+        {
+            Invalidate();
+            throw;
+        }
     }
 
-    public Task SendAsync(string message)
+    public async Task SendAsync(string message)
     {
-        return GetLink().SendAsync(new Message(message));
+        try
+        {
+            await GetLink().SendAsync(new Message(message)).ConfigureAwait(false);
+        }
+        catch
+        {
+            Invalidate();
+            throw;
+        }
     }
 
     protected override SenderLink InitialiseLink(Session session)
