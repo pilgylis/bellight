@@ -7,8 +7,8 @@ namespace Bellight.MessageBus.Amqp.UnitTests;
 /// test control exactly what <see cref="FakeLink"/> instance <c>InitialiseLink</c> hands
 /// back next, without needing a real <see cref="Session"/>.
 /// </summary>
-public class TestLinkWrapper(IAmqpConnectionFactory connectionFactory, Func<FakeLink> nextLink)
-    : AmqpLinkWrapper<FakeLink>(connectionFactory)
+public class TestLinkWrapper(IAmqpConnectionFactory connectionFactory, Func<FakeLink> nextLink, string sessionKey = "test-session")
+    : AmqpLinkWrapper<FakeLink>(connectionFactory, sessionKey)
 {
     public int InitialiseLinkCallCount { get; private set; }
 
@@ -18,5 +18,5 @@ public class TestLinkWrapper(IAmqpConnectionFactory connectionFactory, Func<Fake
         return nextLink();
     }
 
-    public void InvalidatePublic() => Invalidate();
+    public void InvalidatePublic(FakeLink failedLink) => Invalidate(failedLink);
 }

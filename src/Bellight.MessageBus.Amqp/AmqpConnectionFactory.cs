@@ -1,60 +1,59 @@
-﻿using System.Collections.Concurrent;
-using Amqp;
+﻿using Amqp;
 using Microsoft.Extensions.Options;
 
 namespace Bellight.MessageBus.Amqp;
 
 public class AmqpConnectionFactory(IOptionsMonitor<AmqpOptions> options) : IAmqpConnectionFactory
 {
-    private Connection? connection;
-    private readonly ConcurrentDictionary<string, Session> sessions = [];
+    // Every named caller gets its own dedicated connection (not just its own session on a
+    // shared connection): establishing a second session on an already-active connection
+    // was observed to hang in practice, so isolation is at the connection level - the one
+    // thing proven to actually contain a topic's problems to itself.
+    private readonly Lock _gate = new();
+    private readonly Dictionary<string, Connection> connections = [];
+    private readonly Dictionary<string, Session> sessions = [];
 
-    public Connection GetConnection()
+    public Session GetSession(string name)
     {
-        if (connection?.IsClosed != false)
+        lock (_gate)
         {
-            connection = new Connection(new Address(options.CurrentValue.Endpoint));
-        }
-
-        return connection;
-    }
-
-    public Session GetSession(string name = "default")
-    {
-        if (sessions.TryGetValue(name, out var value))
-        {
-            var session = value;
-            if (!session.IsClosed)
+            if (sessions.TryGetValue(name, out var value) && !value.IsClosed)
             {
-                return session;
+                return value;
             }
+
+            var newSession = new Session(GetConnectionNoLock(name));
+            sessions[name] = newSession;
+            return newSession;
         }
-
-        GetConnection();
-
-        var newSession = new Session(connection);
-        sessions[name] = newSession;
-
-        return newSession;
     }
 
-    public void Reset()
+    public void Reset(string name)
     {
-        var current = connection;
-        connection = null;
-
-        foreach (var name in sessions.Keys.ToList())
+        lock (_gate)
         {
-            if (sessions.TryRemove(name, out var session) && !session.IsClosed)
+            if (sessions.Remove(name, out var session) && !session.IsClosed)
             {
                 TryClose(session);
             }
+
+            if (connections.Remove(name, out var conn) && !conn.IsClosed)
+            {
+                TryClose(conn);
+            }
+        }
+    }
+
+    private Connection GetConnectionNoLock(string name)
+    {
+        if (connections.TryGetValue(name, out var existing) && !existing.IsClosed)
+        {
+            return existing;
         }
 
-        if (current?.IsClosed == false)
-        {
-            TryClose(current);
-        }
+        var newConnection = new Connection(new Address(options.CurrentValue.Endpoint));
+        connections[name] = newConnection;
+        return newConnection;
     }
 
     private static void TryClose(AmqpObject amqpObject)

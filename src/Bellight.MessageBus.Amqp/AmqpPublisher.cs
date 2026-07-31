@@ -5,30 +5,32 @@ namespace Bellight.MessageBus.Amqp;
 
 public class AmqpPublisher(
     IAmqpConnectionFactory connectionFactory,
-    PublisherOptions options) : AmqpLinkWrapper<SenderLink>(connectionFactory), IPublisher
+    PublisherOptions options) : AmqpLinkWrapper<SenderLink>(connectionFactory, $"{options.MessageBusType}:{options.Topic}"), IPublisher
 {
     public void Send(string message)
     {
+        var link = GetLink();
         try
         {
-            GetLink().Send(new Message(message));
+            link.Send(new Message(message));
         }
         catch
         {
-            Invalidate();
+            Invalidate(link);
             throw;
         }
     }
 
     public async Task SendAsync(string message)
     {
+        var link = GetLink();
         try
         {
-            await GetLink().SendAsync(new Message(message)).ConfigureAwait(false);
+            await link.SendAsync(new Message(message)).ConfigureAwait(false);
         }
         catch
         {
-            Invalidate();
+            Invalidate(link);
             throw;
         }
     }
